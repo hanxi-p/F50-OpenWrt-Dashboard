@@ -546,88 +546,82 @@
       ]
     },
     {
-      "id": "configuration",
-      "category": "管理与个性化配置",
-      "name": "管理与个性化配置",
-      "summary": "统一设置指定设备免密、SSH登录、会话时长，以及SMTP、代理和RPC适配选项。",
+      "id": "trusted-login",
+      "category": "管理与可选配置",
+      "name": "指定设备后台免密",
+      "summary": "选择允许免密进入后台的设备及Wi-Fi/USB范围。",
       "delivery": "configuration",
-      "document": "docs/features/configuration.md",
+      "document": "docs/features/trusted-login.md",
       "files": [],
-      "requires": [],
-      "options": [
-        {
-          "id": "trusted-login",
-          "name": "指定设备后台免密",
-          "document": "docs/features/trusted-login.md"
-        },
-        {
-          "id": "ssh-key",
-          "name": "SSH密钥登录",
-          "document": "docs/features/ssh-key.md"
-        },
-        {
-          "id": "session-timeout",
-          "name": "后台会话时长",
-          "document": "docs/features/session-timeout.md"
-        },
-        {
-          "id": "smtp",
-          "name": "SMTP邮箱参数",
-          "document": "docs/sms-email.md"
-        },
-        {
-          "id": "proxy-configuration",
-          "name": "代理与订阅配置",
-          "document": "docs/features/proxy-configuration.md"
-        },
-        {
-          "id": "rpcd-compatibility",
-          "name": "RPC兼容性修补",
-          "document": "docs/features/rpcd-compatibility.md"
-        }
-      ]
+      "requires": []
+    },
+    {
+      "id": "ssh-key",
+      "category": "管理与可选配置",
+      "name": "SSH密钥登录",
+      "summary": "配置自己的SSH公钥授权与连接别名。",
+      "delivery": "configuration",
+      "document": "docs/features/ssh-key.md",
+      "files": [],
+      "requires": []
+    },
+    {
+      "id": "session-timeout",
+      "category": "管理与可选配置",
+      "name": "后台会话时长",
+      "summary": "单独设置后台会话期限，例如12小时。",
+      "delivery": "configuration",
+      "document": "docs/features/session-timeout.md",
+      "files": [],
+      "requires": []
+    },
+    {
+      "id": "smtp",
+      "category": "管理与可选配置",
+      "name": "SMTP邮箱参数",
+      "summary": "单独设置发件邮箱、SMTP/TLS、收件人与授权码。",
+      "delivery": "configuration",
+      "document": "docs/features/smtp.md",
+      "files": [],
+      "requires": []
+    },
+    {
+      "id": "proxy-configuration",
+      "category": "管理与可选配置",
+      "name": "代理与订阅配置",
+      "summary": "安装和导入自己的代理、订阅或规则，配置DNS与IPv6。",
+      "delivery": "configuration",
+      "document": "docs/features/proxy-configuration.md",
+      "files": [],
+      "requires": []
+    },
+    {
+      "id": "rpcd-compatibility",
+      "category": "管理与可选配置",
+      "name": "RPC兼容性修补",
+      "summary": "按系统构建和ABI选择RPC依赖库兼容修补。",
+      "delivery": "configuration",
+      "document": "docs/features/rpcd-compatibility.md",
+      "files": [],
+      "requires": []
     }
   ],
   "aliases": {
     "management-access": [
-      "configuration"
+      "trusted-login",
+      "ssh-key",
+      "session-timeout"
     ],
-    "ssh-key": [
-      "configuration"
-    ],
-    "session-timeout": [
-      "configuration"
-    ],
-    "rpcd-compatibility": [
-      "configuration"
-    ],
-    "trusted-login": [
-      "configuration"
-    ],
-    "proxy-configuration": [
-      "configuration"
+    "configuration": [
+      "trusted-login",
+      "ssh-key",
+      "session-timeout",
+      "smtp",
+      "proxy-configuration",
+      "rpcd-compatibility"
     ]
   },
-  "option_aliases": {
-    "ssh-key": {
-      "feature": "configuration",
-      "option": "ssh-key"
-    },
-    "session-timeout": {
-      "feature": "configuration",
-      "option": "session-timeout"
-    },
-    "rpcd-compatibility": {
-      "feature": "configuration",
-      "option": "rpcd-compatibility"
-    },
-    "trusted-login": {
-      "feature": "configuration",
-      "option": "trusted-login"
-    },
-    "proxy-configuration": {
-      "feature": "configuration",
-      "option": "proxy-configuration"
-    }
+  "legacy_selection": {
+    "configuration": "旧configuration.options中明确选择的ID直接转为独立功能；未明确选择的项目不启用。"
   }
 }

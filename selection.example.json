@@ -6,14 +6,9 @@
     "plan",
     "minute-log",
     "error-log",
-    "configuration"
+    "trusted-login",
+    "ssh-key",
+    "session-timeout"
   ],
-  "note": "复制到本机按需求修改；这是配置/验收选择，不自动执行设备命令。",
-  "configuration": {
-    "options": [
-      "trusted-login",
-      "ssh-key",
-      "session-timeout"
-    ]
-  }
+  "note": "复制到本机按需求修改；这是配置/验收选择，不自动执行设备命令。"
 }

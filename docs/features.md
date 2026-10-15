@@ -1,6 +1,6 @@
 # 全部功能
 
-从[首页功能目录](../README.md#功能目录)选择，也可读取[机器可读清单](../features.json)。
+从[功能目录](../README.md#功能目录)分别选择需要的功能。
 
 ### 界面与设备
 
@@ -95,7 +95,17 @@
 - [ ] **[无线失败命令追踪](features/wireless-trace.md)** `wireless-trace`
   记录无线初始化究竟是哪条命令失败。
 
-### 管理与个性化配置
+### 管理与可选配置
 
-- [ ] **[管理与个性化配置](features/configuration.md)** `configuration`
-  统一设置指定设备免密、SSH登录、会话时长，以及SMTP、代理和RPC适配选项。
+- [ ] **[指定设备后台免密](features/trusted-login.md)** `trusted-login`
+  选择允许免密进入后台的设备及Wi-Fi/USB范围。
+- [ ] **[SSH密钥登录](features/ssh-key.md)** `ssh-key`
+  配置自己的SSH公钥授权与连接别名。
+- [ ] **[后台会话时长](features/session-timeout.md)** `session-timeout`
+  单独设置后台会话期限，例如12小时。
+- [ ] **[SMTP邮箱参数](features/smtp.md)** `smtp`
+  单独设置发件邮箱、SMTP/TLS、收件人与授权码。
+- [ ] **[代理与订阅配置](features/proxy-configuration.md)** `proxy-configuration`
+  安装和导入自己的代理、订阅或规则，配置DNS与IPv6。
+- [ ] **[RPC兼容性修补](features/rpcd-compatibility.md)** `rpcd-compatibility`
+  按系统构建和ABI选择RPC依赖库兼容修补。

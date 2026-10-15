@@ -1,6 +1,6 @@
 # RPC兼容性修补
 
-[返回配置入口](configuration.md) · 选项ID：`rpcd-compatibility` · 可选配置
+[返回功能目录](../../README.md#功能目录) · 功能ID：`rpcd-compatibility` · 可选配置
 
 ## 功能
 
@@ -19,7 +19,7 @@
 按[故障修补说明](../troubleshooting.md)核对上游修复与ABI，先做隔离测试，再按实际兼容结果选择部署方式。此选项不等于全量升级系统库。
 
 ```text
-我选择 F50-OpenWrt-Dashboard 的 configuration 入口，配置 rpcd-compatibility 选项。
+我选择 F50-OpenWrt-Dashboard 的 rpcd-compatibility 功能。
 先读取此功能页与风险清单，核对我的系统、现有配置和选项；为我的设备准备配置，保留备份。
 公开资料只用通用说明与示例；设备名单、凭据、密钥和实际配置保存到我的本机或设备私有文件。
 配置后按功能页检查，交付结果和恢复方法。

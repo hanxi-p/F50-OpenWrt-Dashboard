@@ -1,3 +1,7 @@
-# 管理访问配置入口
+# 管理访问功能
 
-[打开管理与个性化配置](configuration.md)。指定设备免密、SSH登录、会话时长及其他配置均在同一入口内选择。
+- [指定设备免密](trusted-login.md)
+- [SSH登录](ssh-key.md)
+- [会话时长](session-timeout.md)
+
+各项分别选择和配置。

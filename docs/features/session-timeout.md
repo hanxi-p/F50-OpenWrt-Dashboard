@@ -1,6 +1,6 @@
 # 后台会话时长
 
-[返回配置入口](configuration.md) · 选项ID：`session-timeout` · 可选配置
+[返回功能目录](../../README.md#功能目录) · 功能ID：`session-timeout` · 可选配置
 
 ## 功能
 
@@ -19,7 +19,7 @@
 保存现有LuCI配置，按所选期限更新会话设置，用新的登录会话读回验证。
 
 ```text
-我选择 F50-OpenWrt-Dashboard 的 configuration 入口，配置 session-timeout 选项。
+我选择 F50-OpenWrt-Dashboard 的 session-timeout 功能。
 先读取此功能页与风险清单，核对我的系统、现有配置和选项；为我的设备准备配置，保留备份。
 公开资料只用通用说明与示例；设备名单、凭据、密钥和实际配置保存到我的本机或设备私有文件。
 配置后按功能页检查，交付结果和恢复方法。
