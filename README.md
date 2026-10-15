@@ -11,7 +11,9 @@
 记录本机选择清单和进度；分别检查明显错误、逻辑与多轮场景，未测写明，最后交付恢复入口。
 ```
 
-复制下面需要的条目或功能ID给codex，也可参考[选择清单](selection.example.json)。**选择用于确定配置与验收目标**：界面功能共用[面板基础包](docs/install.md)，短信邮件和系统组件分别部署，定向配置另行核对。
+复制下面需要的条目或功能ID给codex，也可参考[选择清单](selection.example.json)。**选择用于确定配置与验收目标**：界面功能共用[面板基础包](docs/install.md)，短信邮件和系统组件分别部署，管理、代理等可选配置按使用者提供的选项准备。
+
+每项配置使用自己的设备和参数：可以选择后台免密、SSH密钥、会话时长、短信邮件、代理配置与兼容性修补。公开页面提供功能和操作方法，实际名单、凭据、密钥及配置记录留在自己的本机和设备。
 
 ## 功能目录
 
@@ -108,10 +110,18 @@
 - [ ] **[无线失败命令追踪](docs/features/wireless-trace.md)** `wireless-trace`
   记录无线初始化究竟是哪条命令失败。
 
-### 定向配置
+### 管理与可选配置
 
-- [ ] **[会话时长、SSH与指定设备免密](docs/features/management-access.md)** `management-access`
-  按自己的设备配置后台访问方式。
+- [ ] **[指定设备后台免密](docs/features/trusted-login.md)** `trusted-login`
+  选择可免密进入后台的设备，其余设备继续使用密码。
+- [ ] **[SSH密钥登录](docs/features/ssh-key.md)** `ssh-key`
+  为自己的电脑配置SSH公钥登录和连接别名。
+- [ ] **[后台会话时长](docs/features/session-timeout.md)** `session-timeout`
+  按需要延长后台登录保持时间，例如12小时。
+- [ ] **[代理与订阅配置](docs/features/proxy-configuration.md)** `proxy-configuration`
+  选择代理插件、导入自己的订阅或规则，并配置DNS与IPv6。
+- [ ] **[RPC兼容性修补](docs/features/rpcd-compatibility.md)** `rpcd-compatibility`
+  按系统版本适配rpcd依赖库，处理已确认的回调兼容问题。
 
 ## 配套文件与维护
 
@@ -123,7 +133,9 @@
 
 ## 界面参考
 
-<img src="assets/dashboard-mobile-20261015.png" alt="F50手机面板：信号、今日峰值与实时双曲线" width="390">
+<img src="assets/dashboard-demo.svg" alt="功能示意：信号、曲线、套餐和快捷按钮；全部使用示例数据" width="390">
+
+图中使用示例数据展示功能布局，不包含个人设备配置，也不代表性能测试结果。
 
 ## 来源与更新
 

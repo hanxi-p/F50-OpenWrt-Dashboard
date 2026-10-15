@@ -37,8 +37,8 @@
 
 - [面板安装说明](install.md) 提供匹配 `v2026.10.11`、厂商 5.4 内核、Aurora / MU300 面板的负载、校验与恢复脚本。不同版本先比对，不直接套用。
 - 流量、历史、控制期限、登录依赖、健康热点跳过及日志修补随 [dashboard 配套文件](../extras/dashboard/) 交付。更新不应清空用户统计、密码、订阅或邮箱配置。
-- `f50-wifi-command-trace.uc` 是**诊断工具**：在匹配的 mac80211 ucode 脚本中记录失败的具体 PHY 命令，供定位 `-12` 使用。它不修复无线驱动，也不自动重启热点。先保存原脚本；不匹配即停止。当前设备三轮真实重新加载已定位距离设置命令返回`-12`，天线/自动功率返回`-95`；不是系统OOM结论，底层原因与冷启动仍待查。默认首页安装器不自动启用它。
-- rpcd 私有库回移是**当前设备的定向修补**，不是通用系统升级。它只通过该服务的 `LD_LIBRARY_PATH` 加载，不替换 `/lib` 全局库。上游修复来自 [signal watcher 删除后访问修复](https://github.com/openwrt/libubox/commit/a9ab90bd1d5d6cf96051700bce395579264d6c5f) 和 [process watcher 删除后访问修复](https://github.com/openwrt/libubox/commit/c08a4ab5312917e21104fd225136b2ae35e79427)。当前完整私有备份包含已部署文件；公开首页包不自动部署该库。其他机器需重新核对原库、ABI、构建来源与隔离测试。
+- `f50-wifi-command-trace.uc` 是可选诊断工具：在匹配的mac80211 ucode脚本中记录具体命令与退出码，wdev只记录安全标签。使用者先保存原脚本并核对布局，再按故障选择启用；它不自动重启热点，也不修复无线驱动。`-12`应结合实际失败命令、内存和驱动上下文判断，不能直接当成系统OOM。
+- [RPC兼容性修补](features/rpcd-compatibility.md)可按需选择。先核对使用者系统的原库、ABI和构建来源，按匹配源码构建并隔离验证；需要服务级适配时，可通过rpcd的 `LD_LIBRARY_PATH` 加载匹配库，保留 `/lib` 全局库。上游修复来自 [signal watcher 删除后访问修复](https://github.com/openwrt/libubox/commit/a9ab90bd1d5d6cf96051700bce395579264d6c5f) 和 [process watcher 删除后访问修复](https://github.com/openwrt/libubox/commit/c08a4ab5312917e21104fd225136b2ae35e79427)。部署文件、服务配置与原件恢复材料纳入使用者自己的备份。
 
 库缺陷已在隔离程序中复现并修补，修补后真实插件组合三轮通过；**尚不能据此认定此前 rpcd 崩溃的唯一根因**。不要用“这轮没有崩溃”替代根因确认。
 

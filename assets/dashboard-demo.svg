@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="860" viewBox="0 0 390 860">
+ <style>text{font-family:Arial,'Microsoft YaHei',sans-serif;fill:#263a45}.label{font-size:12px;fill:#687c86}.small{font-size:10px;fill:#687c86}.dl{fill:#249ad1}.ul{fill:#159b85}.card{fill:white;stroke:#d6e5eb}.button{fill:#edf6fb;stroke:#bcd8e6}</style>
+ <rect width="390" height="860" fill="#f5f9fc"/>
+ <text x="18" y="25" font-size="13" font-weight="bold">F50 功能示意</text><text x="372" y="25" class="small" text-anchor="end">全部为示例数据</text>
+ <rect x="14" y="40" width="362" height="130" rx="14" fill="#e2f0f6" stroke="#c7dfe9"/>
+ <text x="28" y="64" class="label">网络状态</text><text x="360" y="64" class="label" text-anchor="end">信号详情</text>
+ <text x="28" y="103" font-size="32" fill="#086353" font-weight="bold">5G SA</text><text x="360" y="103" font-size="30" fill="#086353" text-anchor="end">−85 dBm</text>
+ <text x="28" y="125" class="label">运营商 · n78 · 100 MHz</text><text x="28" y="150" class="label">QCI 9　1000 / 100 Mbps</text><text x="360" y="150" class="small" text-anchor="end">RSRQ −10 · SINR 15</text>
+ <rect x="14" y="184" width="362" height="450" rx="14" class="card"/>
+ <text x="28" y="209" font-size="13">流量</text><text x="360" y="209" class="label" text-anchor="end">今日峰值</text>
+ <text x="28" y="242" class="label dl">下载</text><text x="65" y="242" class="dl" font-size="25" font-weight="bold">12.4 MB/s</text><text x="360" y="242" class="dl" font-size="25" text-anchor="end">18.0 MB/s</text>
+ <text x="28" y="270" class="label ul">上传</text><text x="65" y="270" class="ul" font-size="21" font-weight="bold">640 KB/s</text><text x="360" y="270" class="ul" font-size="21" text-anchor="end">1.2 MB/s</text>
+ <rect x="27" y="288" width="336" height="184" rx="8" fill="#fff" stroke="#c8dfe7"/>
+ <path d="M41 316H348 M41 341H348 M41 366H348 M41 391H348 M41 416H348" fill="none" stroke="#e8f0f3"/>
+ <path d="M41 391L41 380 66 380 66 352 87 352 87 367 110 367 110 330 134 330 134 344 160 344 160 318 184 318 184 359 210 359 210 341 235 341 235 326 260 326 260 357 286 357 286 344 310 344 310 349 348 349 348 391Z" fill="#dff3fa"/>
+ <path d="M41 380H66V352H87V367H110V330H134V344H160V318H184V359H210V341H235V326H260V357H286V344H310V349H348" fill="none" stroke="#249ad1" stroke-width="2.5"/>
+ <path d="M41 391L41 397 72 397 72 402 110 402 110 396 158 396 158 410 199 410 199 399 242 399 242 405 286 405 286 398 348 398 348 391Z" fill="#dcf4ee"/>
+ <path d="M41 397H72V402H110V396H158V410H199V399H242V405H286V398H348" fill="none" stroke="#159b85" stroke-width="2.5"/>
+ <text x="41" y="456" class="small">5分钟前</text><text x="195" y="456" class="small" text-anchor="middle">实时双曲线</text><text x="348" y="456" class="small" text-anchor="end">现在</text>
+ <text x="28" y="500" class="label">本次接收 / 发送　　本小时 / 今日使用</text>
+ <text x="28" y="529" class="label">流量套餐示例</text><text x="360" y="529" class="label" text-anchor="end">设置流量套餐</text>
+ <rect x="28" y="542" width="332" height="12" rx="6" fill="#e7f0f5"/><rect x="28" y="542" width="66" height="12" rx="6" fill="#249ad1"/>
+ <text x="28" y="578" font-size="17">已用 20 GB</text><text x="360" y="578" font-size="17" text-anchor="end">剩余 80 GB</text>
+ <text x="28" y="610" class="small">点击展开每日用量 / 每日峰值历史</text>
+ <rect x="14" y="648" width="362" height="66" rx="12" class="card"/>
+ <text x="30" y="674" class="label">CPU占用</text><text x="152" y="674" class="label">内存</text><text x="272" y="674" class="label">温度</text>
+ <text x="30" y="699" font-size="19">20%</text><text x="152" y="699" font-size="19">余 1.1G</text><text x="272" y="699" font-size="19">50°C</text>
+ <g class="button"><rect x="14" y="730" width="114" height="42" rx="8"/><rect x="138" y="730" width="114" height="42" rx="8"/><rect x="262" y="730" width="114" height="42" rx="8"/><rect x="14" y="782" width="114" height="42" rx="8"/><rect x="138" y="782" width="114" height="42" rx="8"/><rect x="262" y="782" width="114" height="42" rx="8"/></g>
+ <g font-size="13" text-anchor="middle"><text x="71" y="756">流量</text><text x="195" y="756">性能 / 能效</text><text x="319" y="756">4G / 自动5G</text><text x="71" y="808">OpenClash</text><text x="195" y="808">重启设备</text><text x="319" y="808">更多设置</text></g>
+ <text x="195" y="848" class="small" text-anchor="middle">功能示意 · 非个人设备配置或性能测试结果</text>
+</svg>

@@ -95,7 +95,15 @@
 - [ ] **[无线失败命令追踪](features/wireless-trace.md)** `wireless-trace`
   记录无线初始化究竟是哪条命令失败。
 
-### 定向配置
+### 管理与可选配置
 
-- [ ] **[会话时长、SSH与指定设备免密](features/management-access.md)** `management-access`
-  按自己的设备配置后台访问方式。
+- [ ] **[指定设备后台免密](features/trusted-login.md)** `trusted-login`
+  选择可免密进入后台的设备，其余设备继续使用密码。
+- [ ] **[SSH密钥登录](features/ssh-key.md)** `ssh-key`
+  为自己的电脑配置SSH公钥登录和连接别名。
+- [ ] **[后台会话时长](features/session-timeout.md)** `session-timeout`
+  按需要延长后台登录保持时间，例如12小时。
+- [ ] **[代理与订阅配置](features/proxy-configuration.md)** `proxy-configuration`
+  选择代理插件、导入自己的订阅或规则，并配置DNS与IPv6。
+- [ ] **[RPC兼容性修补](features/rpcd-compatibility.md)** `rpcd-compatibility`
+  按系统版本适配rpcd依赖库，处理已确认的回调兼容问题。
