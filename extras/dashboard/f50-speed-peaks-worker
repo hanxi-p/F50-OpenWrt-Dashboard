@@ -1,0 +1,23 @@
+#!/bin/sh
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export TZ=CST-8
+umask 077
+mkdir -p /tmp/f50-speed-peaks || exit 1
+exec 9>/tmp/f50-speed-peaks/worker.lock
+flock -n 9 || exit 0
+child=''; sleeper=''; failures=0
+cleanup() {
+ trap '' TERM INT
+ for pid in "$child" "$sleeper"; do [ -z "$pid" ] || { kill -TERM "$pid" 2>/dev/null; wait "$pid" 2>/dev/null; }; done
+}
+trap cleanup EXIT
+trap 'exit 143' TERM INT
+while :; do
+ /usr/libexec/f50-bounded 8 ucode /usr/libexec/f50-speed-peaks.uc >/tmp/f50-speed-peaks/result.log 2>&1 & child=$!
+ if wait "$child"; then failures=0; else
+  failures=$((failures+1))
+  [ $((failures%6)) -ne 1 ] || logger -t f50-speed-peaks 'Recorder unavailable; retaining saved peaks'
+ fi
+ child=''
+ sleep 10 & sleeper=$!; wait "$sleeper"; sleeper=''
+done

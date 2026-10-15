@@ -1,0 +1,9 @@
+* text=auto
+*.sh text eol=lf
+*.uc text eol=lf
+*.js text eol=lf
+*.py text eol=lf
+SHA256SUMS text eol=lf
+extras/dashboard/* text eol=lf
+extras/sms-email/* text eol=lf
+extras/system-reliability/* text eol=lf

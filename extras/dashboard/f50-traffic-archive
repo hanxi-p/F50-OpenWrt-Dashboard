@@ -1,0 +1,37 @@
+#!/bin/sh
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin:/opt/mu300/busybox-bin
+export TZ=CST-8
+umask 077
+[ ! -L /opt/f50-traffic-hours ] || exit 1
+mkdir -p /opt/f50-traffic-hours || exit 1
+chmod 700 /opt/f50-traffic-hours || exit 1
+exec 9>/tmp/f50-traffic-archive.flock
+flock -n 9 || exit 0
+child=''
+trap '[ -z "$child" ] || { kill "$child" 2>/dev/null; wait "$child" 2>/dev/null; }' EXIT
+trap 'exit 143' INT TERM
+audit() {
+ /usr/libexec/f50-bounded 8 ucode /usr/libexec/f50-counter-audit.uc & child=$!
+ wait "$child"; audit_code=$?; child=''
+ [ "$audit_code" = 0 ] || logger -t f50-traffic-counter 'Raw counter audit failed; existing records retained'
+ return "$audit_code"
+}
+once() {
+ audit; audit_code=$?
+ file=$(mktemp /tmp/f50-hourly.XXXXXX) || return 1
+ /usr/libexec/f50-bounded 8 vnstat --json h 2400 -i sipa_eth0 > "$file" & child=$!
+ wait "$child"; code=$?; child=''
+ if [ "$code" = 0 ]; then
+  /usr/libexec/f50-bounded 8 ucode /usr/libexec/f50-traffic-export.uc "$file" /opt/f50-traffic-hours & child=$!
+  wait "$child"; code=$?; child=''
+ fi
+ rm -f "$file"
+ [ "$code" = 0 ] && [ "$audit_code" = 0 ]
+}
+if [ "$1" = once ]; then once; exit $?; fi
+n=0
+while :; do
+ if [ "$n" = 0 ]; then once || logger -t f50-traffic-archive 'Hourly archive failed; previous files retained'; else audit; fi
+ n=$(((n+1)%5))
+ sleep 60 & child=$!; wait "$child"; child=''
+done

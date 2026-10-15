@@ -1,0 +1,28 @@
+"""Read-only package/link/syntax checks; never connects to or modifies an F50."""
+from pathlib import Path
+import ast,hashlib,json,re,shutil,subprocess
+root=Path(__file__).resolve().parents[1]
+missing=[];count=0
+for folder in ['dashboard','sms-email','system-reliability']:
+ d=root/'extras'/folder
+ for line in (d/'SHA256SUMS').read_text(encoding='utf-8').splitlines():
+  digest,name=line.split('  ',1)
+  assert (d/name).is_file() and hashlib.sha256((d/name).read_bytes()).hexdigest()==digest,(folder,name)
+ for p in d.iterdir():
+  if p.is_file():
+   data=p.read_bytes();assert b'\r\n' not in data,p
+   if data.startswith(b'#!/bin/sh') and shutil.which('bash'):subprocess.run(['bash','-n',str(p)],check=True)
+   if p.suffix=='.py':ast.parse(p.read_text(encoding='utf-8'))
+   count+=1
+for p in root.rglob('*.md'):
+ text=re.sub(r'```[\s\S]*?```','',p.read_text(encoding='utf-8'))
+ targets=re.findall(r'\]\(([^)]+)\)',text)+re.findall(r'<img[^>]+src="([^"]+)"',text)
+ for target in targets:
+  if '://' in target or target.startswith(('mailto:','#')):continue
+  path=target.strip('<>').partition('#')[0]
+  if not (p.parent/path).exists():missing.append((str(p.relative_to(root)),target))
+assert not missing,missing
+js=list((root/'extras/dashboard').glob('*.js'))
+if shutil.which('node'):
+ subprocess.run(['node','-e',"const fs=require('fs');for(const p of process.argv.slice(1))new Function(fs.readFileSync(p,'utf8'));",*[str(p) for p in js]],check=True)
+print(json.dumps({'package_files':count,'javascript_files':len(js),'missing_links':missing,'result':'PASS'},ensure_ascii=False))

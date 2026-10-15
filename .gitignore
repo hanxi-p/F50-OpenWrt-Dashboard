@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.env
+*.private
+*.key
+F50-progress.md
+backups/
+private/
+logs/
