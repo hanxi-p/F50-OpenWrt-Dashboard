@@ -1,6 +1,6 @@
 # 短信邮件转发配套文件
 
-完整步骤：[第十二章：其他可选功能](../../docs/12-optional-features.md)。
+完整步骤：[短信与扩展说明](../../docs/sms-email.md)。
 
 适用条件：mu300-linux OpenWrt、支持 SMS hook 的 `mu300-sms`、`msmtp`、465 隐式 TLS。无需安装首页美化。
 

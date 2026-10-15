@@ -1,6 +1,6 @@
 # 面板安装包
 
-完整流程见 [第十一章](../../docs/11-optional-dashboard.md)，功能见 [features.md](../../docs/features.md)。请下载本仓库完整目录，不混用原刷机指南旧包。
+完整流程见 [面板安装说明](../../docs/install.md)，功能见 [features.md](../../docs/features.md)。请下载本仓库完整目录，不混用原刷机指南旧包。
 
 Windows仓库根目录：
 

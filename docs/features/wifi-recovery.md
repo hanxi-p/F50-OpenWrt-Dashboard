@@ -1,0 +1,37 @@
+# 热点启动保护与恢复
+
+[返回功能目录](../../README.md#功能目录) · 功能ID：`wifi-recovery` · 日志与排错
+
+## 这项功能做什么
+
+针对零BSSID、长期pending和异常热点提供保护。
+
+使用有效单播MAC，健康AP跳过重复重配；pending有边界、恢复有冷却；用户主动关闭不自启。
+
+## 可以设置/需要准备什么
+
+先保留USB管理并读取日志；不能把AP ENABLED单独当手机可用。
+
+## 如何选择与部署
+
+此功能使用[共享面板基础包](../install.md)。选择此项确定配置和验收范围；基础包会一并部署共用页面、RPC及采集服务，执行前由codex列出依赖与会一并安装的内容。
+
+```text
+我选择 F50-OpenWrt-Dashboard 的 wifi-recovery 功能。
+先读对应功能页、依赖和风险清单，保存原配置；列出会配置/安装的范围后按我的选择推进。
+按本页验收并记录通过、失败与未测，最后交付恢复入口。
+```
+
+## 怎么验证
+
+正常/边界/失败分类、手机关联/DHCP/后台；真实驱动死锁与冷启动独立记录。
+
+按[风险清单](../risk-register.md)分别记录明显错误、逻辑审查和多轮场景测试。已有历史验证不替代自己设备上的验收，危险或需人工配合场景单列未测。
+
+## 代码与恢复
+
+- [f50-wifi-start-safe](../../extras/dashboard/f50-wifi-start-safe)
+- [f50-wifi-evaluate](../../extras/dashboard/f50-wifi-evaluate)
+- [f50-wifi-guard](../../extras/dashboard/f50-wifi-guard)
+
+使用实际安装时生成的备份与恢复脚本，保留历史数据。日志与恢复操作见[维护说明](../operations.md)，历史修补见[修复记录](../fix-history.md)。

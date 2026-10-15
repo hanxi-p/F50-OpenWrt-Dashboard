@@ -1,0 +1,11 @@
+{
+  "features": [
+    "mobile-layout",
+    "live-chart",
+    "daily-peaks",
+    "plan",
+    "minute-log",
+    "error-log"
+  ],
+  "note": "复制到本机按需求修改；这是配置/验收选择，不自动执行设备命令。"
+}

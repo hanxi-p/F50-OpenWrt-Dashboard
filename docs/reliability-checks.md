@@ -6,7 +6,7 @@
 
 1. 前十章：准备 → 原始备份 → B09 → 解锁 → Root → SD 安装 → 管理配置与切换。
 2. [安装后优化](https://github.com/hanxi-p/F50-mu300-linux-guide/blob/codex/practical-guide/docs/10a-post-install-optimization.md)：核对并部署 [系统组件修补](../extras/system-reliability/README.md)，再完成密码、SSH、无线、时间、软件源与备份。
-3. 按需部署 [首页扩展](11-optional-dashboard.md) 或 [短信邮件](12-optional-features.md)，核对各自依赖、哈希与恢复入口。
+3. 按需部署 [首页扩展](install.md) 或 [短信邮件](sms-email.md)，核对各自依赖、哈希与恢复入口。
 4. 重新检查管理与联网，保存包含新增配置的私人备份。
 
 用户需要自己的 SIM、SD、密码及 SMTP / 代理配置；这些内容不在公共配套文件中。需要插拔、短接、WebUSB 设备选择或本地输入密码时，由 Codex 给出当前步骤并等待完成，其他步骤按实际检测结果推进。
