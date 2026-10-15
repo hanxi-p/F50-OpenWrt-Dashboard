@@ -1,6 +1,6 @@
 # USB网络与防火墙适配
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`usb-firewall` · 独立扩展
+[返回功能目录](../../README.md#功能目录) · 功能ID：`usb-firewall` · 诊断管理
 
 ## 这项功能做什么
 

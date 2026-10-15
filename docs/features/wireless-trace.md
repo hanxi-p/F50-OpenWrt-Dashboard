@@ -1,6 +1,6 @@
 # 无线失败命令追踪
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`wireless-trace` · 定向诊断
+[返回功能目录](../../README.md#功能目录) · 功能ID：`wireless-trace` · 诊断管理
 
 ## 这项功能做什么
 

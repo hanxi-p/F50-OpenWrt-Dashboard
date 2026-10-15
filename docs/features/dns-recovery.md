@@ -1,6 +1,6 @@
 # DNS协调与恢复
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`dns-recovery` · 日志与排错
+[返回功能目录](../../README.md#功能目录) · 功能ID：`dns-recovery` · 诊断管理
 
 ## 这项功能做什么
 

@@ -1,6 +1,6 @@
 # 基站、小区与SIM详情
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`cell-details` · 界面与设备
+[返回功能目录](../../README.md#功能目录) · 功能ID：`cell-details` · 数据展示记录
 
 ## 这项功能做什么
 

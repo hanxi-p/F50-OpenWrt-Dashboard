@@ -1,6 +1,6 @@
 # 指定设备后台免密
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`trusted-login` · 可选配置
+[返回功能目录](../../README.md#功能目录) · 功能ID：`trusted-login` · 诊断管理
 
 ## 功能
 

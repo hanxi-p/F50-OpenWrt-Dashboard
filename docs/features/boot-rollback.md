@@ -1,6 +1,6 @@
 # 更新与回滚互斥
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`boot-rollback` · 独立扩展
+[返回功能目录](../../README.md#功能目录) · 功能ID：`boot-rollback` · 诊断管理
 
 ## 这项功能做什么
 

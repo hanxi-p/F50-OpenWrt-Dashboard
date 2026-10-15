@@ -25,6 +25,10 @@ assert not missing,missing
 catalog=json.loads((root/'features.json').read_text(encoding='utf-8')) if (root/'features.json').exists() else None
 if catalog:
  ids=[f['id'] for f in catalog['features']];assert len(ids)==len(set(ids))
+ if 'categories' in catalog:
+  assert len(catalog['categories'])==len(set(catalog['categories']))
+  assert set(catalog['categories'])=={f['category'] for f in catalog['features']}
+  readme=(root/'README.md').read_text(encoding='utf-8');assert all('### '+category in readme for category in catalog['categories'])
  for feature in catalog['features']:
   assert (root/feature['document']).is_file(),feature['id']
   assert feature['document'] in (root/'README.md').read_text(encoding='utf-8'),feature['id']

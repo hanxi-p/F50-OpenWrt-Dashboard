@@ -1,6 +1,6 @@
 # 月度用量历史
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`monthly-history` · 流量与套餐
+[返回功能目录](../../README.md#功能目录) · 功能ID：`monthly-history` · 流量套餐
 
 ## 这项功能做什么
 

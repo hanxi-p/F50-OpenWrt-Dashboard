@@ -4,218 +4,8 @@
   "shared_base": "docs/install.md",
   "features": [
     {
-      "id": "mobile-layout",
-      "category": "界面与设备",
-      "name": "手机与桌面布局",
-      "summary": "常用信息常显，详情按需展开，手机按钮每行3个。",
-      "delivery": "dashboard",
-      "document": "docs/features/mobile-layout.md",
-      "files": [
-        "extras/dashboard/home.js"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "signal",
-      "category": "界面与设备",
-      "name": "信号与网络质量",
-      "summary": "制式、运营商、频段、QCI和信号读数集中展示。",
-      "delivery": "dashboard",
-      "document": "docs/features/signal.md",
-      "files": [
-        "extras/dashboard/home.js",
-        "extras/dashboard/dashboard-info"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "cell-details",
-      "category": "界面与设备",
-      "name": "基站、小区与SIM详情",
-      "summary": "需要时展开查看基站、小区、地址与手机号。",
-      "delivery": "dashboard",
-      "document": "docs/features/cell-details.md",
-      "files": [
-        "extras/dashboard/home.js",
-        "extras/dashboard/dashboard-info"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "cpu",
-      "category": "界面与设备",
-      "name": "CPU总负载与逐核心详情",
-      "summary": "总占用常显，点开查看8个核心占用与频率。",
-      "delivery": "dashboard",
-      "document": "docs/features/cpu.md",
-      "files": [
-        "extras/dashboard/home.js",
-        "extras/dashboard/dashboard-info"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "memory",
-      "category": "界面与设备",
-      "name": "内存占用与余量",
-      "summary": "显示占用百分比、剩余量和Linux可管理总量。",
-      "delivery": "dashboard",
-      "document": "docs/features/memory.md",
-      "files": [
-        "extras/dashboard/home.js",
-        "extras/dashboard/dashboard-info"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "temperature",
-      "category": "界面与设备",
-      "name": "四传感器温度",
-      "summary": "大字号平均温度，框内列出四个传感器。",
-      "delivery": "dashboard",
-      "document": "docs/features/temperature.md",
-      "files": [
-        "extras/dashboard/home.js",
-        "extras/dashboard/dashboard-info"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "live-chart",
-      "category": "速率与历史",
-      "name": "实时下载/上传双曲线",
-      "summary": "最近5分钟、约2秒采样，关掉网页也继续记录。",
-      "delivery": "dashboard",
-      "document": "docs/features/live-chart.md",
-      "files": [
-        "extras/dashboard/home.js",
-        "extras/dashboard/f50history-worker",
-        "extras/dashboard/f50history"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "daily-peaks",
-      "category": "速率与历史",
-      "name": "每日下载/上传峰值",
-      "summary": "今日峰值常显，点击展开30天峰值双曲线。",
-      "delivery": "dashboard",
-      "document": "docs/features/daily-peaks.md",
-      "files": [
-        "extras/dashboard/f50-speed-peaks.uc",
-        "extras/dashboard/f50-speed-peaks-worker",
-        "extras/dashboard/f50speedpeaks.js"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "session-usage",
-      "category": "流量与套餐",
-      "name": "本次累计接收/发送",
-      "summary": "分别显示当前蜂窝接口收到和发出的总字节数。",
-      "delivery": "dashboard",
-      "document": "docs/features/session-usage.md",
-      "files": [
-        "extras/dashboard/home.js",
-        "extras/dashboard/dashboard-info"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "hourly-usage",
-      "category": "流量与套餐",
-      "name": "本小时使用流量",
-      "summary": "显示北京时间当前小时接收+发送合计。",
-      "delivery": "dashboard",
-      "document": "docs/features/hourly-usage.md",
-      "files": [
-        "extras/dashboard/f50quota",
-        "extras/dashboard/f50quota5.js"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "today-usage",
-      "category": "流量与套餐",
-      "name": "今日使用流量",
-      "summary": "从北京时间0点累计到当前的接收+发送。",
-      "delivery": "dashboard",
-      "document": "docs/features/today-usage.md",
-      "files": [
-        "extras/dashboard/f50quota",
-        "extras/dashboard/f50quota5.js"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "plan",
-      "category": "流量与套餐",
-      "name": "套餐总量、已用和剩余",
-      "summary": "自己填写套餐总量与已用，显示进度和剩余额度。",
-      "delivery": "dashboard",
-      "document": "docs/features/plan.md",
-      "files": [
-        "extras/dashboard/f50quota",
-        "extras/dashboard/f50quota5.js"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "daily-usage-chart",
-      "category": "流量与套餐",
-      "name": "每日用量折线",
-      "summary": "点击本月总消耗，在首页展开最近30天。",
-      "delivery": "dashboard",
-      "document": "docs/features/daily-usage-chart.md",
-      "files": [
-        "extras/dashboard/f50quota5.js"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "monthly-history",
-      "category": "流量与套餐",
-      "name": "月度用量历史",
-      "summary": "查看每月接收、发送和含校准的已用合计。",
-      "delivery": "dashboard",
-      "document": "docs/features/monthly-history.md",
-      "files": [
-        "extras/dashboard/f50quota",
-        "extras/dashboard/f50quota5.js"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
       "id": "data-switch",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "蜂窝流量开关",
       "summary": "打开或关闭移动数据连接。",
       "delivery": "dashboard",
@@ -230,7 +20,7 @@
     },
     {
       "id": "power-mode",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "性能/能效模式",
       "summary": "按需开关大核：性能全核，能效使用4个小核。",
       "delivery": "dashboard",
@@ -246,7 +36,7 @@
     },
     {
       "id": "radio-mode",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "4G/自动5G切换",
       "summary": "点击立即切换，倒计时只提示预计等待。",
       "delivery": "dashboard",
@@ -261,7 +51,7 @@
     },
     {
       "id": "openclash",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "OpenClash开关",
       "summary": "已装代理插件的异步启停与状态反馈。",
       "delivery": "dashboard",
@@ -277,7 +67,7 @@
     },
     {
       "id": "wifi-switch",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "Wi-Fi热点开关",
       "summary": "更多设置内控制热点开关。",
       "delivery": "dashboard",
@@ -293,7 +83,7 @@
     },
     {
       "id": "adguard",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "AdGuard Home开关",
       "summary": "广告过滤服务独立启停，位于更多设置。",
       "delivery": "dashboard",
@@ -309,7 +99,7 @@
     },
     {
       "id": "channel",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "自动/手动Wi-Fi信道",
       "summary": "按当前地区与驱动能力选择合法非DFS信道。",
       "delivery": "dashboard",
@@ -325,7 +115,7 @@
     },
     {
       "id": "band-lock",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "制式与频段锁定",
       "summary": "在更多设置查看邻区并锁定制式/频段。",
       "delivery": "dashboard",
@@ -342,7 +132,7 @@
     },
     {
       "id": "modem-restart",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "重启调制解调器",
       "summary": "只重启蜂窝模块，保留本地管理入口。",
       "delivery": "dashboard",
@@ -357,7 +147,7 @@
     },
     {
       "id": "device-restart",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "重启设备与二次确认",
       "summary": "防止误点导致整机重启。",
       "delivery": "dashboard",
@@ -372,7 +162,7 @@
     },
     {
       "id": "android-switch",
-      "category": "快捷控制",
+      "category": "快捷指令",
       "name": "切换到Android",
       "summary": "更多设置中主动进入保留的原厂系统。",
       "delivery": "dashboard",
@@ -386,8 +176,115 @@
       ]
     },
     {
+      "id": "signal",
+      "category": "数据展示记录",
+      "name": "信号与网络质量",
+      "summary": "制式、运营商、频段、QCI和信号读数集中展示。",
+      "delivery": "dashboard",
+      "document": "docs/features/signal.md",
+      "files": [
+        "extras/dashboard/home.js",
+        "extras/dashboard/dashboard-info"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "cell-details",
+      "category": "数据展示记录",
+      "name": "基站、小区与SIM详情",
+      "summary": "需要时展开查看基站、小区、地址与手机号。",
+      "delivery": "dashboard",
+      "document": "docs/features/cell-details.md",
+      "files": [
+        "extras/dashboard/home.js",
+        "extras/dashboard/dashboard-info"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "cpu",
+      "category": "数据展示记录",
+      "name": "CPU总负载与逐核心详情",
+      "summary": "总占用常显，点开查看8个核心占用与频率。",
+      "delivery": "dashboard",
+      "document": "docs/features/cpu.md",
+      "files": [
+        "extras/dashboard/home.js",
+        "extras/dashboard/dashboard-info"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "memory",
+      "category": "数据展示记录",
+      "name": "内存占用与余量",
+      "summary": "显示占用百分比、剩余量和Linux可管理总量。",
+      "delivery": "dashboard",
+      "document": "docs/features/memory.md",
+      "files": [
+        "extras/dashboard/home.js",
+        "extras/dashboard/dashboard-info"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "temperature",
+      "category": "数据展示记录",
+      "name": "四传感器温度",
+      "summary": "大字号平均温度，框内列出四个传感器。",
+      "delivery": "dashboard",
+      "document": "docs/features/temperature.md",
+      "files": [
+        "extras/dashboard/home.js",
+        "extras/dashboard/dashboard-info"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "live-chart",
+      "category": "数据展示记录",
+      "name": "实时下载/上传双曲线",
+      "summary": "最近5分钟、约2秒采样，关掉网页也继续记录。",
+      "delivery": "dashboard",
+      "document": "docs/features/live-chart.md",
+      "files": [
+        "extras/dashboard/home.js",
+        "extras/dashboard/f50history-worker",
+        "extras/dashboard/f50history"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "daily-peaks",
+      "category": "数据展示记录",
+      "name": "每日下载/上传峰值",
+      "summary": "今日峰值常显，点击展开30天峰值双曲线。",
+      "delivery": "dashboard",
+      "document": "docs/features/daily-peaks.md",
+      "files": [
+        "extras/dashboard/f50-speed-peaks.uc",
+        "extras/dashboard/f50-speed-peaks-worker",
+        "extras/dashboard/f50speedpeaks.js"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
       "id": "minute-log",
-      "category": "日志与排错",
+      "category": "数据展示记录",
       "name": "每分钟流量日志",
       "summary": "每分钟记录下载/上传增量与合计，保留5GB。",
       "delivery": "dashboard",
@@ -401,8 +298,97 @@
       ]
     },
     {
+      "id": "session-usage",
+      "category": "流量套餐",
+      "name": "本次累计接收/发送",
+      "summary": "分别显示当前蜂窝接口收到和发出的总字节数。",
+      "delivery": "dashboard",
+      "document": "docs/features/session-usage.md",
+      "files": [
+        "extras/dashboard/home.js",
+        "extras/dashboard/dashboard-info"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "hourly-usage",
+      "category": "流量套餐",
+      "name": "本小时使用流量",
+      "summary": "显示北京时间当前小时接收+发送合计。",
+      "delivery": "dashboard",
+      "document": "docs/features/hourly-usage.md",
+      "files": [
+        "extras/dashboard/f50quota",
+        "extras/dashboard/f50quota5.js"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "today-usage",
+      "category": "流量套餐",
+      "name": "今日使用流量",
+      "summary": "从北京时间0点累计到当前的接收+发送。",
+      "delivery": "dashboard",
+      "document": "docs/features/today-usage.md",
+      "files": [
+        "extras/dashboard/f50quota",
+        "extras/dashboard/f50quota5.js"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "plan",
+      "category": "流量套餐",
+      "name": "套餐总量、已用和剩余",
+      "summary": "自己填写套餐总量与已用，显示进度和剩余额度。",
+      "delivery": "dashboard",
+      "document": "docs/features/plan.md",
+      "files": [
+        "extras/dashboard/f50quota",
+        "extras/dashboard/f50quota5.js"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "daily-usage-chart",
+      "category": "流量套餐",
+      "name": "每日用量折线",
+      "summary": "点击本月总消耗，在首页展开最近30天。",
+      "delivery": "dashboard",
+      "document": "docs/features/daily-usage-chart.md",
+      "files": [
+        "extras/dashboard/f50quota5.js"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "monthly-history",
+      "category": "流量套餐",
+      "name": "月度用量历史",
+      "summary": "查看每月接收、发送和含校准的已用合计。",
+      "delivery": "dashboard",
+      "document": "docs/features/monthly-history.md",
+      "files": [
+        "extras/dashboard/f50quota",
+        "extras/dashboard/f50quota5.js"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
       "id": "error-log",
-      "category": "日志与排错",
+      "category": "诊断管理",
       "name": "报错与操作日志",
       "summary": "保留操作结果、错误原因和故障上下文，容量5GB。",
       "delivery": "dashboard",
@@ -417,7 +403,7 @@
     },
     {
       "id": "dns-recovery",
-      "category": "日志与排错",
+      "category": "诊断管理",
       "name": "DNS协调与恢复",
       "summary": "在代理、广告过滤和直连之间协调可用解析链。",
       "delivery": "dashboard",
@@ -433,7 +419,7 @@
     },
     {
       "id": "wifi-recovery",
-      "category": "日志与排错",
+      "category": "诊断管理",
       "name": "热点启动保护与恢复",
       "summary": "针对零BSSID、长期pending和异常热点提供保护。",
       "delivery": "dashboard",
@@ -449,7 +435,7 @@
     },
     {
       "id": "bounded-control",
-      "category": "日志与排错",
+      "category": "诊断管理",
       "name": "超时、锁与子进程清理",
       "summary": "避免控制任务无限等待、重复切换或留下孤儿任务。",
       "delivery": "dashboard",
@@ -464,8 +450,103 @@
       ]
     },
     {
+      "id": "usb-firewall",
+      "category": "诊断管理",
+      "name": "USB网络与防火墙适配",
+      "summary": "修补RNDIS桥接顺序与厂商5.4的flowtable问题。",
+      "delivery": "system-reliability",
+      "document": "docs/features/usb-firewall.md",
+      "files": [
+        "extras/system-reliability/10-mu300-usb",
+        "extras/system-reliability/19-mu300-fw4"
+      ],
+      "requires": []
+    },
+    {
+      "id": "boot-rollback",
+      "category": "诊断管理",
+      "name": "更新与回滚互斥",
+      "summary": "回滚恢复匹配模块，避免并发修改启动控制。",
+      "delivery": "system-reliability",
+      "document": "docs/features/boot-rollback.md",
+      "files": [
+        "extras/system-reliability/mu300-update",
+        "extras/system-reliability/mu300-next-boot",
+        "extras/system-reliability/modem-lock"
+      ],
+      "requires": []
+    },
+    {
+      "id": "wireless-trace",
+      "category": "诊断管理",
+      "name": "无线失败命令追踪",
+      "summary": "记录无线初始化究竟是哪条命令失败。",
+      "delivery": "diagnostic",
+      "document": "docs/features/wireless-trace.md",
+      "files": [
+        "extras/dashboard/f50-wifi-command-trace.uc"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "trusted-login",
+      "category": "诊断管理",
+      "name": "指定设备后台免密",
+      "summary": "选择允许免密进入后台的设备及Wi-Fi/USB范围。",
+      "delivery": "configuration",
+      "document": "docs/features/trusted-login.md",
+      "files": [],
+      "requires": []
+    },
+    {
+      "id": "ssh-key",
+      "category": "诊断管理",
+      "name": "SSH密钥登录",
+      "summary": "配置自己的SSH公钥授权与连接别名。",
+      "delivery": "configuration",
+      "document": "docs/features/ssh-key.md",
+      "files": [],
+      "requires": []
+    },
+    {
+      "id": "session-timeout",
+      "category": "诊断管理",
+      "name": "后台会话时长",
+      "summary": "单独设置后台会话期限，例如12小时。",
+      "delivery": "configuration",
+      "document": "docs/features/session-timeout.md",
+      "files": [],
+      "requires": []
+    },
+    {
+      "id": "rpcd-compatibility",
+      "category": "诊断管理",
+      "name": "RPC兼容性修补",
+      "summary": "按系统构建和ABI选择RPC依赖库兼容修补。",
+      "delivery": "configuration",
+      "document": "docs/features/rpcd-compatibility.md",
+      "files": [],
+      "requires": []
+    },
+    {
+      "id": "mobile-layout",
+      "category": "其他功能",
+      "name": "手机与桌面布局",
+      "summary": "常用信息常显，详情按需展开，手机按钮每行3个。",
+      "delivery": "dashboard",
+      "document": "docs/features/mobile-layout.md",
+      "files": [
+        "extras/dashboard/home.js"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
       "id": "sms-email",
-      "category": "独立扩展",
+      "category": "其他功能",
       "name": "短信转发到邮件",
       "summary": "发送号码与完整短信原文转发到自己的邮箱。",
       "delivery": "sms-email",
@@ -480,7 +561,7 @@
     },
     {
       "id": "ipv6",
-      "category": "独立扩展",
+      "category": "其他功能",
       "name": "IPv6多前缀学习",
       "summary": "学习蜂窝前缀并撤回失效前缀。",
       "delivery": "system-reliability",
@@ -493,7 +574,7 @@
     },
     {
       "id": "sms-storage",
-      "category": "独立扩展",
+      "category": "其他功能",
       "name": "短信存储与接收守护",
       "summary": "短信保存后释放SIM空间，保持接收与写池串行。",
       "delivery": "system-reliability",
@@ -505,79 +586,8 @@
       "requires": []
     },
     {
-      "id": "usb-firewall",
-      "category": "独立扩展",
-      "name": "USB网络与防火墙适配",
-      "summary": "修补RNDIS桥接顺序与厂商5.4的flowtable问题。",
-      "delivery": "system-reliability",
-      "document": "docs/features/usb-firewall.md",
-      "files": [
-        "extras/system-reliability/10-mu300-usb",
-        "extras/system-reliability/19-mu300-fw4"
-      ],
-      "requires": []
-    },
-    {
-      "id": "boot-rollback",
-      "category": "独立扩展",
-      "name": "更新与回滚互斥",
-      "summary": "回滚恢复匹配模块，避免并发修改启动控制。",
-      "delivery": "system-reliability",
-      "document": "docs/features/boot-rollback.md",
-      "files": [
-        "extras/system-reliability/mu300-update",
-        "extras/system-reliability/mu300-next-boot",
-        "extras/system-reliability/modem-lock"
-      ],
-      "requires": []
-    },
-    {
-      "id": "wireless-trace",
-      "category": "定向诊断",
-      "name": "无线失败命令追踪",
-      "summary": "记录无线初始化究竟是哪条命令失败。",
-      "delivery": "diagnostic",
-      "document": "docs/features/wireless-trace.md",
-      "files": [
-        "extras/dashboard/f50-wifi-command-trace.uc"
-      ],
-      "requires": [
-        "dashboard-base"
-      ]
-    },
-    {
-      "id": "trusted-login",
-      "category": "管理与可选配置",
-      "name": "指定设备后台免密",
-      "summary": "选择允许免密进入后台的设备及Wi-Fi/USB范围。",
-      "delivery": "configuration",
-      "document": "docs/features/trusted-login.md",
-      "files": [],
-      "requires": []
-    },
-    {
-      "id": "ssh-key",
-      "category": "管理与可选配置",
-      "name": "SSH密钥登录",
-      "summary": "配置自己的SSH公钥授权与连接别名。",
-      "delivery": "configuration",
-      "document": "docs/features/ssh-key.md",
-      "files": [],
-      "requires": []
-    },
-    {
-      "id": "session-timeout",
-      "category": "管理与可选配置",
-      "name": "后台会话时长",
-      "summary": "单独设置后台会话期限，例如12小时。",
-      "delivery": "configuration",
-      "document": "docs/features/session-timeout.md",
-      "files": [],
-      "requires": []
-    },
-    {
       "id": "smtp",
-      "category": "管理与可选配置",
+      "category": "其他功能",
       "name": "SMTP邮箱参数",
       "summary": "单独设置发件邮箱、SMTP/TLS、收件人与授权码。",
       "delivery": "configuration",
@@ -587,21 +597,11 @@
     },
     {
       "id": "proxy-configuration",
-      "category": "管理与可选配置",
+      "category": "其他功能",
       "name": "代理与订阅配置",
       "summary": "安装和导入自己的代理、订阅或规则，配置DNS与IPv6。",
       "delivery": "configuration",
       "document": "docs/features/proxy-configuration.md",
-      "files": [],
-      "requires": []
-    },
-    {
-      "id": "rpcd-compatibility",
-      "category": "管理与可选配置",
-      "name": "RPC兼容性修补",
-      "summary": "按系统构建和ABI选择RPC依赖库兼容修补。",
-      "delivery": "configuration",
-      "document": "docs/features/rpcd-compatibility.md",
       "files": [],
       "requires": []
     }
@@ -623,5 +623,12 @@
   },
   "legacy_selection": {
     "configuration": "旧configuration.options中明确选择的ID直接转为独立功能；未明确选择的项目不启用。"
-  }
+  },
+  "categories": [
+    "快捷指令",
+    "数据展示记录",
+    "流量套餐",
+    "诊断管理",
+    "其他功能"
+  ]
 }

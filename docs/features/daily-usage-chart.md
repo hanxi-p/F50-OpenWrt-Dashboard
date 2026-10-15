@@ -1,6 +1,6 @@
 # 每日用量折线
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`daily-usage-chart` · 流量与套餐
+[返回功能目录](../../README.md#功能目录) · 功能ID：`daily-usage-chart` · 流量套餐
 
 ## 这项功能做什么
 

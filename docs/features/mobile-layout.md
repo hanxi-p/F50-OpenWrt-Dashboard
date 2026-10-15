@@ -1,6 +1,6 @@
 # 手机与桌面布局
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`mobile-layout` · 界面与设备
+[返回功能目录](../../README.md#功能目录) · 功能ID：`mobile-layout` · 其他功能
 
 ## 这项功能做什么
 

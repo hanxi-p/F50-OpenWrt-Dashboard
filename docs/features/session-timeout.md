@@ -1,6 +1,6 @@
 # 后台会话时长
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`session-timeout` · 可选配置
+[返回功能目录](../../README.md#功能目录) · 功能ID：`session-timeout` · 诊断管理
 
 ## 功能
 

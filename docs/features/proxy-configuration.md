@@ -1,6 +1,6 @@
 # 代理与订阅配置
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`proxy-configuration` · 可选配置
+[返回功能目录](../../README.md#功能目录) · 功能ID：`proxy-configuration` · 其他功能
 
 ## 功能
 

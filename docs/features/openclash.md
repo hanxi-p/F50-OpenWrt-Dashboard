@@ -1,6 +1,6 @@
 # OpenClash开关
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`openclash` · 快捷控制
+[返回功能目录](../../README.md#功能目录) · 功能ID：`openclash` · 快捷指令
 
 ## 这项功能做什么
 

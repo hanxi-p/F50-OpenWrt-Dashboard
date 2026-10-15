@@ -1,6 +1,6 @@
 # RPC兼容性修补
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`rpcd-compatibility` · 可选配置
+[返回功能目录](../../README.md#功能目录) · 功能ID：`rpcd-compatibility` · 诊断管理
 
 ## 功能
 

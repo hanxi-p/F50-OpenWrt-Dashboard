@@ -1,6 +1,6 @@
 # 重启调制解调器
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`modem-restart` · 快捷控制
+[返回功能目录](../../README.md#功能目录) · 功能ID：`modem-restart` · 快捷指令
 
 ## 这项功能做什么
 

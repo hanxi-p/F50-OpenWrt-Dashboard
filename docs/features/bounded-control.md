@@ -1,6 +1,6 @@
 # 超时、锁与子进程清理
 
-[返回功能目录](../../README.md#功能目录) · 功能ID：`bounded-control` · 日志与排错
+[返回功能目录](../../README.md#功能目录) · 功能ID：`bounded-control` · 诊断管理
 
 ## 这项功能做什么
 
