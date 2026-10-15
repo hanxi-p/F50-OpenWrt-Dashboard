@@ -95,15 +95,7 @@
 - [ ] **[无线失败命令追踪](features/wireless-trace.md)** `wireless-trace`
   记录无线初始化究竟是哪条命令失败。
 
-### 管理与可选配置
+### 管理与个性化配置
 
-- [ ] **[指定设备后台免密](features/trusted-login.md)** `trusted-login`
-  选择可免密进入后台的设备，其余设备继续使用密码。
-- [ ] **[SSH密钥登录](features/ssh-key.md)** `ssh-key`
-  为自己的电脑配置SSH公钥登录和连接别名。
-- [ ] **[后台会话时长](features/session-timeout.md)** `session-timeout`
-  按需要延长后台登录保持时间，例如12小时。
-- [ ] **[代理与订阅配置](features/proxy-configuration.md)** `proxy-configuration`
-  选择代理插件、导入自己的订阅或规则，并配置DNS与IPv6。
-- [ ] **[RPC兼容性修补](features/rpcd-compatibility.md)** `rpcd-compatibility`
-  按系统版本适配rpcd依赖库，处理已确认的回调兼容问题。
+- [ ] **[管理与个性化配置](features/configuration.md)** `configuration`
+  统一设置指定设备免密、SSH登录、会话时长，以及SMTP、代理和RPC适配选项。

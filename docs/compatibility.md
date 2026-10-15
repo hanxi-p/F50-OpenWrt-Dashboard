@@ -8,6 +8,8 @@
 
 ## 文件交付与配置范围
 
+设备免密、SSH登录、会话时长、SMTP、代理和RPC适配统一从[管理与个性化配置](features/configuration.md)选择，下面列明选项各自的依赖。
+
 | 范围 | 本仓库交付 | 还需要什么 |
 | --- | --- | --- |
 | 面板、RPC、采样、峰值、统计、分钟/错误日志 | `extras/dashboard` 整目录及 SHA256 | 匹配版本、vnstat2 / flock / curl与可用SSH |

@@ -29,8 +29,15 @@ if catalog:
   assert (root/feature['document']).is_file(),feature['id']
   assert feature['document'] in (root/'README.md').read_text(encoding='utf-8'),feature['id']
   for path in feature['files']:assert (root/path).is_file(),(feature['id'],path)
+  options=feature.get('options',[]);assert len({o['id'] for o in options})==len(options)
+  for option in options:assert (root/option['document']).is_file(),(feature['id'],option['id'])
  selected=json.loads((root/'selection.example.json').read_text(encoding='utf-8'))['features'];assert all(x in ids for x in selected)
  for alias,targets in catalog.get('aliases',{}).items():assert alias not in ids and all(x in ids for x in targets)
+ configuration=next((f for f in catalog['features'] if f['id']=='configuration'),None)
+ if configuration:
+  allowed={o['id'] for o in configuration['options']}
+  choice=json.loads((root/'selection.example.json').read_text(encoding='utf-8')).get('configuration',{}).get('options',[]);assert all(x in allowed for x in choice)
+  for alias,row in catalog.get('option_aliases',{}).items():assert row['feature']=='configuration' and row['option'] in allowed
 js=list((root/'extras/dashboard').glob('*.js'))
 if shutil.which('node'):
  subprocess.run(['node','-e',"const fs=require('fs');for(const p of process.argv.slice(1))new Function(fs.readFileSync(p,'utf8'));",*[str(p) for p in js]],check=True)
