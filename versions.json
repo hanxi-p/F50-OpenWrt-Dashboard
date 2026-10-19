@@ -73,5 +73,11 @@
     "base_rootfs": "v2026.10.11",
     "upstream_commit": "52093b28c9c3e0280b1a1be6f0d4b5437a6053a1",
     "scope": "Selected userspace, SMS, IPv6, USB and fw4 components; local boot/update mutex and process cleanup; no full rootfs or kernel upgrade"
+  },
+  "dashboard_publication": {
+    "date": "2026-10-19",
+    "active_resource_version": "59f60d24c040",
+    "review": "docs/reviews/2026-10-19-dashboard-publication.md",
+    "screenshots": "assets/README.md"
   }
 }

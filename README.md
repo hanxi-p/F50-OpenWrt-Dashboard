@@ -56,10 +56,10 @@
   显示占用百分比、剩余量和Linux可管理总量。
 - [ ] **[四传感器温度](docs/features/temperature.md)** `temperature`
   大字号平均温度，框内列出四个传感器。
-- [ ] **[实时下载/上传双曲线](docs/features/live-chart.md)** `live-chart`
-  最近5分钟、约2秒采样，关掉网页也继续记录。
+- [ ] **[实时下载/上传像素图](docs/features/live-chart.md)** `live-chart`
+  每秒采样、逐帧连续滚动；默认1分钟，横向拖动查看过去5分钟，关掉网页也继续记录。
 - [ ] **[每日下载/上传峰值](docs/features/daily-peaks.md)** `daily-peaks`
-  今日峰值常显，点击展开30天峰值双曲线。
+  今日下载/上传峰值常显，后台保留100天，不展开历史曲线。
 - [ ] **[每分钟流量日志](docs/features/minute-log.md)** `minute-log`
   每分钟记录下载/上传增量与合计，保留5GB。
 
@@ -73,7 +73,7 @@
   从北京时间0点累计到当前的接收+发送。
 - [ ] **[套餐总量、已用和剩余](docs/features/plan.md)** `plan`
   自己填写套餐总量与已用，显示进度和剩余额度。
-- [ ] **[每日用量折线](docs/features/daily-usage-chart.md)** `daily-usage-chart`
+- [ ] **[每日用量柱状图](docs/features/daily-usage-chart.md)** `daily-usage-chart`
   点击本月总消耗，在首页展开最近30天。
 - [ ] **[月度用量历史](docs/features/monthly-history.md)** `monthly-history`
   查看每月接收、发送和含校准的已用合计。
@@ -128,9 +128,11 @@
 
 ## 界面参考
 
-<img src="assets/dashboard-demo.svg" alt="功能示意：信号、曲线、套餐和快捷按钮；全部使用示例数据" width="390">
+<a href="assets/dashboard-live-mobile.jpg"><img src="assets/dashboard-live-mobile.jpg" alt="F50 实机手机布局：实时像素曲线、流量套餐与快捷控制" width="390"></a>
 
-图中使用示例数据展示功能布局，不包含个人设备配置，也不代表性能测试结果。
+[桌面实机原图](assets/dashboard-live-desktop.jpg) · [截图与版本说明](assets/README.md)
+
+2026-10-19 直接连接 F50 拍摄，手机与桌面分别检查响应式布局；点击图片查看原尺寸。截图保留拍摄时读数，设备标识、手机号及客户端详情保持折叠，不展示凭据。
 
 ## 来源与更新
 

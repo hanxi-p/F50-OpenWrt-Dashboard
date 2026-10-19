@@ -42,6 +42,7 @@ cat > "$backup/paths" <<'PATHS'
 /usr/libexec/f50-speed-peaks-worker
 /etc/init.d/f50-speed-peaks
 /www/luci-static/resources/f50speedpeaks.js
+/www/luci-static/resources/f50livechart.js
 /usr/libexec/unisoc-modem/cell
 /www/luci-static/resources/view/mu300/home.js
 /www/luci-static/resources/mu300/common.js
@@ -152,6 +153,7 @@ f50-speed-peaks.uc /usr/libexec/f50-speed-peaks.uc
 f50-speed-peaks-worker /usr/libexec/f50-speed-peaks-worker
 f50-speed-peaks-init /etc/init.d/f50-speed-peaks
 f50speedpeaks.js /www/luci-static/resources/f50speedpeaks.js
+f50livechart.js /www/luci-static/resources/f50livechart.js
 cell /usr/libexec/unisoc-modem/cell
 modem-lock /usr/libexec/unisoc-modem/lock
 mu300dash /usr/libexec/rpcd/mu300dash
@@ -205,7 +207,7 @@ chmod 755 /usr/libexec/rpcd/f50history /usr/libexec/f50history-worker /etc/init.
 # Session lifetime is LuCI sauth.sessiontime, not rpcd executable timeout.
 uci set luci.sauth.sessiontime=7200
 uci commit luci
-uci set unisoc_modem.main.home_refresh_interval=2
+uci set unisoc_modem.main.home_refresh_interval=1
 uci commit unisoc_modem
 chmod 755 /usr/libexec/f50-lock
 # Remove retired dashboard extension when upgrading.

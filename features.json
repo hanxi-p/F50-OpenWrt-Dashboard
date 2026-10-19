@@ -253,14 +253,15 @@
     {
       "id": "live-chart",
       "category": "数据展示记录",
-      "name": "实时下载/上传双曲线",
-      "summary": "最近5分钟、约2秒采样，关掉网页也继续记录。",
+      "name": "实时下载/上传像素图",
+      "summary": "每秒采样、逐帧连续滚动；默认1分钟，横向拖动查看过去5分钟，关掉网页也继续记录。",
       "delivery": "dashboard",
       "document": "docs/features/live-chart.md",
       "files": [
         "extras/dashboard/home.js",
         "extras/dashboard/f50history-worker",
-        "extras/dashboard/f50history"
+        "extras/dashboard/f50history",
+        "extras/dashboard/f50livechart.js"
       ],
       "requires": [
         "dashboard-base"
@@ -270,7 +271,7 @@
       "id": "daily-peaks",
       "category": "数据展示记录",
       "name": "每日下载/上传峰值",
-      "summary": "今日峰值常显，点击展开30天峰值双曲线。",
+      "summary": "今日下载/上传峰值常显，后台保留100天，不展开历史曲线。",
       "delivery": "dashboard",
       "document": "docs/features/daily-peaks.md",
       "files": [
@@ -360,7 +361,7 @@
     {
       "id": "daily-usage-chart",
       "category": "流量套餐",
-      "name": "每日用量折线",
+      "name": "每日用量柱状图",
       "summary": "点击本月总消耗，在首页展开最近30天。",
       "delivery": "dashboard",
       "document": "docs/features/daily-usage-chart.md",

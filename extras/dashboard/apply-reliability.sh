@@ -20,7 +20,9 @@ if ! grep -q 'f50fast1' "$loader"; then
  grep -q 'pkgs_update_time }}' "$loader" || { echo 'LuCI loader 格式不同，请先适配'; exit 1; }
  sed -i 's/pkgs_update_time }}/pkgs_update_time }}-f50fast1/' "$loader"
 fi
-home_hash=$(sha256sum /www/luci-static/resources/view/mu300/home.js | cut -c1-12)
+# Every module shares LuCI's resource version. Version dependencies too, so a
+# quota/peak-only update cannot remain stuck in a browser's immutable cache.
+home_hash=$(sha256sum /www/luci-static/resources/view/mu300/home.js /www/luci-static/resources/f50*.js | sha256sum | cut -c1-12)
 sed -i "s/-f50fast1[^\"]*/-f50fast1-$home_hash/" "$loader"
 if ! grep -q '/usr/libexec/f50-wifi-start-safe' "$boot"; then
  grep -q '/opt/mu300/bin/openwrt-wifi-config' "$boot" || { echo '启动流程不同，请先适配'; exit 1; }
@@ -31,7 +33,7 @@ if ! grep -q '/usr/libexec/f50-wifi-start-safe' "$boot"; then
 fi
 # Upgrade the earlier boot hook without changing explicit recovery callers.
 sed -i 's@/usr/libexec/f50-wifi-start-safe >>@/usr/libexec/f50-wifi-start-safe --if-needed >>@' "$boot"
-uci set unisoc_modem.main.home_refresh_interval=3
+uci set unisoc_modem.main.home_refresh_interval=1
 uci commit unisoc_modem
 /usr/libexec/f50-wifi-nondfs apply >/dev/null || { echo '当前地区没有合法非 DFS 80 MHz 信道组；请先核对国家码和无线能力。'; exit 1; }
 echo '首屏快照与非 DFS 开机保护已配置；当前连接不重启。'

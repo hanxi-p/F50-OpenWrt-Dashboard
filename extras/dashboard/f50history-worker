@@ -28,7 +28,7 @@ while :; do
  fi
  previous_rx=$rx; previous_tx=$tx
  printf '%s %s %s\n' "$ts" "$rx" "$tx" >> "$D/samples"
- awk -v now="$ts" '$1>=now-300' "$D/samples" | tail -n 200 > "$D/samples.new"
+ awk -v now="$ts" '$1>=now-300' "$D/samples" | tail -n 320 > "$D/samples.new"
  mv "$D/samples.new" "$D/samples"
  awk 'BEGIN{printf "["} NR>1 {dt=$1-t; if(dt>0){a=($2>=rx?($2-rx)/dt:0);b=($3>=tx?($3-tx)/dt:0);printf "%s[%s,%.3f,%.3f]",sep,$1,a,b;sep=","}} {t=$1;rx=$2;tx=$3} END{print "]"}' "$D/samples" > "$D/history.new"
  mv "$D/history.new" "$D/history.json"
@@ -43,6 +43,7 @@ while :; do
    fi
   ' & child=$!
  fi
- n=$(((n+1)%3))
- sleep 2
+ # Read byte counters every second; keep expensive modem snapshots at ~6s.
+ n=$(((n+1)%6))
+ sleep 1
 done

@@ -80,14 +80,11 @@ return baseclass.extend({
    var series=dailySeries(latest,30),max=Math.max.apply(null,[1].concat(series.map(function(d){return d.bytes || 0;}))),selected=E('div',{style:'min-height:1.6em;font-size:.85em;margin:8px 0'},'最近 30 天');
    var width=1320,height=220,base=175,top=35,step=(width-50)/29;
    var points=series.map(function(d,i){return {x:25+i*step,y:base-(d.bytes || 0)/max*(base-top),d:d};});
-   var paths=[],segment=[];
-   points.forEach(function(p){if(p.d.bytes===null){if(segment.length)paths.push(segment);segment=[];}else segment.push(p);});if(segment.length)paths.push(segment);
-   var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+width+' '+height+'" style="display:block;width:'+width+'px;height:220px" role="img" aria-label="最近30天每日用量折线图">';
+   var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+width+' '+height+'" style="display:block;width:'+width+'px;height:220px" role="img" aria-label="最近30天每日用量柱状图">';
    [35,105,175].forEach(function(y){svg+='<line x1="25" x2="'+(width-25)+'" y1="'+y+'" y2="'+y+'" stroke="#e6eef2"/>';});
-   paths.forEach(function(seg){var line=seg.map(function(p){return p.x+','+p.y;}).join(' ');svg+='<polygon points="'+seg[0].x+','+base+' '+line+' '+seg[seg.length-1].x+','+base+'" fill="#dff3fa"/><polyline points="'+line+'" fill="none" stroke="#289fc7" stroke-width="3" stroke-linejoin="round"/>';});
    points.forEach(function(p,i){var value=p.d.bytes===null?'—':p.d.bytes>=GB?(p.d.bytes/GB).toFixed(1)+'G':p.d.bytes>=1000000?(p.d.bytes/1000000).toFixed(0)+'M':compact(p.d.bytes),label=p.d.date+' · '+(p.d.bytes===null?'未记录':compact(p.d.bytes))+(p.d.suspect?'（原始记录异常）':'');
-    if(p.d.bytes!==null)svg+='<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="'+(p.d.suspect?'#c58d34':'#139f91')+'"><title>'+label+'</title></circle>';
-    var y=i%2?Math.min(base+17,p.y+18):Math.max(16,p.y-12);
+    if(p.d.bytes!==null)svg+='<rect data-daily-bar="'+p.d.date+'" x="'+(p.x-13)+'" y="'+p.y+'" width="26" height="'+(base-p.y)+'" rx="3" fill="'+(p.d.suspect?'#c58d34':'#43b3d5')+'"><title>'+label+'</title></rect>';
+    var y=Math.max(16,p.y-10);
     svg+='<text x="'+p.x+'" y="'+y+'" text-anchor="middle" font-size="11" fill="'+(p.d.suspect?'#a47329':'#278eaa')+'">'+value+'</text><text x="'+p.x+'" y="208" text-anchor="middle" font-size="10" fill="#74858c">'+p.d.date.slice(5)+'</text>';
    });svg+='</svg>';
    var chart=E('div',{style:'overflow-x:auto;border:1px solid #d7e8ee;border-radius:10px;background:#fff;padding:6px 0;-webkit-overflow-scrolling:touch'});chart.innerHTML=svg;

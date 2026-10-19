@@ -14,7 +14,7 @@ if(!valid(state)){state=read(root+'/history.json');if(!valid(state)){if(fs.stat(
 let oldDays=sprintf('%J',state.days),cutoff=datekey(now-99*86400), today=datekey(now), days={};
 for(let day,row in state.days){if(match(day,/^\d{4}-\d{2}-\d{2}$/) && day>=cutoff && day<=today && type(row)=='object' && match(type(row.download),/^(int|double)$/) && match(type(row.upload),/^(int|double)$/) && row.download>=0 && row.upload>=0 && row.download<=1250000000 && row.upload<=1250000000)days[day]=row;}
 let samples=read(source);if(type(samples)!='array')die('Rate cache unavailable');
-if(length(samples)>250)die('Oversized rate cache');
+if(length(samples)>320)die('Oversized rate cache');
 for(let p in samples){
  if(type(p)!='array' || length(p)<3 || !match(type(p[0]),/^(int|double)$/) || p[0]>now+5 || p[0]<now-400)continue;
  if(!match(type(p[1]),/^(int|double)$/) || !match(type(p[2]),/^(int|double)$/) || p[1]<0 || p[2]<0 || p[1]>1250000000 || p[2]>1250000000)continue;
