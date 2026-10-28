@@ -7,3 +7,8 @@ F50-progress.md
 backups/
 private/
 logs/
+node_modules/
+/extras/dashboard/device-traffic/flow-account
+/extras/dashboard/device-traffic/flow-account.build
+/extras/dashboard/device-traffic/SHA256SUMS.local
+*.ko

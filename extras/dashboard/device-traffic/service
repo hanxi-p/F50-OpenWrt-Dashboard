@@ -1,0 +1,22 @@
+#!/bin/sh /etc/rc.common
+START=99
+STOP=10
+USE_PROCD=1
+start_service(){
+ mkdir -p /tmp/f50-devices /etc/f50-devices
+ chmod 700 /tmp/f50-devices /etc/f50-devices
+ local lan_ip maskbits
+ lan_ip=$(ip -4 -o addr show dev "$(uci -q get network.lan.device)" | awk '{print $4;exit}')
+ maskbits=${lan_ip#*/}
+ [ -n "$lan_ip" ] || return 1
+ procd_open_instance source
+ procd_set_param command /usr/libexec/f50-devices/flow-account "${lan_ip%/*}" "$maskbits" /tmp/f50-devices/source /tmp/f50-devices/unused
+ procd_set_param respawn 3600 5 5
+ procd_set_param stderr 1
+ procd_close_instance
+ procd_open_instance ledger
+ procd_set_param command /usr/bin/ucode /usr/libexec/f50-devices/collector.uc
+ procd_set_param respawn 3600 5 5
+ procd_set_param stderr 1
+ procd_close_instance
+}

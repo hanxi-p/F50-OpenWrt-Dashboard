@@ -22,3 +22,6 @@
 可选首页扩展基于上述 mu300-linux 的 MU300 LuCI 页面与采集脚本，由 hanxi-p 调整布局、核心负载和快捷控制；用量历史由 [vergoh/vnstat](https://github.com/vergoh/vnstat) 提供。配套代码的署名与 MIT 许可见 [extras/dashboard/LICENSE](extras/dashboard/LICENSE)。
 
 系统组件适配来自 [dikeckaan/mu300-linux](https://github.com/dikeckaan/mu300-linux)，保留其署名和 [MIT 许可](extras/system-reliability/LICENSE)；本指南补充共享互斥与进程清理。
+
+- LuCI dispatcher 参考源码：Jo-Philipp Wich / OpenWrt LuCI，Apache 2.0，见 `extras/dashboard/optional/auth/LICENSE`。
+- 无线发送路径修补依据 dikeckaan/mu300-linux 的 SC2355 修复及其注明的 kanoqwq 工作；通用工具只对精确模块哈希生成本地补丁，不分发厂商模块。

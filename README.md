@@ -26,13 +26,13 @@
 - [ ] **[性能/能效模式](docs/features/power-mode.md)** `power-mode`
   按需开关大核：性能全核，能效使用4个小核。
 - [ ] **[4G/自动5G切换](docs/features/radio-mode.md)** `radio-mode`
-  点击立即切换，倒计时只提示预计等待。
+  在更多设置切换，倒计时只提示预计等待。
 - [ ] **[OpenClash开关](docs/features/openclash.md)** `openclash`
   已装代理插件的异步启停与状态反馈。
 - [ ] **[Wi-Fi热点开关](docs/features/wifi-switch.md)** `wifi-switch`
   更多设置内控制热点开关。
 - [ ] **[AdGuard Home开关](docs/features/adguard.md)** `adguard`
-  广告过滤服务独立启停，位于更多设置。
+  广告过滤服务独立启停，位于首页快捷控制。
 - [ ] **[自动/手动Wi-Fi信道](docs/features/channel.md)** `channel`
   按当前地区与驱动能力选择合法非DFS信道。
 - [ ] **[制式与频段锁定](docs/features/band-lock.md)** `band-lock`
@@ -46,6 +46,9 @@
 
 ### 数据展示记录
 
+- [ ] **[设备流量统计](docs/features/device-traffic.md)** `device-traffic`
+  实时速率和今日流量各自上下排布，另列本月累计、总累计；按今日下载排序。
+
 - [ ] **[信号与网络质量](docs/features/signal.md)** `signal`
   制式、运营商、频段、QCI和信号读数集中展示。
 - [ ] **[基站、小区与SIM详情](docs/features/cell-details.md)** `cell-details`
@@ -56,7 +59,7 @@
   显示占用百分比、剩余量和Linux可管理总量。
 - [ ] **[四传感器温度](docs/features/temperature.md)** `temperature`
   大字号平均温度，框内列出四个传感器。
-- [ ] **[实时下载/上传像素图](docs/features/live-chart.md)** `live-chart`
+- [ ] **[实时下载/上传曲线](docs/features/live-chart.md)** `live-chart`
   每秒采样、逐帧连续滚动；默认1分钟，横向拖动查看过去5分钟，关掉网页也继续记录。
 - [ ] **[每日下载/上传峰值](docs/features/daily-peaks.md)** `daily-peaks`
   今日下载/上传峰值常显，后台保留100天，不展开历史曲线。
@@ -79,6 +82,9 @@
   查看每月接收、发送和含校准的已用合计。
 
 ### 诊断管理
+
+- [ ] **[无线驱动日志与发包修补](docs/features/wifi-log-quiet.md)** `wifi-log-quiet`
+  精确匹配构建的日志降噪与 AP DNS/IPv6组播发送路径修补，独立确认应用。
 
 - [ ] **[报错与操作日志](docs/features/error-log.md)** `error-log`
   保留操作结果、错误原因和故障上下文，容量5GB。
@@ -132,7 +138,7 @@
 
 [桌面实机原图](assets/dashboard-live-desktop.jpg) · [截图与版本说明](assets/README.md)
 
-2026-10-19 直接连接 F50 拍摄，手机与桌面分别检查响应式布局；点击图片查看原尺寸。截图保留拍摄时读数，设备标识、手机号及客户端详情保持折叠，不展示凭据。
+以下为 2026-10-19 历史截图，未包含新增设备统计和展开布局；本轮只通过代码及 SSH 验证，未使用浏览器或更新截图。原图直接连接 F50 拍摄，手机与桌面分别检查响应式布局；点击图片查看原尺寸。截图保留拍摄时读数，设备标识、手机号及客户端详情保持折叠，不展示凭据。
 
 ## 来源与更新
 

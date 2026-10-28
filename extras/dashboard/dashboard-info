@@ -227,7 +227,7 @@ W_DIS=$(wu 'radio0.disabled')
 [ -d "/sys/class/net/$WIFI_DEVICE" ] || W_UP=0
 [ "$W_HOSTAPD" = 1 ] || W_UP=0
 # station table: one block per client - mac, signal, tx/rx bitrate, connected time
-W_CLIENTS=$(t3 iw dev "$WIFI_DEVICE" station dump 2>/dev/null | awk -F':\t*' '
+W_CLIENTS=$(t3 iw "$WIFI_DEVICE" station dump 2>/dev/null | awk -F':\t*' '
     /^Station / { mac = $2; sub(/ .*/, "", mac); sig = tx = rx = ct = "" }
     /^	signal:/ { sig = $2 + 0 }
     /^	tx bitrate:/ { tx = $2; sub(/ .*/, "", tx); sub(/$/, " Mbit/s", tx) }

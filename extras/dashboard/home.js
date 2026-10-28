@@ -1,5 +1,6 @@
 'use strict';
 'require view';
+'require f50devices as F50Devices';
 'require rpc';
 'require f50adguard as F50AdGuard';
 'require uci';
@@ -82,6 +83,7 @@ return view.extend({
 		this.organize(root);
 		this.wire(root);
 		this._speedPeaks = F50SpeedPeaks.mount(root);
+		this._devicesDispose = F50Devices.mount(root);
 		var self = this;
 		var seed = document.getElementById('f50-dashboard-seed');
 		if (seed) {
@@ -125,6 +127,7 @@ return view.extend({
 	},
 
 	unload: function() {
+		if(this._devicesDispose)this._devicesDispose();
 		if(this._speedPeaks)this._speedPeaks.dispose();
 		clearTimeout(this._refreshTimer);
 		if(this._liveChart){this._liveChart.dispose();this._liveChart=null;}
@@ -166,6 +169,7 @@ return view.extend({
     <div id="mud-rate-detail" style="display:none;font-size:.75em;margin:4px 0"></div>
 
   </div>
+  <div id="f50-usage-inline" hidden>
   <div class="mud-kpis">
     <div class="mud-kpi"><b id="mud-session-rx">--</b><span>本次累计接收</span></div>
     <div class="mud-kpi"><b id="mud-session-tx">--</b><span>本次累计发送</span></div>
@@ -173,6 +177,7 @@ return view.extend({
   <div class="mud-kpis">
     <div class="mud-kpi"><b id="mud-rx">--</b><span>本小时使用流量</span></div>
     <div class="mud-kpi"><b id="mud-tx">--</b><span>今日使用流量</span></div>
+  </div>
   </div>
   <div id="f50-quota-slot" style="margin:0 0 16px">
     <div class="mud-kpis">
@@ -261,12 +266,12 @@ return view.extend({
   <div class="mud-ctl f50-primary-controls">
     <button class="mud-btn" id="mud-btn-data">流量开关</button>
     <button class="mud-btn" id="mud-btn-power">温控模式</button>
-    <button class="mud-btn" id="mud-btn-5g">自动 5G</button>
+    <button class="mud-btn" id="mud-btn-adguard" aria-pressed="false">AdGuard Home</button>
     <button class="mud-btn" id="mud-btn-openclash" aria-pressed="false">OpenClash · 读取状态…</button>
     <button class="mud-btn warn" id="mud-btn-reboot">${_('Restart device')}</button>
     <button class="mud-btn" id="mud-btn-other" aria-expanded="false">更多设置</button>
     <button class="mud-btn" id="mud-btn-wifi">Wi-Fi 开关</button>
-    <button class="mud-btn" id="mud-btn-adguard" aria-pressed="false">AdGuard Home</button>
+    <button class="mud-btn" id="mud-btn-5g">自动 5G</button>
     <button class="mud-btn" id="mud-btn-channel">信道设置</button>
     <button class="mud-btn warn" id="mud-btn-modem">${_('Restart modem')}</button>
 
@@ -317,6 +322,17 @@ return view.extend({
    .f50-home .f50-core b{font-variant-numeric:tabular-nums}
    .f50-home .mud-card{padding:10px 12px}
    .f50-home .mud-hero{padding:12px 14px;gap:6px 16px;margin-bottom:8px}
+   .f50-home #f50-cell-inline{box-sizing:border-box;min-width:0;margin:0 0 8px}
+   .f50-home #f50-cell-inline .f50-cell-summary{display:flex;align-items:flex-start;gap:12px;padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--border-color,#e0e6eb)}
+   .f50-home #f50-cell-inline .f50-cell-caption{flex:0 0 6em;font-size:.76rem;line-height:1.5;font-weight:600;color:var(--text-muted,#777)}
+   .f50-home #f50-cell-inline .mud-cellline{flex:1;min-width:0;font-size:.76rem;line-height:1.5;white-space:normal;overflow-wrap:anywhere;margin:0}
+   .f50-home #f50-cell-inline .f50-cell-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px;align-items:start;margin:0}
+   .f50-home #f50-cell-inline .f50-cell-grid>div{min-width:0}
+   .f50-home #f50-cell-inline .mud-rows{display:flex;flex-direction:column;gap:0;min-width:0}
+   .f50-home #f50-cell-inline .mud-r{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:5px 0;min-width:0}
+   .f50-home #f50-cell-inline .mud-k{flex:0 0 auto;max-width:42%;white-space:normal;font-size:.76rem;line-height:1.5}
+   .f50-home #f50-cell-inline .mud-v{flex:1;min-width:0;text-align:right;font-size:.76rem;font-weight:400;line-height:1.5;white-space:pre-line;overflow-wrap:anywhere}
+   @media(max-width:600px){.f50-home #f50-cell-inline .f50-cell-grid{grid-template-columns:minmax(0,1fr)}.f50-home #f50-cell-inline .f50-cell-summary{display:block}.f50-home #f50-cell-inline .f50-cell-caption{display:block;margin-bottom:3px}}
    .f50-home .mud-hero-l{gap:3px}
    .f50-home .mud-sec{padding:0 0 4px}
    .f50-home .mud-sec>h3{margin:9px 0 7px}
@@ -356,11 +372,16 @@ return view.extend({
    before.parentNode.insertBefore(d,before); nodes.forEach(function(n){d.appendChild(n);}); return d;
   }
   var secs=root.querySelectorAll('.mud-body > .mud-sec'),link=secs[0],device=secs[1],quick=secs[2],locks=secs[3];
+  device.classList.add('f50-load-section');
   var heroRight=root.querySelector('.mud-hero-r');
-  heroRight.prepend(E('div',{class:'f50-signal-title'},'信号详情'));
+  var signalButton=E('button',{type:'button',id:'f50-signal-toggle',class:'f50-signal-title','aria-expanded':'false','aria-controls':'f50-cell-inline',style:'display:block;width:100%;border:0;background:transparent;color:inherit;padding:0;cursor:pointer;text-align:inherit;font-family:inherit'},'信号详情');
+  heroRight.prepend(signalButton);
   var qci=root.querySelector('#mud-qci').parentNode;
   qci.classList.add('f50-qci');root.querySelector('.mud-hero-l').appendChild(qci);qci.appendChild(E('div',{id:'mud-hero-ambr',class:'mud-tag f50-hero-ambr',title:'网络下发的下行 / 上行会话速率上限'},'--'));
-  var cols=link.querySelector('.mud-cols');var cellLine=root.querySelector('#mud-cellline');cellLine.replaceWith(E('div',{class:'f50-hero-band',id:'mud-hero-band'},'--'));cols.prepend(E('div',{class:'f50-cell-detail'},[E('b',{},'基站与小区'),cellLine]));wrap([cols],'蜂窝网络详情',cols);
+  var cols=link.querySelector('.mud-cols');var cellLine=root.querySelector('#mud-cellline');cellLine.replaceWith(E('div',{class:'f50-hero-band',id:'mud-hero-band'},'--'));cols.classList.add('f50-cell-grid');
+  var cellSummary=E('div',{class:'f50-cell-summary'},[E('span',{class:'f50-cell-caption'},'基站与小区'),cellLine]);
+  var cellPanel=E('section',{id:'f50-cell-inline',class:'mud-card f50-cell-inline',hidden:true,'aria-labelledby':'f50-signal-toggle'},[cellSummary,cols]);root.querySelector('.mud-hero').insertAdjacentElement('afterend',cellPanel);
+  signalButton.onclick=function(){cellPanel.hidden=!cellPanel.hidden;signalButton.setAttribute('aria-expanded',String(!cellPanel.hidden));};
   device.querySelector('h3').textContent='设备负载与温度';
   var kpis=device.querySelector('.mud-kpis'),extra=E('div',{class:'mud-kpis'});
   ['disk','batt'].forEach(function(id){extra.appendChild(root.querySelector('#mud-'+id).parentNode);});
@@ -378,7 +399,7 @@ return view.extend({
   var dcols=device.querySelector('.mud-cols'),leases=root.querySelector('#mud-leases'),android=root.querySelector('#mud-btn-android').parentNode;
   wrap([extra,dcols,leases,android],'无线、局域网与设备详情',dcols);
   var other=E('div',{id:'f50-other-controls',class:'mud-ctl f50-other-controls',hidden:true});quick.appendChild(other);
-  ['wifi','adguard','channel','modem','android'].forEach(function(id){other.appendChild(root.querySelector('#mud-btn-'+id));});android.remove();
+  ['wifi','5g','channel','modem','android'].forEach(function(id){other.appendChild(root.querySelector('#mud-btn-'+id));});android.remove();
   var otherBtn=root.querySelector('#mud-btn-other');otherBtn.setAttribute('aria-controls','f50-other-controls');
   otherBtn.onclick=function(){other.hidden=!other.hidden;otherBtn.setAttribute('aria-expanded',String(!other.hidden));otherBtn.textContent=other.hidden?'更多设置':'收起设置';};
   var lockTable=locks.querySelector('.mud-scroll');locks.querySelector('h3').remove();
@@ -408,12 +429,22 @@ return view.extend({
    .f50-home .mud-hero-r .mud-chips{justify-content:flex-end;gap:4px;flex-wrap:wrap}
    .f50-home .mud-hero-r .mud-chip{font-size:.7rem;padding:3px 5px}
    .f50-home .mud-hero-l .mud-cellline{overflow-wrap:anywhere;font-size:.72rem}
-   .f50-home .mud-sec:nth-child(2)>.mud-kpis{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:0!important}
-   .f50-home .mud-sec:nth-child(2)>.mud-kpis b{font-size:1.4rem}
+   .f50-home .f50-load-section>.mud-kpis{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:0!important}
+   .f50-home .f50-load-section>.mud-kpis b{font-size:1.4rem}
    .f50-home .f50-average-temp{border:1px solid var(--border-color,rgba(127,127,127,.28));border-radius:8px}
    .f50-home .f50-cpu-toggle{cursor:pointer}
-   .f50-home .f50-cpu-toggle>span:after{content:' ▾'}
-   .f50-home .f50-cpu-toggle[aria-expanded=true]>span:after{content:' ▴'}
+   .f50-home button[aria-expanded]:not([data-q=daily-open]):not([data-q=usage-open])::after,
+   .f50-home .f50-cpu-toggle>span::after,
+   .f50-home #f50-quota-card button[aria-expanded]>span::after,
+   .f50-home #f50-quota-card [data-q=month]::after{content:'▸';display:inline-block;width:.7em;margin-left:.3em;font-size:.75em;line-height:1;opacity:.75;vertical-align:baseline;flex:none;pointer-events:none}
+   .f50-home button[aria-expanded=true]:not([data-q=daily-open]):not([data-q=usage-open])::after,
+   .f50-home .f50-cpu-toggle[aria-expanded=true]>span::after,
+   .f50-home #f50-quota-card button[aria-expanded=true]>span::after{content:'▾'}
+   .f50-home details>summary{list-style:none}
+   .f50-home details>summary::marker{content:''}
+   .f50-home details>summary::-webkit-details-marker{display:none}
+   .f50-home details>summary::before{content:'▸';display:inline-block;width:.7em;margin-right:.35em;font-size:.75em;opacity:.75}
+   .f50-home details[open]>summary::before{content:'▾'}
    .f50-home #mud-ram-sub{display:block}
    .f50-home #mud-temps{display:grid;grid-template-columns:1fr;gap:2px;margin:4px 0 0}
    .f50-home #mud-temps span{display:block;font-size:.65rem;padding:0;border:0;text-align:left;white-space:nowrap}
@@ -496,6 +527,9 @@ return view.extend({
    .f50-home #mud-btn-power[data-mode=performance]{background:#d63b3b;border-color:#d63b3b;color:#fff}
    .f50-home #mud-btn-power[data-mode=eco]{background:#238b45;border-color:#238b45;color:#fff}
    .f50-home #mud-btn-5g[data-mode="4g"]{background:#238b45;border-color:#238b45;color:#fff}
+   .f50-home #f50-other-controls>#mud-btn-5g[data-mode="4g"]{background:#238b45!important;border-color:#238b45!important;color:#fff!important}
+   .f50-home #f50-other-controls>#mud-btn-5g[data-switching=true][data-target-mode="4g"]{background:#d3eadb!important;border-color:#9fcbb0!important;color:#417c55!important}
+   .f50-home #f50-other-controls>#mud-btn-5g[data-switching=true][data-target-mode=auto]{background:#d2eaf2!important;border-color:#9fc9d9!important;color:#397c94!important}
    @media(max-width:600px){
     .f50-home .f50-other-controls{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 
@@ -506,8 +540,8 @@ return view.extend({
     .f50-home .f50-signal-title{font-size:.78rem}
     .f50-home .mud-hero-r .mud-rsrp{font-size:1.7rem}
     .f50-home .mud-hero-r .mud-chips{gap:3px}
-    .f50-home .mud-sec:nth-child(2)>.mud-kpis .mud-kpi{padding:7px 6px}
-    .f50-home .mud-sec:nth-child(2)>.mud-kpis span{font-size:.68rem}
+    .f50-home .f50-load-section>.mud-kpis .mud-kpi{padding:7px 6px}
+    .f50-home .f50-load-section>.mud-kpis span{font-size:.68rem}
     .f50-home #mud-ram-sub{display:block;overflow-wrap:anywhere}
     .f50-home #mud-temps{grid-template-columns:1fr}
     .f50-home #mud-temps span{font-size:.62rem}

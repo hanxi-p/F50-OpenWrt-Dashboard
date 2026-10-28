@@ -34,7 +34,7 @@ return baseclass.extend({
   section.innerHTML=`
 <style>#f50-quota-card [data-edit]{cursor:pointer}#f50-quota-card [data-edit]:hover{box-shadow:inset 0 0 0 1px var(--primary,#2f7bf6)}#f50-quota-card [data-edit]:focus-visible{outline:2px solid var(--primary,#2f7bf6)}</style>
 <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:.78em;margin:5px 0">
- <button type="button" data-q="month" aria-label="查看月度历史" style="border:0;background:none;color:inherit;padding:3px 0;cursor:pointer"></button>
+ <button type="button" data-q="month" aria-label="查看月度历史" aria-haspopup="dialog" style="border:0;background:none;color:inherit;padding:3px 0;cursor:pointer"></button>
  <button type="button" data-edit="quota" aria-label="设置流量套餐" style="border:0;background:none;color:var(--primary,#0066cc);padding:3px 0;font-size:inherit">设置流量套餐</button>
  <strong data-q="percent">—</strong>
 </div>
@@ -42,12 +42,17 @@ return baseclass.extend({
  <div role="progressbar" data-q="bar" aria-label="本月流量使用比例" aria-valuemin="0" aria-valuemax="100" style="position:absolute;inset:0"><div data-q="fill" style="height:100%;width:0;background:var(--primary,#0066cc);opacity:.18"></div></div>
  <div style="position:relative;display:flex;height:100%">
   <button type="button" data-q="daily-open" aria-label="查看最近30天流量" aria-expanded="false" aria-controls="f50-daily-inline" style="flex:1;min-width:0;border:0;background:none;color:inherit;text-align:left;padding:6px 10px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;line-height:1.3"><b data-q="used" style="display:block;font-size:.94rem">—</b><span style="font-size:.68rem;color:var(--text-muted,#777)">本月总消耗</span></button>
-  <div style="flex:1;min-width:0;border:0;background:none;color:inherit;text-align:right;padding:6px 10px;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;line-height:1.3"><b data-q="remaining" style="display:block;font-size:.94rem">—</b><span style="font-size:.68rem;color:var(--text-muted,#777)">本月剩余</span></div>
+  <button type="button" data-q="usage-open" aria-label="展开本次、本小时和今日流量" aria-expanded="false" aria-controls="f50-usage-inline" style="flex:1;min-width:0;border:0;background:none;color:inherit;text-align:right;padding:6px 10px;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;line-height:1.3;cursor:pointer;font-family:inherit"><b data-q="remaining" style="display:block;font-size:.94rem">—</b><span style="font-size:.68rem;color:var(--text-muted,#777)">本月剩余</span></button>
  </div>
 </div>
 <div id="f50-daily-inline" data-q="daily-panel" hidden style="margin:8px 0"></div>`;
   root.querySelector('#f50-quota-slot').replaceChildren(section);
   var q=function(n){return section.querySelector('[data-q="'+n+'"]');};
+  var usage=root.querySelector('#f50-usage-inline');
+  if(usage){
+   section.insertBefore(usage,q('daily-panel'));
+   q('usage-open').onclick=function(){usage.hidden=!usage.hidden;this.setAttribute('aria-expanded',String(!usage.hidden));};
+  }else q('usage-open').disabled=true;
   function render(data) {
    if (!data.ok) throw new Error(data.error || '读取失败');
    latest=data;

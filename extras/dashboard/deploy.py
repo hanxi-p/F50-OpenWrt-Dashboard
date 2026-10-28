@@ -13,8 +13,8 @@ if args.host.startswith('-'):
 source = Path(__file__).resolve().parent
 stream = io.BytesIO()
 with tarfile.open(fileobj=stream, mode='w:gz') as archive:
-    for entry in sorted(source.iterdir()):
+    for entry in sorted(source.rglob('*')):
         if entry.is_file():
-            archive.add(entry, arcname='dashboard/' + entry.name)
+            archive.add(entry, arcname='dashboard/' + entry.relative_to(source).as_posix())
 subprocess.run(['ssh', args.host, 'cat > /tmp/f50-dashboard.tar.gz'], input=stream.getvalue(), check=True)
 subprocess.run(['ssh', args.host, 'mkdir -p /tmp/f50-dashboard-package && tar -xzf /tmp/f50-dashboard.tar.gz -C /tmp/f50-dashboard-package && sh /tmp/f50-dashboard-package/dashboard/install.sh'], check=True)

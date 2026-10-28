@@ -34,3 +34,5 @@
 - [dashboard-info](../../extras/dashboard/dashboard-info)
 
 使用实际安装时生成的备份与恢复脚本，保留历史数据。日志与恢复操作见[维护说明](../operations.md)，历史修补见[修复记录](../fix-history.md)。
+
+四张用量卡片默认收在“本月剩余”区域，点击展开/收起；本月总消耗仍独立展开每日用量，设置套餐入口保持独立。

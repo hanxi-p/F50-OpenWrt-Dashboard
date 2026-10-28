@@ -10,6 +10,18 @@ enabled() {
  [ "$(uci -q get wireless.radio0.disabled)" != 1 ] && [ "$(uci -q get wireless.ap0.disabled)" != 1 ]
 }
 enabled || exit 0
+# The boot verifier may run before the vendor driver creates its PHY/interface.
+# Give registration a bounded window rather than failing MAC validation early.
+phy_ready=0
+for n in $(seq 1 21); do
+ enabled || exit 0
+ if [ -d /sys/class/ieee80211/phy0 ] && [ -r /sys/class/net/wlan0/address ]; then phy_ready=1; break; fi
+ [ "$n" = 21 ] || sleep 1
+done
+if [ "$phy_ready" != 1 ]; then
+ logger -t f50-wifi-start 'PHY/interface unavailable after bounded wait; recovery deferred to guard'
+ exit 1
+fi
 # Some vendor boots expose an all-zero PHY address although wlan0 has its
 # assigned address. Pin only a missing/invalid AP address to that real address.
 valid_mac() {

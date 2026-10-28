@@ -13,7 +13,7 @@ bounded() {
  wait "$child"; rc=$?; child=''
  return "$rc"
 }
-bad=0; last=0; pending_since=0
+bad=0; last=0; pending_since=0; observed=''; reported=0
 sleep 120
 while :; do
  now=$(cut -d. -f1 /proc/uptime)
@@ -33,6 +33,15 @@ while :; do
   bounded 5 ip link show wlan0 2>/dev/null | grep -q LOWER_UP && carrier=1
   age=0; [ "$pending_since" = 0 ] || age=$((now-pending_since))
   state=$(/usr/libexec/f50-wifi-evaluate "$status" "$carrier" "$pending" "$age" "$bssid")
+  # Internal readiness is not an over-the-air beacon check. Keep bounded,
+  # low-frequency evidence even when the old checks would just say healthy.
+  phy_ready=0; [ -d /sys/class/ieee80211/phy0 ] && phy_ready=1
+  [ "$phy_ready" = 1 ] || state=broken
+  sample="$state/$status/$carrier/$pending/$phy_ready"
+  if [ "$sample" != "$observed" ] || [ $((now-reported)) -ge 300 ]; then
+   logger -t f50-wifi-guard "internal=$state ap=$status carrier=$carrier pending=$pending phy=$phy_ready air=unverified"
+   observed=$sample; reported=$now
+  fi
   case "$state" in
   healthy|pending) bad=0;;
   broken)
@@ -42,7 +51,7 @@ while :; do
     [ ! -f /root/f50-wifi-diagnostics/latest.txt ] || mv /root/f50-wifi-diagnostics/latest.txt /root/f50-wifi-diagnostics/previous.txt
     {
      date; uptime; bounded 5 ip link show wlan0
-     bounded 5 iw dev
+     bounded 5 iw wlan0 info
      bounded 5 iw reg get
      bounded 5 ubus call hostapd.wlan0 get_status
      bounded 5 logread | grep -E 'hostapd|netifd|wlan0|ACS|DFS|cfg80211|f50-wifi' | tail -n 100

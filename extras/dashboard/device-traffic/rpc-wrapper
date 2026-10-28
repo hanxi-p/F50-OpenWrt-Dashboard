@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1:$2" in
+ call:rename) exec flock /tmp/f50-device-aliases.lock ucode /usr/libexec/f50-devices/rpc.uc "$@";;
+ *) exec ucode /usr/libexec/f50-devices/rpc.uc "$@";;
+esac

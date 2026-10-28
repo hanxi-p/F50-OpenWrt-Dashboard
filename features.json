@@ -38,7 +38,7 @@
       "id": "radio-mode",
       "category": "快捷指令",
       "name": "4G/自动5G切换",
-      "summary": "点击立即切换，倒计时只提示预计等待。",
+      "summary": "在更多设置内切换4G/自动5G，倒计时只提示预计等待。",
       "delivery": "dashboard",
       "document": "docs/features/radio-mode.md",
       "files": [
@@ -85,7 +85,7 @@
       "id": "adguard",
       "category": "快捷指令",
       "name": "AdGuard Home开关",
-      "summary": "广告过滤服务独立启停，位于更多设置。",
+      "summary": "广告过滤服务独立启停，位于首页快捷控制。",
       "delivery": "dashboard",
       "document": "docs/features/adguard.md",
       "files": [
@@ -253,7 +253,7 @@
     {
       "id": "live-chart",
       "category": "数据展示记录",
-      "name": "实时下载/上传像素图",
+      "name": "实时下载/上传曲线",
       "summary": "每秒采样、逐帧连续滚动；默认1分钟，横向拖动查看过去5分钟，关掉网页也继续记录。",
       "delivery": "dashboard",
       "document": "docs/features/live-chart.md",
@@ -498,7 +498,9 @@
       "summary": "选择允许免密进入后台的设备及Wi-Fi/USB范围。",
       "delivery": "configuration",
       "document": "docs/features/trusted-login.md",
-      "files": [],
+      "files": [
+        "extras/dashboard/optional/auth/f50-trusted-auth.uc"
+      ],
       "requires": []
     },
     {
@@ -518,7 +520,9 @@
       "summary": "单独设置后台会话期限，例如12小时。",
       "delivery": "configuration",
       "document": "docs/features/session-timeout.md",
-      "files": [],
+      "files": [
+        "extras/dashboard/optional/auth/dispatcher.uc"
+      ],
       "requires": []
     },
     {
@@ -605,6 +609,45 @@
       "document": "docs/features/proxy-configuration.md",
       "files": [],
       "requires": []
+    },
+    {
+      "id": "device-traffic",
+      "category": "数据展示记录",
+      "name": "设备流量统计",
+      "summary": "MAC识别、上下行合并展示，按今日下载排序，保存本月与总累计。",
+      "delivery": "dashboard",
+      "document": "docs/features/device-traffic.md",
+      "files": [
+        "extras/dashboard/f50devices.js",
+        "extras/dashboard/device-traffic/flow-account.c",
+        "extras/dashboard/device-traffic/collector.uc",
+        "extras/dashboard/device-traffic/ledger.uc",
+        "extras/dashboard/device-traffic/rpc.uc",
+        "extras/dashboard/device-traffic/build.sh"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
+    },
+    {
+      "id": "wifi-log-quiet",
+      "category": "诊断管理",
+      "name": "无线驱动日志与发包修补",
+      "summary": "按精确驱动SHA256准备日志降噪、AP DNS/IPv6组播及描述符偏移修补，独立确认后应用。",
+      "delivery": "configuration",
+      "document": "docs/features/wifi-log-quiet.md",
+      "files": [
+        "extras/dashboard/optional/wifi-quiet/driver-quiet.cjs",
+        "extras/dashboard/optional/wifi-quiet/driver-activation.sh",
+        "extras/dashboard/optional/wifi-quiet/driver-recovery.sh",
+        "extras/dashboard/optional/wifi-quiet/driver-recovery.init",
+        "extras/dashboard/optional/wifi-tx/driver-tx-fix.cjs",
+        "extras/dashboard/optional/wifi-tx/tx-guard.s",
+        "extras/dashboard/optional/wifi-tx/driver-activation.sh"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
     }
   ],
   "aliases": {

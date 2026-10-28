@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "linkedom": "0.18.12"
+  },
+  "name": "f50-openwrt-dashboard",
+  "private": true,
+  "scripts": {
+    "test": "node tools/test-dashboard.cjs && node tools/test-livechart.cjs"
+  }
+}

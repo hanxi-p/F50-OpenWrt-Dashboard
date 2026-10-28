@@ -32,3 +32,5 @@
 分别记录语法/配置、逻辑和多轮场景；通过、失败和未测留在使用者的执行记录中。恢复使用本次配置前保存的原件与状态。
 
 [兼容与交付范围](../compatibility.md) · [日志与维护](../operations.md)
+
+[匹配与会话参考源码](../../extras/dashboard/optional/auth/README.md)不含名单，基础安装器不自动启用；合并前保留当前 dispatcher 的其他定制。

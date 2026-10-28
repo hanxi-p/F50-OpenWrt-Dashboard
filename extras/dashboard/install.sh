@@ -4,11 +4,15 @@ cd "$(dirname "$0")"
 [ "$(id -u)" = 0 ] || { echo '请使用 root SSH 执行'; exit 1; }
 version=$(cat /etc/mu300/image-version 2>/dev/null || true)
 [ "$version" = v2026.10.11 ] || { echo "此补丁匹配 v2026.10.11，当前为 $version；请先核对页面与 RPC 差异。"; exit 1; }
-for cmd in vnstat ubus uci jsonfilter setsid flock sha256sum curl; do command -v "$cmd" >/dev/null || { echo "缺少 $cmd，请先安装对应依赖"; exit 1; }; done
+for cmd in vnstat ubus uci jsonfilter setsid flock sha256sum curl ucode iw; do command -v "$cmd" >/dev/null || { echo "缺少 $cmd，请先安装对应依赖"; exit 1; }; done
 [ -r /usr/libexec/unisoc-modem/dashboard-info ] && [ -r /www/luci-static/resources/view/mu300/home.js ] || { echo '缺少 MU300 面板'; exit 1; }
 ip link show sipa_eth0 >/dev/null || { echo '当前蜂窝接口不是 sipa_eth0，请先适配统计接口'; exit 1; }
 [ "$(uci -q get wireless.radio0.band)" = 5g ] && [ "$(uci -q get wireless.ap0.device)" = radio0 ] || { echo '此版本匹配 radio0 / ap0 和 5GHz 无线，请先适配'; exit 1; }
+[ "$(uname -m)" = aarch64 ] || { echo '设备采集器只匹配 aarch64；请先重新构建与适配'; exit 1; }
+[ "$(cat /proc/sys/net/netfilter/nf_conntrack_acct 2>/dev/null)" = 1 ] || { echo 'conntrack 字节计数不可用；未修改网络或加速设置，请先评估兼容采集方式。'; exit 1; }
 sha256sum -c SHA256SUMS >/dev/null
+[ -f device-traffic/SHA256SUMS.local ] || { echo '请先在 Linux 构建主机执行 sh extras/dashboard/device-traffic/build.sh，准备本地采集器。'; exit 1; }
+(cd device-traffic && sha256sum -c SHA256SUMS.local >/dev/null)
 case "$(sha256sum /usr/sbin/vnstatd | awk '{print $1}')" in
  7eca0a8d4d07f7c01c1703a096afde01e133d73c963b2a58e2a035ffeda219a9|436b3a8dd8efe250d21a908ba6ab36a70872832285d3a70dffeb2ddcf3507026) ;;
  *) echo 'vnstatd 版本不匹配计数复位补丁，请先适配；尚未修改服务。'; exit 1;;
@@ -23,7 +27,7 @@ if /etc/init.d/vnstat enabled; then echo 1 > "$backup/vnstat.enabled"; else echo
 if /etc/init.d/vnstat running; then echo 1 > "$backup/vnstat.running"; else echo 0 > "$backup/vnstat.running"; fi
 if [ -x /etc/init.d/f50power ] && /etc/init.d/f50power enabled; then echo 1 > "$backup/f50power.enabled"; else echo 0 > "$backup/f50power.enabled"; fi
 if [ -x /etc/init.d/f50history ] && /etc/init.d/f50history enabled; then echo 1 > "$backup/f50history.enabled"; else echo 0 > "$backup/f50history.enabled"; fi
-for service in f50-wifi-guard f50-dns-guard f50-diagnostics f50-traffic-archive f50-speed-peaks; do
+for service in f50-devices f50-wifi-guard f50-dns-guard f50-diagnostics f50-traffic-archive f50-speed-peaks; do
  if [ -x /etc/init.d/$service ] && /etc/init.d/$service enabled; then echo 1 > "$backup/$service.enabled"; else echo 0 > "$backup/$service.enabled"; fi
  if [ -x /etc/init.d/$service ] && /etc/init.d/$service running; then echo 1 > "$backup/$service.running"; else echo 0 > "$backup/$service.running"; fi
 done
@@ -43,6 +47,14 @@ cat > "$backup/paths" <<'PATHS'
 /etc/init.d/f50-speed-peaks
 /www/luci-static/resources/f50speedpeaks.js
 /www/luci-static/resources/f50livechart.js
+/www/luci-static/resources/f50devices.js
+/usr/libexec/f50-devices/flow-account
+/usr/libexec/f50-devices/ledger.uc
+/usr/libexec/f50-devices/collector.uc
+/usr/libexec/f50-devices/rpc.uc
+/etc/init.d/f50-devices
+/usr/libexec/rpcd/f50devices
+/usr/share/rpcd/acl.d/luci-app-f50devices.json
 /usr/libexec/unisoc-modem/cell
 /www/luci-static/resources/view/mu300/home.js
 /www/luci-static/resources/mu300/common.js
@@ -102,6 +114,11 @@ while IFS= read -r path; do
  if [ -e "$path" ]; then mkdir -p "$backup$(dirname "$path")"; cp -p "$path" "$backup$path"; fi
 done < "$backup/paths"
 cp restore.sh "$backup/restore.sh"
+if [ -d /etc/f50-devices ]; then
+ mkdir -p "$backup/device-traffic-state"
+ cp -p /etc/f50-devices/*.json "$backup/device-traffic-state/" 2>/dev/null || true
+fi
+[ ! -x /etc/init.d/f50-devices ] || /etc/init.d/f50-devices stop
 [ ! -x /etc/init.d/f50history ] || /etc/init.d/f50history stop
 /etc/init.d/vnstat stop
 sh f50-vnstat-counterfix.sh
@@ -128,8 +145,9 @@ uci commit vnstat
 if [ ! -f /etc/config/f50quota ]; then printf "config plan 'plan'\n\toption quota_gb '0'\n" > /etc/config/f50quota; fi
 while IFS=' ' read -r src target; do
  mkdir -p "$(dirname "$target")"
- cp "$src" "$target"
- chmod 644 "$target"
+ cp "$src" "$target.f50-new"
+ chmod 644 "$target.f50-new"
+ mv "$target.f50-new" "$target"
 done <<'FILES'
 f50-bounded /usr/libexec/f50-bounded
 f50-wifi-guard /usr/libexec/f50-wifi-guard
@@ -154,6 +172,14 @@ f50-speed-peaks-worker /usr/libexec/f50-speed-peaks-worker
 f50-speed-peaks-init /etc/init.d/f50-speed-peaks
 f50speedpeaks.js /www/luci-static/resources/f50speedpeaks.js
 f50livechart.js /www/luci-static/resources/f50livechart.js
+f50devices.js /www/luci-static/resources/f50devices.js
+device-traffic/flow-account /usr/libexec/f50-devices/flow-account
+device-traffic/ledger.uc /usr/libexec/f50-devices/ledger.uc
+device-traffic/collector.uc /usr/libexec/f50-devices/collector.uc
+device-traffic/rpc.uc /usr/libexec/f50-devices/rpc.uc
+device-traffic/service /etc/init.d/f50-devices
+device-traffic/rpc-wrapper /usr/libexec/rpcd/f50devices
+device-traffic/acl.json /usr/share/rpcd/acl.d/luci-app-f50devices.json
 cell /usr/libexec/unisoc-modem/cell
 modem-lock /usr/libexec/unisoc-modem/lock
 mu300dash /usr/libexec/rpcd/mu300dash
@@ -195,6 +221,7 @@ chmod 755 /usr/libexec/f50-traffic-archive /etc/init.d/f50-traffic-archive
 chmod 755 /usr/libexec/f50-speed-peaks-worker /etc/init.d/f50-speed-peaks
 chmod 755 /usr/libexec/f50-wifi-nondfs /usr/libexec/f50-wifi-start-safe
 chmod 755 /usr/libexec/f50-bounded /usr/libexec/f50-wifi-guard /usr/libexec/f50-wifi-evaluate /etc/init.d/f50-wifi-guard /usr/libexec/f50-dns-guard /usr/libexec/f50-dns-health /etc/init.d/f50-dns-guard /usr/libexec/f50-lock
+chmod 755 /usr/libexec/f50-devices/flow-account /usr/libexec/rpcd/f50devices /etc/init.d/f50-devices
 sh apply-reliability.sh
 chmod 755 /usr/libexec/unisoc-modem/dashboard-info /usr/libexec/rpcd/f50quota /usr/libexec/rpcd/f50channel /usr/libexec/rpcd/f50openclash /usr/libexec/f50openclash-worker
 chmod 755 /usr/libexec/rpcd/f50power /usr/libexec/f50power-worker /etc/init.d/f50power
@@ -205,14 +232,18 @@ chmod 755 /usr/libexec/rpcd/f50adguard /usr/libexec/f50adguard-worker /usr/libex
 /etc/init.d/vnstat start
 chmod 755 /usr/libexec/rpcd/f50history /usr/libexec/f50history-worker /etc/init.d/f50history
 # Session lifetime is LuCI sauth.sessiontime, not rpcd executable timeout.
-uci set luci.sauth.sessiontime=7200
-uci commit luci
+if [ -z "$(uci -q get luci.sauth.sessiontime)" ]; then
+ uci set luci.sauth.sessiontime=7200
+ uci commit luci
+fi
 uci set unisoc_modem.main.home_refresh_interval=1
 uci commit unisoc_modem
 chmod 755 /usr/libexec/f50-lock
 # Remove retired dashboard extension when upgrading.
 rm -f /www/luci-static/resources/f50highrail.js /usr/libexec/rpcd/f50highrail /usr/libexec/f50highrail-worker /usr/libexec/f50highrail-run /usr/share/rpcd/acl.d/luci-app-f50highrail.json
 /etc/init.d/rpcd restart
+/etc/init.d/f50-devices enable
+/etc/init.d/f50-devices start
 /etc/init.d/f50history enable
 /etc/init.d/f50history start
 /etc/init.d/f50-wifi-guard enable
@@ -229,5 +260,6 @@ sync
 printf '安装完成；请重新登录并强制刷新首页。\n原页面和配置备份：%s\n恢复命令：sh %s/restore.sh\n' "$backup" "$backup"
 ubus call f50power status >/dev/null
 ubus call f50quota status >/dev/null
+ubus call f50devices status >/dev/null
 ubus call f50channel status >/dev/null
 ubus call f50openclash status >/dev/null

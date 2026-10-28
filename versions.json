@@ -75,9 +75,13 @@
     "scope": "Selected userspace, SMS, IPv6, USB and fw4 components; local boot/update mutex and process cleanup; no full rootfs or kernel upgrade"
   },
   "dashboard_publication": {
-    "date": "2026-10-19",
-    "active_resource_version": "59f60d24c040",
-    "review": "docs/reviews/2026-10-19-dashboard-publication.md",
-    "screenshots": "assets/README.md"
+    "date": "2026-10-28",
+    "review": "docs/reviews/2026-10-28-dashboard-device-traffic.md",
+    "resource_version": "computed from installed home.js and f50*.js during deployment",
+    "screenshots": "assets/README.md",
+    "screenshots_date": "2026-10-19",
+    "verification_mode": "code and SSH; no browser",
+    "collector_build": "source-only; prepare local AArch64 binary before installation",
+    "optional_wlan_patch": "exact module SHA256 only; independent activation and reboot"
   }
 }
