@@ -1,4 +1,8 @@
 .text
+.org 0x2ea14
+b.eq arp_guard
+.org 0x2ec14
+original_arp_path:
 .org 0x2ed54
 b dns_guard
 .org 0x2ed58
@@ -20,4 +24,15 @@ dns_guard:
  b data_path
 original_selection:
  cbnz w9, original_special_path
+ b data_path
+
+.org 0x2efc8
+arp_guard:
+ ldr w9, [x20, #2992]
+ orr w9, w9, #4
+ cmp w9, #6
+ b.ne original_arp_path
+ ldr w9, [x23, #92]
+ cmp w9, #3
+ b.ne original_arp_path
  b data_path

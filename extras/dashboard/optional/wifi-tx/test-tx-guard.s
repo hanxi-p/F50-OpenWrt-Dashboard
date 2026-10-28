@@ -17,6 +17,20 @@ checkroute:
  ldp x20, x21, [sp, #16]
  ldp x29, x30, [sp], #48
  ret
+
+.global checkarp
+.type checkarp, %function
+checkarp:
+ stp x29, x30, [sp, #-32]!
+ stp x20, x23, [sp, #16]
+ mov x20, x0
+ mov x23, x1
+ ldr x16, =guard_blob+0x2ea14
+ cmp wzr, wzr
+ blr x16
+ ldp x20, x23, [sp, #16]
+ ldp x29, x30, [sp], #32
+ ret
 .balign 4
 .global setgroupbk
 .type setgroupbk, %function

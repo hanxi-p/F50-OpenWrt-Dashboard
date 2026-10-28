@@ -2,7 +2,7 @@
 START=98
 USE_PROCD=1
 start_service(){
- [ -f /root/f50-tx-fix-20261028/activation-pending ] || return 0
+ [ -f /root/f50-arp-fix-20261028/activation-pending ] || return 0
  procd_open_instance
  procd_set_param command /usr/libexec/f50-driver-recovery
  procd_set_param stdout 1

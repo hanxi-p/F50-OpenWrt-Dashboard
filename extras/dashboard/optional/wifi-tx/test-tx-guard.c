@@ -3,7 +3,8 @@
 #include <assert.h>
 extern int checkroute(void*,void*,int,int,int,int);
 extern void setgroupbk(void*);
-int main(void){unsigned char netdev[3000]={0},priv[96]={0};int tests=0;
+extern int checkarp(void*,void*);
+int main(void){unsigned char netdev[3000]={0},priv[96]={0};int tests=0;int arp_tests=0;for(int round=0;round<3;round++)for(int mode=0;mode<9;mode++)for(int hw=0;hw<5;hw++){memcpy(netdev+2992,&mode,4);memcpy(priv+92,&hw,4);assert(checkarp(netdev,priv)==((mode==2||mode==6)&&hw==3));arp_tests++;}printf("PASS %d ARP classification cases\n",arp_tests);
  for(int round=0;round<3;round++)for(int mode=0;mode<9;mode++)for(int hw=0;hw<5;hw++)for(int dns=0;dns<2;dns++)for(int dhcp=0;dhcp<2;dhcp++)for(int vowifi=0;vowifi<2;vowifi++){
   memcpy(netdev+2992,&mode,4);memcpy(priv+92,&hw,4);int special=dns||dhcp||vowifi;
   int want=(dns&&!dhcp&&!vowifi&&(mode==2||mode==6)&&hw==3)?1:!special;
