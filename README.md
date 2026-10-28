@@ -111,6 +111,9 @@
 
 ### 其他功能
 
+- [ ] **[Bark/WxPusher短信与故障通知](docs/features/push-notifications.md)** `push-notifications`
+  新短信与故障/恢复双通道通知，独立重试，保留原短信邮件转发。
+
 - [ ] **[手机与桌面布局](docs/features/mobile-layout.md)** `mobile-layout`
   常用信息常显，详情按需展开，手机按钮每行3个。
 - [ ] **[短信转发到邮件](docs/features/sms-email.md)** `sms-email`

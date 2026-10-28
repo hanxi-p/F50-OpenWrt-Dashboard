@@ -3,7 +3,7 @@ from pathlib import Path
 import ast,hashlib,json,re,shutil,subprocess
 root=Path(__file__).resolve().parents[1]
 missing=[];count=0
-for folder in ['dashboard','sms-email','system-reliability']:
+for folder in ['dashboard','sms-email','system-reliability','notifications']:
  d=root/'extras'/folder
  for line in (d/'SHA256SUMS').read_text(encoding='utf-8').splitlines():
   digest,name=line.split('  ',1)

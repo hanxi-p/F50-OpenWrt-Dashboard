@@ -30,3 +30,7 @@ ucode extras/dashboard/device-traffic/test-ledger.uc
 ```
 
 ARM 构建可在 F50 的 `/tmp` 中运行上述隔离程序。测试覆盖方向、内网/代理排除、首次基线、实际时间差、重复读取、计数回退、采集代次变化、过期、跨日跨月与旧数据迁移。不要将隔离结果当成真实断电、自然跨日、接口切换或加速精度测试。
+
+## 已确认设备的私有 MAC 变更
+
+可在设备私有 `/etc/f50-devices/identities.json` 中配置成员 MAC 到稳定身份 MAC 的单层映射。必须先向设备持有人核对当前 Wi-Fi 地址，不根据相似主机名或 IP 自动关联。输出行按身份合计日/月/总量，显示在线地址；原始账本按各 MAC 保留，可解除关联。自定义名称在确认成员间同步，免密名单须独立核验与配置，映射本身不授予权限。无需改网络或关闭加速。原生回归：`ucode extras/dashboard/device-traffic/test-identity.uc`。

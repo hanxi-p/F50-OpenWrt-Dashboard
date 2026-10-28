@@ -648,6 +648,29 @@
       "requires": [
         "dashboard-base"
       ]
+    },
+    {
+      "id": "push-notifications",
+      "category": "其他功能",
+      "name": "Bark/WxPusher短信与故障通知",
+      "summary": "双通道接收新短信及故障/恢复，独立重试去重，保留原短信邮件。",
+      "delivery": "configuration",
+      "document": "docs/features/push-notifications.md",
+      "files": [
+        "extras/notifications/f50-bark-send",
+        "extras/notifications/f50-bark-worker",
+        "extras/notifications/f50-bark-worker.uc",
+        "extras/notifications/f50-bark-state.uc",
+        "extras/notifications/f50-wxpusher-send",
+        "extras/notifications/f50-wxpusher-worker",
+        "extras/notifications/f50-wxpusher-worker.uc",
+        "extras/notifications/f50-bark-route.rb",
+        "extras/notifications/f50-bark.init",
+        "extras/notifications/f50-wxpusher.init"
+      ],
+      "requires": [
+        "device-traffic"
+      ]
     }
   ],
   "aliases": {

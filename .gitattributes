@@ -7,3 +7,4 @@ SHA256SUMS text eol=lf
 extras/dashboard/** text=auto eol=lf
 extras/sms-email/** text=auto eol=lf
 extras/system-reliability/** text=auto eol=lf
+extras/notifications/** text=auto eol=lf

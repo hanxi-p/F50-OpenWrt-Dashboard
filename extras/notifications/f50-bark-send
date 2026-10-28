@@ -1,0 +1,23 @@
+#!/bin/sh
+set -eu
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin:/opt/mu300/busybox-bin
+umask 077
+[ "$#" -eq 1 ] || [ "$#" -eq 2 ] || { echo 'usage: f50-bark-send title body' >&2; exit 2; }
+D=/etc/mu300/bark
+[ -s "$D/device-key" ] || { echo 'Bark key missing' >&2; exit 1; }
+tmp=$(mktemp -d /tmp/f50-bark-send.XXXXXX)
+trap 'rm -rf "$tmp"' EXIT
+trap 'exit 143' TERM INT
+if [ "$#" -eq 1 ]; then
+ ucode -e 'import { readfile, writefile } from "fs"; let p=json(readfile(ARGV[0])); if(type(p.title)!="string" || type(p.body)!="string")exit(2); writefile(ARGV[1]+"/title",p.title); writefile(ARGV[1]+"/body",p.body);' "$1" "$tmp"
+else
+ printf '%s' "$1" > "$tmp/title"
+ printf '%s' "$2" > "$tmp/body"
+fi
+source=$(uci -q get openclash.config.config_path || true)
+runtime="/etc/openclash/${source##*/}"
+[ -f "$runtime" ] || runtime=/etc/openclash/config.yaml
+ruby -ryaml -e 'c=YAML.load_file(ARGV[0]); p=c["port"] || c["mixed-port"]; abort "proxy listener missing" unless p; puts "proxy = " + "http://127.0.0.1:#{p}".inspect; a=Array(c["authentication"]).first; puts "proxy-user = " + a.inspect if a; {ARGV[1]=>80,ARGV[2]=>700}.each{|path,limit|v=File.read(path,encoding:"UTF-8").scrub; v=v[0,limit]+"\n…（内容过长，完整内容请查看F50）" if v.length>limit; File.write(path,v)}' "$runtime" "$tmp/title" "$tmp/body" > "$tmp/proxy"
+curl --config "$tmp/proxy" --silent --show-error --fail --connect-timeout 5 --max-time 20 --proto '=https' --tlsv1.2 --request POST https://api.day.app/push --data-urlencode "device_key@$D/device-key" --data-urlencode "title@$tmp/title" --data-urlencode "body@$tmp/body" --data-urlencode group=F50 --data-urlencode isArchive=1 --output "$tmp/response"
+ucode -e 'import { readfile } from "fs"; let r = json(readfile(ARGV[0])); exit(r.code == 200 ? 0 : 1);' "$tmp/response"
+echo 'Bark accepted notification'

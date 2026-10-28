@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin:/opt/mu300/busybox-bin
+umask 077
+[ "$#" -eq 1 ] || { echo 'usage: f50-wxpusher-send payload.json' >&2; exit 2; }
+D=/etc/mu300/wxpusher
+[ -s "$D/spt" ] || { echo 'WxPusher token missing' >&2; exit 1; }
+tmp=$(mktemp -d /tmp/f50-wxpusher-send.XXXXXX)
+trap 'rm -rf "$tmp"' EXIT
+trap 'exit 143' TERM INT
+ucode -e 'import * as fs from "fs"; let p=json(fs.readfile(ARGV[0]));if(type(p.title)!="string" || type(p.body)!="string")exit(2);let r={spt:trim(fs.readfile(ARGV[1])),content:p.title+"\n"+p.body,summary:p.title,contentType:1};fs.writefile(ARGV[2],sprintf("%J",r));' "$1" "$D/spt" "$tmp/request"
+curl --silent --show-error --fail --noproxy '*' --connect-timeout 5 --max-time 20 --proto '=https' --tlsv1.2 --request POST https://wxpusher.zjiecode.com/api/send/message/simple-push --header 'Content-Type: application/json; charset=utf-8' --data-binary "@$tmp/request" --output "$tmp/response"
+ucode -e 'import { readfile } from "fs"; let r=json(readfile(ARGV[0]));if(r.code!=1000 || r.success===false)exit(1);if(type(r.data)=="array"){for(let v in r.data)if(v.code!=null && v.code!=1000)exit(1);}else if(type(r.data)=="object" && r.data.code!=null && r.data.code!=1000)exit(1);' "$tmp/response"
+echo 'WxPusher accepted notification'

@@ -1,6 +1,6 @@
 #!/usr/bin/ucode
 import * as fs from 'fs';
-import {readjson,atomic} from './ledger.uc';
+import {readjson,atomic,identity} from './ledger.uc';
 let args=ARGV;
 if(args[0]=='list'){print('{"status":{},"rename":{"mac":"String","name":"String"}}');exit(0);}
 if(args[0]!='call')exit(1);
@@ -12,5 +12,9 @@ let mac=lc(v.mac??''), name=trim(v.name??'');
 if(!match(mac,/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/)||length(name)>96||match(name,/[[:cntrl:]]/)){print('{"error":"名称最多96字节，不能含控制字符"}');exit(0);}
 fs.mkdir('/etc/f50-devices',0700);
 let saved=fs.readfile('/etc/f50-devices/aliases.json');let aliases=saved!=null?json(saved):{};
-if(type(aliases)!='object')die('invalid aliases retained');if(name=='')delete aliases[mac];else aliases[mac]=name;
+if(type(aliases)!='object')die('invalid aliases retained');
+let links=readjson('/etc/f50-devices/identities.json',{}),root=identity(mac,links),members={};
+members[root]=true;members[mac]=true;
+if(type(links)=='object')for(let member,target in links)if(identity(member,links)==root)members[member]=true;
+for(let member in members){if(name=='')delete aliases[member];else aliases[member]=name;}
 atomic('/etc/f50-devices/aliases.json',aliases);print('{"ok":true}');

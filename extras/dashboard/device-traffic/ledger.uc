@@ -5,7 +5,38 @@ function atomic(path, value) {
  f.write(type(value)=='string'?value:sprintf('%J',value)); f.flush(); f.close();
  if(!fs.rename(path+'.new',path))die('rename '+path+' failed');
 }
-function calculate(state, source, peers, aliases, now, day) {
+function identity(mac, links) {
+ if(type(links)!='object')return mac;
+ let root=links[mac];
+ if(type(root)!='string'||!match(root,/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/))return mac;
+ // Explicit one-level links only; cycles and chained guesses fail closed.
+ if(links[root]!=null && links[root]!=root)return mac;
+ return root;
+}
+function groupRows(rows, devices, aliases, links) {
+ let groups={},out=[];
+ for(let row in rows){let root=identity(row.mac,links);groups[root]??=[];push(groups[root],row);}
+ for(let root,members in groups){
+  let best=members[0];
+  for(let row in members){
+   let seen=devices[row.mac]?.last_seen??0,oldSeen=devices[best.mac]?.last_seen??0;
+   if((row.online&&!best.online)||(row.online==best.online && (seen>oldSeen || (seen==oldSeen && row.mac!=root && best.mac==root))))best=row;
+  }
+  let merged={};for(let k,v in best)merged[k]=v;
+  merged.identity_mac=root;
+  merged.name=aliases[root]||aliases[best.mac]||best.hostname||best.mac;
+  if(length(members)>1){
+   merged.today_rx=0;merged.today_tx=0;merged.month_total=0;merged.total=0;merged.rx_rate=null;merged.tx_rate=null;merged.online=false;
+   for(let row in members){
+    for(let k in ['today_rx','today_tx','month_total','total'])merged[k]+=row[k]??0;
+    if(row.online){merged.online=true;if(row.rx_rate!=null)merged.rx_rate=(merged.rx_rate??0)+row.rx_rate;if(row.tx_rate!=null)merged.tx_rate=(merged.tx_rate??0)+row.tx_rate;}
+   }
+  }
+  push(out,merged);
+ }
+ return out;
+}
+function calculate(state, source, peers, aliases, now, day, identities) {
  state ??= {version:1,devices:{}}; let devices=state.devices, lines=split(trim(source),'\n');
  let month=substr(day,0,7);
  function initializeMonth(d){
@@ -24,6 +55,7 @@ function calculate(state, source, peers, aliases, now, day) {
   previousDay[mac]=d.sample_day??d.day;
   initializeMonth(d);
   d.online=!!peers[mac]?.online;
+  if(d.online)d.last_seen=now;
   if(d.day!=day){d.today_rx=0;d.today_tx=0;d.day=day;}
   d.rx_rate=null;d.tx_rate=null;
  }
@@ -48,7 +80,7 @@ function calculate(state, source, peers, aliases, now, day) {
  for(let mac,d in devices){push(rows,{mac:mac,ip:d.ip??'',name:aliases[mac]||d.hostname||mac,
   hostname:d.hostname??'',connection:d.connection??'unknown',interface:d.interface??'',online:!!d.online,
   rx_rate:valid?d.rx_rate:null,tx_rate:valid?d.tx_rate:null,today_rx:d.today_rx,today_tx:d.today_tx,month_total:d.month_total,total:d.total});}
- return {state:state,public:{timestamp:now,sample_timestamp:stamp,date:day,stale:!valid,errors:errors,devices:rows,
+ return {state:state,public:{timestamp:now,sample_timestamp:stamp,date:day,stale:!valid,errors:errors,devices:groupRows(rows,devices,aliases,identities),
   scope:'IPv4 / IPv6 外网连接；透明代理按客户端段计数，排除内网目的地址'}};
 }
-export {readjson,atomic,calculate};
+export {readjson,atomic,calculate,identity};

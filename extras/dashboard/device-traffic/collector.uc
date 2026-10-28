@@ -35,7 +35,7 @@ function tick(){
  if(busy)return;busy=true;let start=mono();
  try{
   let src=fs.readfile(R+'/source');if(src){
-   let result=calculate(state,src,peers(),readjson(P+'/aliases.json',{}),time(),trim(cmd('date +%F')));
+   let result=calculate(state,src,peers(),readjson(P+'/aliases.json',{}),time(),trim(cmd('date +%F')),readjson(P+'/identities.json',{}));
    state=result.state;atomic(P+'/ledger.json',state);atomic(R+'/devices.json',result.public);
   }
  }catch(e){warn('f50-devices: '+e+'\n');}

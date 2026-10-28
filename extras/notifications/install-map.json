@@ -1,0 +1,12 @@
+{
+  "f50-bark-send": "/usr/libexec/f50-bark-send",
+  "f50-bark-worker": "/usr/libexec/f50-bark-worker",
+  "f50-bark-worker.uc": "/usr/libexec/f50-bark-worker.uc",
+  "f50-bark-state.uc": "/usr/libexec/f50-bark-state.uc",
+  "f50-wxpusher-send": "/usr/libexec/f50-wxpusher-send",
+  "f50-wxpusher-worker": "/usr/libexec/f50-wxpusher-worker",
+  "f50-wxpusher-worker.uc": "/usr/libexec/f50-wxpusher-worker.uc",
+  "f50-bark-route.rb": "/usr/libexec/f50-bark-route.rb",
+  "f50-bark.init": "/etc/init.d/f50-bark",
+  "f50-wxpusher.init": "/etc/init.d/f50-wxpusher"
+}

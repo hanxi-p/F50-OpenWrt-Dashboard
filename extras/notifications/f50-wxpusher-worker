@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin:/opt/mu300/busybox-bin
+umask 077
+exec 9>/run/f50-wxpusher.lock
+flock -n 9 || exit 0
+exec /usr/bin/ucode /usr/libexec/f50-wxpusher-worker.uc

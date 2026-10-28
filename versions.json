@@ -97,5 +97,17 @@
     "directory": "extras/dashboard/optional/wifi-source-repair",
     "review": "docs/reviews/2026-10-28-edma-source-repair.md",
     "distribution": "Source patch and documentation only; no kernel or modules; no automatic activation"
+  },
+  "maintenance_publication": {
+    "date": "2026-10-28",
+    "features": [
+      "confirmed-mac-identity",
+      "decimal-traffic-units",
+      "bark-wxpusher-notifications"
+    ],
+    "review": "docs/reviews/2026-10-28-notifications-publication.md",
+    "notification_sources": "extras/notifications",
+    "rootfs_upgrade_tested": false,
+    "remaining_warning": "charger-manager temperature warning retained; protections unchanged"
   }
 }

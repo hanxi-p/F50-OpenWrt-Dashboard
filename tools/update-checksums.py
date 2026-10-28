@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib
 root=Path(__file__).resolve().parents[1]
 local={'device-traffic/flow-account','device-traffic/flow-account.build','device-traffic/SHA256SUMS.local'}
-for name in ['dashboard','sms-email','system-reliability']:
+for name in ['dashboard','sms-email','system-reliability','notifications']:
  folder=root/'extras'/name;rows=[]
  for p in sorted(folder.rglob('*')):
   if not p.is_file():continue
