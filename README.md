@@ -132,13 +132,14 @@
 
 当前面板包匹配mu300-linux `v2026.10.11`、OpenWrt `25.12.5`、厂商5.4内核与MU300/Aurora页面；其他版本先适配。
 
-## 界面参考
+## 实拍截图
 
-<a href="assets/dashboard-live-mobile.jpg"><img src="assets/dashboard-live-mobile.jpg" alt="F50 实机手机布局：实时像素曲线、流量套餐与快捷控制" width="390"></a>
+<a href="assets/dashboard-phone-overview-20261028.png"><img src="assets/dashboard-phone-overview-20261028.png" alt="F50 手机实拍：信号、实时流量曲线与本月套餐" width="360"></a>
+<a href="assets/dashboard-phone-devices-20261028.png"><img src="assets/dashboard-phone-devices-20261028.png" alt="F50 手机实拍：设备流量统计、负载温度与快捷控制" width="360"></a>
 
-[桌面实机原图](assets/dashboard-live-desktop.jpg) · [截图与版本说明](assets/README.md)
+[信号与流量原图](assets/dashboard-phone-overview-20261028.png) · [设备统计原图](assets/dashboard-phone-devices-20261028.png) · [截图与版本说明](assets/README.md)
 
-以下为 2026-10-19 历史截图，未包含新增设备统计和展开布局；本轮只通过代码及 SSH 验证，未使用浏览器或更新截图。原图直接连接 F50 拍摄，手机与桌面分别检查响应式布局；点击图片查看原尺寸。截图保留拍摄时读数，设备标识、手机号及客户端详情保持折叠，不展示凭据。
+以上为使用者于 2026-10-28 提供并指定公开的两张手机实拍截图，保留原图与拍摄时读数，点击查看原尺寸。第二张展示设备名称及上下行合并的五列统计；截图不是测速或长期稳定性验收。旧版手机响应式视口图和桌面图保留在截图说明中。
 
 ## 来源与更新
 
