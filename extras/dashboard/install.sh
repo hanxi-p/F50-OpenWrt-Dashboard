@@ -48,6 +48,7 @@ cat > "$backup/paths" <<'PATHS'
 /www/luci-static/resources/f50speedpeaks.js
 /www/luci-static/resources/f50livechart.js
 /www/luci-static/resources/f50devices.js
+/www/luci-static/resources/f50units.js
 /usr/libexec/f50-devices/flow-account
 /usr/libexec/f50-devices/ledger.uc
 /usr/libexec/f50-devices/collector.uc
@@ -184,6 +185,7 @@ cell /usr/libexec/unisoc-modem/cell
 modem-lock /usr/libexec/unisoc-modem/lock
 mu300dash /usr/libexec/rpcd/mu300dash
 home.js /www/luci-static/resources/view/mu300/home.js
+f50units.js /www/luci-static/resources/f50units.js
 dashboard-info /usr/libexec/unisoc-modem/dashboard-info
 f50quota5.js /www/luci-static/resources/f50quota5.js
 f50channel.js /www/luci-static/resources/f50channel.js

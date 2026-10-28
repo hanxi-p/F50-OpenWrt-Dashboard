@@ -15,7 +15,8 @@ async function scenario(){
  const rpc={declare:d=>()=>Promise.resolve(d.object==='f50devices'?payload:{ok:true,today:'2026-10-28',month:'2026-10',hour:2,quota_gb:100,monthly_json:'{}',hourly_json:JSON.stringify({interfaces:[{traffic:{hour:[{date:{year:2026,month:10,day:28},time:{hour:2},rx:1000,tx:2000}]}}]}),daily_json:JSON.stringify({interfaces:[{traffic:{day:[{date:{year:2026,month:10,day:28},rx:10000,tx:20000}]}}]})})};
  const ui={addNotification:(_,node)=>notifications.push(node.textContent),showModal:()=>{},hideModal:()=>{}};
  const Home=load('home.js',{view:Base,rpc,_:s=>s,E,document,L:{url:(...p)=>'/cgi-bin/luci/'+p.join('/')},requestAnimationFrame:()=>{},MutationObserver:window.MutationObserver});const home=new Home();root.innerHTML=home.html();
- const common={baseclass:Base,rpc,ui,E,document,setTimeout:fn=>(pending.push(fn),pending.length),clearTimeout:()=>{}};
+ const Units=new (load('f50units.js',{baseclass:Base}))();
+ const common={Units,baseclass:Base,rpc,ui,E,document,setTimeout:fn=>(pending.push(fn),pending.length),clearTimeout:()=>{}};
  const cardIds=['mud-session-rx','mud-session-tx','mud-rx','mud-tx'];
  const cards=cardIds.map(id=>document.getElementById(id));cards[0].textContent='10 MB';cards[1].textContent='2 MB';
  const usage=document.getElementById('f50-usage-inline');assert.equal(usage.hidden,true);
@@ -25,7 +26,7 @@ async function scenario(){
  for(let i=0;i<3;i++){
   opener.onclick();assert.equal(usage.hidden,false);assert.equal(opener.getAttribute('aria-expanded'),'true');
   for(let n=0;n<4;n++)assert.equal(document.getElementById(cardIds[n]),cards[n],'toggling must preserve live counter nodes');
-  assert.equal(cards[0].textContent,'10 MB');assert.equal(cards[1].textContent,'2 MB');assert.equal(cards[2].textContent,'3.0 KB');assert.equal(cards[3].textContent,'30.0 KB');
+  assert.equal(cards[0].textContent,'10 MB');assert.equal(cards[1].textContent,'2 MB');assert.equal(cards[2].textContent,'0.003M');assert.equal(cards[3].textContent,'0.03M');
   const refresh=pending.shift();refresh();await flush();assert.equal(usage.hidden,false,'data refresh must not close the expanded panel');
   root.querySelector('[data-q=daily-open]').onclick();assert.equal(usage.hidden,false,'monthly consumed history is independent');
   opener.onclick();assert.equal(usage.hidden,true);

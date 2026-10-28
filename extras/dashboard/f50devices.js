@@ -2,9 +2,10 @@
 'require baseclass';
 'require rpc';
 'require ui';
+'require f50units as Units';
 var status=rpc.declare({object:'f50devices',method:'status',expect:{'':{}}});
 var rename=rpc.declare({object:'f50devices',method:'rename',params:['mac','name'],expect:{'':{}}});
-function size(n,rate){if(n==null||!Number.isFinite(+n))return '—';var u=rate?['B/s','KiB/s','MiB/s','GiB/s']:['B','KiB','MiB','GiB','TiB'];var i=0;while(n>=1024&&i<u.length-1){n/=1024;i++;}return (i?n.toFixed(n>=100?0:1):Math.round(n))+' '+u[i];}
+function size(n,rate){return rate?Units.fmtRate(n):Units.fmtBytes(n);}
 function todayDownloadRank(d){return d.today_rx!=null&&Number.isFinite(+d.today_rx)&&+d.today_rx>=0?+d.today_rx:-1;}
 return baseclass.extend({mount:function(root){
  var section=E('section',{class:'mud-sec f50-devices'},[E('h3',{},'设备流量统计')]);

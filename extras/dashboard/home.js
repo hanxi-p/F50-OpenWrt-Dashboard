@@ -5,6 +5,7 @@
 'require f50adguard as F50AdGuard';
 'require uci';
 'require mu300.common as M';
+'require f50units as Units';
 'require f50quota5 as F50Quota';
 'require f50channelstate as F50Channel';
 'require f50openclash2 as F50OpenClash';
@@ -666,7 +667,7 @@ return view.extend({
 		if(this._speedPeaks)this._speedPeaks.update(st.speedPeaks);
 		var i = st.info || {};
         if(st.previousCpu)this.lastCpu=st.previousCpu;
-        if(st.history && st.history.length){this.dlHist=st.history.map(function(p){return p[1];});this.ulHist=st.history.map(function(p){return p[2];});this.rateTimes=st.history.map(function(p){return p[0]*1000;});var latest=st.history[st.history.length-1];M.set("dl",M.fmtRate(latest[1]));M.set("ul",M.fmtRate(latest[2]));this.drawRates();}
+        if(st.history && st.history.length){this.dlHist=st.history.map(function(p){return p[1];});this.ulHist=st.history.map(function(p){return p[2];});this.rateTimes=st.history.map(function(p){return p[0]*1000;});var latest=st.history[st.history.length-1];M.set("dl",Units.fmtRate(latest[1]));M.set("ul",Units.fmtRate(latest[2]));this.drawRates();}
 		this.lastInfo = i;
 		if (i.ts && this._bootEl) {
 			this._bootEl.classList.remove('mud-booting');
@@ -765,14 +766,14 @@ return view.extend({
 			var dt = i.ts - this.lastNet.ts;
 			if (dt > 0) {
 				var dl = (net.rx - this.lastNet.rx) / dt, ul = (net.tx - this.lastNet.tx) / dt;
-				M.set('dl', M.fmtRate(dl)); M.set('ul', M.fmtRate(ul));
+				M.set('dl', Units.fmtRate(dl)); M.set('ul', Units.fmtRate(ul));
 				this.dlHist.push(Math.max(0,dl)); this.ulHist.push(Math.max(0,ul)); this.rateTimes.push(Date.now());
 				if (this.dlHist.length > RATE_WIN) { this.dlHist.shift(); this.ulHist.shift(); this.rateTimes.shift(); }
 				this.drawRates();
 			}
 		}
 		if (net) {
-			M.set('session-rx', M.fmtBytes(net.rx)); M.set('session-tx', M.fmtBytes(net.tx));
+			M.set('session-rx', Units.fmtBytes(net.rx)); M.set('session-tx', Units.fmtBytes(net.tx));
 			this.lastNet = { ts: i.ts, rx: net.rx, tx: net.tx };
 		}
 		var w = i.wan || {};
@@ -881,7 +882,7 @@ return view.extend({
 		if (i.mem && i.mem.total_kb) {
 			var used = i.mem.total_kb - i.mem.avail_kb, pct = Math.round(used * 100 / i.mem.total_kb);
 			M.set('ram', pct + '%'); M.v('ram-bar').style.width = pct + '%';
-			var ramSub=this._root.querySelector('#mud-ram-sub'); ramSub.replaceChildren(E('span',{style:'display:block'},'余'+(i.mem.avail_kb/1048576).toFixed(1)+'G'),E('span',{style:'display:block'},'共'+(i.mem.total_kb/1048576).toFixed(1)+'G'));
+			var ramSub=this._root.querySelector('#mud-ram-sub'); ramSub.replaceChildren(E('span',{style:'display:block'},'余'+Units.fmtBytes(i.mem.avail_kb*1024)),E('span',{style:'display:block'},'共'+Units.fmtBytes(i.mem.total_kb*1024)));
 		}
 		if (i.storage && i.storage.total_kb) {
 			var pct2 = Math.round(i.storage.used_kb * 100 / i.storage.total_kb);

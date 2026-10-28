@@ -2,10 +2,11 @@
 'require rpc';
 'require ui';
 'require baseclass';
+'require f50units as Units';
 var status = rpc.declare({object:'f50quota',method:'status',nobatch:true});
 var configure = rpc.declare({object:'f50quota',method:'configure',params:['quota_gb','used_gb','calibrate']});
 var GB = 1000000000;
-function amount(v) { return (Number(v || 0)/GB).toFixed(3)+' GB'; }
+function amount(v) { return Units.fmtBytes(Number(v || 0),3,true); }
 function key(d) { return d.year+'-'+String(d.month).padStart(2,'0'); }
 function dayKey(d) { return key(d)+'-'+String(d.day).padStart(2,'0'); }
 function bytes(v) { return Number(v.rx || 0)+Number(v.tx || 0); }
@@ -19,7 +20,7 @@ function grouped(rows, hour) {
  });
  return Object.keys(map).map(function(k){return map[k];});
 }
-function compact(v) { return v>=GB?amount(v):v>=1000000?(v/1000000).toFixed(1)+' MB':v>=1000?(v/1000).toFixed(1)+' KB':Math.round(v)+' B'; }
+function compact(v) { return Units.fmtBytes(v); }
 function dailySeries(data,count) {
  var rows=grouped(traffic(data.daily_json).traffic.day),map={};
  rows.forEach(function(r){map[dayKey(r.date)]=r;});
@@ -64,7 +65,7 @@ return baseclass.extend({
    var quota=Number(data.quota_gb)*GB,percent=quota>0?used/quota*100:0;
    q('month').textContent=data.month;
    q('used').textContent=amount(used);
-   section.querySelector('.f50-quota-meter').title=quota>0?'本月总流量 '+Number(data.quota_gb)+' GB':'本月总流量尚未设置';
+   section.querySelector('.f50-quota-meter').title=quota>0?'本月总流量 '+Number(data.quota_gb)+' G':'本月总流量尚未设置';
    q('remaining').textContent=quota>0?(used>quota?'超出 '+amount(used-quota):amount(quota-used)):'—';
    q('percent').textContent=quota>0?percent.toFixed(2)+'%':'请设置额度';
    q('fill').style.width=Math.min(100,percent)+'%';
@@ -109,8 +110,8 @@ return baseclass.extend({
     status().then(function(s){if(s.month!==month)throw new Error('月份已变更，请重新设置。');return configure(a.toFixed(3),b.toFixed(3),usedEdited);}).then(function(r){if(!r.ok)throw new Error(r.error || '保存失败');ui.hideModal();return refresh();}).catch(function(e){ui.addNotification(null,E('p',{},e.message));}).finally(function(){save.disabled=false;});
    }},'保存');
    ui.showModal('本月流量',[
-    E('label',{for:quota.id,style:'display:block;margin-bottom:16px'},['本月总流量（GB）',quota]),
-    E('label',{for:used.id,style:'display:block;margin-bottom:16px'},['本月已使用（GB）',used]),
+    E('label',{for:quota.id,style:'display:block;margin-bottom:16px'},['本月总流量（G）',quota]),
+    E('label',{for:used.id,style:'display:block;margin-bottom:16px'},['本月已使用（G）',used]),
     E('div',{class:'right'},[E('button',{type:'button',class:'cbi-button',click:ui.hideModal},'取消'),' ',save])
    ]);
    (kind==='used'?used:quota).focus();(kind==='used'?used:quota).select();

@@ -1,5 +1,6 @@
 'use strict';
 'require baseclass';
+'require f50units as Units';
 'require mu300.common as M';
 
 var WINDOW_MS=60000,DELAY_MS=1200;
@@ -46,7 +47,7 @@ return baseclass.extend({prepare:prepare,curve:curve,texture:texture,mount:funct
  function geometry(){
   if(!rows.length)return;
   var right=viewEnd(),visible=rows.filter(function(p){return p.t>=right-WINDOW_MS-3000&&p.t<=right+DELAY_MS+1000;});if(!visible.length)visible=[rows[rows.length-1]];
-  var dlPeak=Math.max.apply(null,visible.map(function(p){return p.dl;})),ulPeak=Math.max.apply(null,visible.map(function(p){return p.ul;})),peak=Math.max(1,dlPeak,ulPeak),divisor=peak>=1048576?1048576:peak>=1024?1024:1,unit=divisor===1048576?'MB/s':divisor===1024?'KB/s':'B/s';
+  var dlPeak=Math.max.apply(null,visible.map(function(p){return p.dl;})),ulPeak=Math.max.apply(null,visible.map(function(p){return p.ul;})),peak=Math.max(1,dlPeak,ulPeak),units=Units.rateScale(peak),divisor=units.divisor,unit=units.unit;
   var v=peak/divisor/5,power=Math.pow(10,Math.floor(Math.log10(v))),f=v/power,step=Math.max(1,(f<=1?1:f<=2?2:f<=5?5:10)*power*divisor),dlLimit=Math.max(step,Math.ceil(dlPeak/step)*step),ulLimit=Math.max(step,Math.ceil(ulPeak/step)*step);
   scale=174/(dlLimit+ulLimit);zero=12+dlLimit*scale;base=rows[0].t;
   /* Fixed 4x3 CSS-pixel blocks, 2px gaps; phase follows absolute sample time.
@@ -70,8 +71,8 @@ return baseclass.extend({prepare:prepare,curve:curve,texture:texture,mount:funct
    var paths=[],areas=[];segments.forEach(function(points){var d=curve(points);paths.push(d);areas.push(d+' L'+points[points.length-1].x.toFixed(2)+','+zero+' L'+points[0].x.toFixed(2)+','+zero+' Z');});
    el.querySelector('[data-line="'+key+'"]').setAttribute('d',paths.join(' '));el.querySelector('[data-area="'+key+'"]').setAttribute('d',areas.join(' '));
   });
-  el.querySelector('.f50-btop-dl span:last-child').textContent='峰值 '+M.fmtRate(Math.max.apply(null,visible.map(function(p){return p.rawDl;})));
-  el.querySelector('.f50-btop-ul span:last-child').textContent='峰值 '+M.fmtRate(Math.max.apply(null,visible.map(function(p){return p.rawUl;})));
+  el.querySelector('.f50-btop-dl span:last-child').textContent='峰值 '+Units.fmtRate(Math.max.apply(null,visible.map(function(p){return p.rawDl;})));
+  el.querySelector('.f50-btop-ul span:last-child').textContent='峰值 '+Units.fmtRate(Math.max.apply(null,visible.map(function(p){return p.rawUl;})));
   geometryDirty=false;
  }
  function paint(now){
@@ -95,7 +96,7 @@ return baseclass.extend({prepare:prepare,curve:curve,texture:texture,mount:funct
  function resume(){touchPinned=false;panEnd=null;lastFrame=0;geometryDirty=true;hideTip();wake();}
  reset.onclick=resume;
  function point(e){if(!rows.length)return;hover={clientX:e.clientX,clientY:e.clientY,pointerType:e.pointerType};var box=svg.getBoundingClientRect(),ts=viewEnd()-WINDOW_MS+clamp((e.clientX-box.left)/Math.max(1,box.width),0,1)*WINDOW_MS,p=rows.reduce(function(best,x){return Math.abs(x.t-ts)<Math.abs(best.t-ts)?x:best;},rows[0]);var cursor=el.querySelector('#mud-rate-cursor'),x=(p.t-viewEnd()+WINDOW_MS)/WINDOW_MS*900;cursor.style.display='';cursor.setAttribute('x1',x);cursor.setAttribute('x2',x);
-  tipTime.textContent=stamp(p.t);tipDl.textContent=M.fmtRate(p.rawDl);tipUl.textContent=M.fmtRate(p.rawUl);tip.style.display='block';
+  tipTime.textContent=stamp(p.t);tipDl.textContent=Units.fmtRate(p.rawDl);tipUl.textContent=Units.fmtRate(p.rawUl);tip.style.display='block';
   var bounds=tip.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight,touch=e.pointerType!=='mouse',left=touch?e.clientX-bounds.width/2:e.clientX+14,top=touch?e.clientY-bounds.height-24:e.clientY+14;
   if(touch){if(top<8)top=e.clientY+24;}else{if(left+bounds.width>vw-8)left=e.clientX-bounds.width-14;if(top+bounds.height>vh-8)top=e.clientY-bounds.height-14;}
   tip.style.left=clamp(left,8,Math.max(8,vw-bounds.width-8))+'px';tip.style.top=clamp(top,8,Math.max(8,vh-bounds.height-8))+'px';
