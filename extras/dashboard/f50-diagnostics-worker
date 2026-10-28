@@ -70,8 +70,8 @@ collect() {
    logread -f > "$queue/system.fifo" & reader=$!
    # Preserve a bounded kernel crash context, including register/stack lines.
    awk '
-    /coredump|Comm: rpcd|segfault|kernel panic|BUG:|hung task|Call trace:/ { context=96 }
-    { keep=($0 ~ /f50-|daemon\.(err|crit|alert|emerg)|Out of memory|oom-kill|segfault|kernel panic|BUG:|hung task|coredump|Comm: rpcd|PHY is undefined|hostapd.*(AP-ENABLED|AP-DISABLED|INTERFACE-DISABLED|fail|error)|rpcd.*(fail|error)|unisoc-modem.*(fail|error|timeout)|sprd-wlan:.*(SPRD_CMD_STATUS_ERROR|cmd.*timeout|assert|fw.*(fail|error))|sipa_eth: fail to send/);
+    /coredump|Comm: rpcd|segfault|[Kk]ernel panic|(^|[^[:alnum:]_])BUG:|hung task|Call trace:/ { context=96 }
+    { keep=($0 ~ /f50-|daemon\.(err|crit|alert|emerg)|Out of memory|oom-kill|segfault|[Kk]ernel panic|(^|[^[:alnum:]_])BUG:|hung task|coredump|Comm: rpcd|PHY is undefined|hostapd.*(AP-ENABLED|AP-DISABLED|INTERFACE-DISABLED|fail|error)|rpcd.*(fail|error)|unisoc-modem.*(fail|error|timeout)|sprd-wlan:.*(SPRD_CMD_STATUS_ERROR|push link fail|tx return err|cmd.*timeout|assert|fw.*(fail|error))|edma_pending_q_buffer.*full|sipa_eth: fail to send/);
       if (context>0 && $0 ~ /kernel:/) { keep=1; context-- }
       if (keep) { print; fflush(); }
     }' < "$queue/system.fifo" >> "$day/system.log" & filter=$!

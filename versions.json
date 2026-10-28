@@ -79,9 +79,23 @@
     "review": "docs/reviews/2026-10-28-dashboard-device-traffic.md",
     "resource_version": "computed from installed home.js and f50*.js during deployment",
     "screenshots": "assets/README.md",
-    "screenshots_date": "2026-10-19",
+    "screenshots_date": "2026-10-28",
     "verification_mode": "code and SSH; no browser",
     "collector_build": "source-only; prepare local AArch64 binary before installation",
-    "optional_wlan_patch": "exact module SHA256 only; independent activation and reboot"
+    "optional_wlan_patch": "Legacy binary tools retained; optional official 5.4 and source module repair, independent activation and reboot"
+  },
+  "wifi_source_repair": {
+    "date": "2026-10-28",
+    "optional": true,
+    "base_rootfs": "v2026.10.11",
+    "kernel_bundle_release": "v2026.10.27.2",
+    "upstream_commit": "fa7bd593c5da6bf7963164e5a274253c4705960f",
+    "kernel_release": "5.4.254-gb50db5b6224c",
+    "original_kernel_bundle_sha256": "6dc27c7ed31ad88609f12b0b61edfa0ef7c6eef746f1693ccb08d8178cde2d52",
+    "tested_wireless_artifact_sha256": "48026a7f7176ce2cf2f7200f2c0f5100a5405e3239b9b14fcbe360fad252d721",
+    "artifact_hash_is_build_specific": true,
+    "directory": "extras/dashboard/optional/wifi-source-repair",
+    "review": "docs/reviews/2026-10-28-edma-source-repair.md",
+    "distribution": "Source patch and documentation only; no kernel or modules; no automatic activation"
   }
 }

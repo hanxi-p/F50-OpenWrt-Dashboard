@@ -6,6 +6,14 @@
 
 ## 当前状态
 
+后续已实际验证[官方 5.4 底座与源码修复](../../extras/dashboard/optional/wifi-source-repair/README.md)：使用官方 v2026.10.27.2 Image、ramdisk 和整套模块，并源码重编译无线模块保留 AP ARP/DNS 防护。该路径覆盖此前局部补丁遗漏的 EDMA 回压重试及完成唤醒，不继续增加二进制改写。真实重启与上下行验收见[本轮记录](../reviews/2026-10-28-edma-source-repair.md)。这不代表整套 OpenWrt rootfs 或面板升级为上游新版，基础安装器也不会自动执行内核更新。
+
+SIPA 的 `ret -115` 通常是 IPA 恢复中的 `-EINPROGRESS` 流控状态，结合队列恢复与真实传输判断，不能仅凭这一行认定故障。下文保留的旧“未决”记录反映当时判断，不代表该状态本身已被证实为丢包。
+
+PHY 命令兼容处理同时识别 `sprd_wlan_combo`：默认全天线、distance 0、txpower auto 不发出无效命令，避免启动时的 -95 / -12 与 powered-off CMD_SET_PARAM；显式参数及其他驱动仍执行并报告失败。诊断采集保留 EDMA full、push link fail 和 tx return err，不以旧 CMD 错误计数未增长代替完整检查。
+
+以下保留旧二进制修补的失败与阶段记录：
+
 发送路径工具仅为局部兼容修补：较长观察中仍复现 `CMD_TX_DATA / SPRD_CMD_STATUS_ERROR`，早期版本尚未彻底解决。补齐AP ARP分支后，匹配构建的新启动观察窗口未再复现；不据此保证长期或全部固件故障已解决。不能将隔离检查、短观察或普通传输通过当成无线故障完全修复；暂不作为常规安装方案，保留给匹配构建的排查与复核。
 
 ## 先匹配构建

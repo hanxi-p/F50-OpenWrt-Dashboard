@@ -1,0 +1,43 @@
+--- a/sc2355/tx.c
++++ b/sc2355/tx.c
+@@ -1076,6 +1076,13 @@
+ 
+ 	/*as CP request, send data with CMD */
+ 	if (is_data2cmd) {
++		/* Ordinary AP DNS must not consume the firmware command queue.
++		 * Return before touching the checksum or taking adap_lock. */
++		if (hif->hw_type == SPRD_HW_SC2355_PCIE &&
++		    (vif->mode == SPRD_MODE_AP || vif->mode == SPRD_MODE_P2P_GO) &&
++		    (is_ipv4_dns || is_ipv6_dns) &&
++		    !is_ipv4_dhcp && !is_ipv6_dhcp && !is_vowifi2cmd)
++			return 1;
+ 		if (is_ipv4_dhcp || is_ipv6_dhcp)
+ 			pr_info("dhcp,check:%x,skb->ip_summed:%d\n",
+ 				udphdr->check, skb->ip_summed);
+@@ -1100,7 +1107,7 @@
+ 		}
+ 
+ 		spin_lock_bh(&adap_info.adap_lock);
+-		pr_info("%s special_data_flag: %d\n",
++		pr_debug("%s special_data_flag: %d\n",
+ 			__func__, adap_info.special_data_flag);
+ 		if ((is_ipv4_dns || is_ipv6_dns) &&
+ 		    (adap_info.special_data_flag == SPRD_NPI_NORMAL_ALL ||
+@@ -2252,10 +2259,15 @@
+ #endif
+ 
+ 	if (ethhdr->h_proto == htons(ETH_P_ARP)) {
+-		pr_info("incoming ARP packet\n");
++		/* PCIe AP/GO ARP uses the flow-controlled data queue. Keep
++		 * station and non-PCIe firmware filtering unchanged. */
++		if (hif->hw_type == SPRD_HW_SC2355_PCIE &&
++		    (vif->mode == SPRD_MODE_AP || vif->mode == SPRD_MODE_P2P_GO))
++			return 1;
++		pr_debug("incoming ARP packet\n");
+ 
+ 		spin_lock_bh(&adap_info.adap_lock);
+-		pr_info("%s special_data_flag: %d\n",
++		pr_debug("%s special_data_flag: %d\n",
+ 			__func__, adap_info.special_data_flag);
+ 		if ((adap_info.special_data_flag == SPRD_NPI_NORMAL_ALL) ||
+ 		    ((adap_info.special_data_flag == SPRD_NPI_NORMAL_UNENCRYP) &&

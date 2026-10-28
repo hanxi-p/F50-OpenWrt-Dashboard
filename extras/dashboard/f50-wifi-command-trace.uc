@@ -34,6 +34,18 @@ if(helperStart>resetStart){
  resetStart=index(result,'function reset_config(');
  result=substr(result,0,resetStart)+helper+substr(result,resetStart);
 }
+// This vendor driver has no antenna/txpower setter, and maps distance changes
+// to CMD_SET_PARAM even while powered off. Leave its unchanged defaults alone;
+// explicit settings and every other driver still execute and report errors.
+if(index(result,'let f50_vendor_defaults =')<0){
+ let commands='\tf50_phy_command(`iw phy ${phy} set antenna ${config.txantenna} ${config.rxantenna}`);\n\tf50_phy_command(`iw phy ${phy} set distance ${config.distance}`);\n\tf50_phy_command(`iw phy ${phy} set txpower ${config.txpower}`);';
+ if(index(result,commands)<0 || index(result,"import * as fs from 'fs';")<0)die('Unknown default PHY command layout');
+ let guarded='\tlet f50_vendor_defaults = match(fs.readlink(`/sys/class/ieee80211/${phy}/device/driver/module`) || "", /\\/sprd_wlan_combo$/) != null;\n'+
+  '\tif (!f50_vendor_defaults || config.txantenna != 0xffffffff || config.rxantenna != 0xffffffff)\n\t\tf50_phy_command(`iw phy ${phy} set antenna ${config.txantenna} ${config.rxantenna}`);\n'+
+  '\tif (!f50_vendor_defaults || (config.distance ?? 0) != 0)\n\t\tf50_phy_command(`iw phy ${phy} set distance ${config.distance}`);\n'+
+  '\tif (!f50_vendor_defaults || config.txpower != "auto")\n\t\tf50_phy_command(`iw phy ${phy} set txpower ${config.txpower}`);';
+ result=replace(result,commands,guarded);
+}
 if(fs.writefile(path,result)!=length(result))die('Write failed');
 fs.chmod(path,0755);
-print('PHY command errors now identify the command\n');
+print('PHY command errors traced; unchanged vendor defaults do not issue unsupported commands\n');
