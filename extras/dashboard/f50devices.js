@@ -8,20 +8,24 @@ var rename=rpc.declare({object:'f50devices',method:'rename',params:['mac','name'
 function size(n,rate){return rate?Units.fmtRate(n):Units.fmtBytes(n,2,true);}
 function todayDownloadRank(d){return d.today_rx!=null&&Number.isFinite(+d.today_rx)&&+d.today_rx>=0?+d.today_rx:-1;}
 return baseclass.extend({mount:function(root){
- var section=E('section',{class:'mud-sec f50-devices'},[E('h3',{},'设备流量统计')]);
- var panels=E('div',{class:'f50-device-panels'});section.appendChild(panels);
+ var toggle=E('button',{type:'button',class:'f50-device-toggle','aria-expanded':'true','aria-controls':'f50-device-content'},'设备流量统计');
+ var content=E('div',{id:'f50-device-content'}),section=E('section',{class:'mud-sec f50-devices'},[E('h3',{},[toggle]),content]);
+ var panels=E('div',{class:'f50-device-panels'});content.appendChild(panels);
+ toggle.onclick=function(){content.hidden=!content.hidden;toggle.setAttribute('aria-expanded',String(!content.hidden));};
  var anchor=root.querySelector('.mud-body > .mud-sec');anchor.insertAdjacentElement('afterend',section);
  section.appendChild(E('style',{},`
  .container:has(.f50-home){max-width:1800px!important}
  .f50-home{max-width:1800px!important;width:100%;box-sizing:border-box}
  .f50-devices{min-width:0;--f50-device-total:#8970b3}
- .f50-device-panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,680px),1fr));gap:14px}
+ .f50-device-panels{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+ .f50-device-toggle{border:0!important;background:transparent!important;color:inherit!important;font:inherit;padding:0!important;text-align:left;cursor:pointer}
+ .f50-device-offline-group{margin-top:10px}.f50-device-offline-group>summary{cursor:pointer;font-size:.8rem;font-weight:600;margin-bottom:8px}
  .f50-device-panel{--f50-device-accent:color-mix(in srgb,var(--f50-dl,#249ad1) 65%,var(--f50-ul,#159b85));min-width:0;border:1px solid var(--hairline,var(--border,#e3e6ea));border-top:2px solid var(--f50-device-accent);border-radius:var(--radius-base,.5rem);overflow:hidden;background:var(--surface,var(--background-alt,var(--background,#fff)));color:var(--text,#222)}
  .f50-device-panel.wifi5{--f50-device-accent:var(--f50-dl,#249ad1)}
  .f50-device-panel.wired{--f50-device-accent:var(--f50-ul,#159b85)}
  .modal.f50-device-name-modal{box-sizing:border-box;width:min(320px,calc(100vw - 40px))!important;min-width:0!important;max-width:calc(100vw - 40px)!important}
  .modal.f50-device-name-modal p{overflow-wrap:anywhere}
- .f50-device-scroll{max-height:390px;overflow:auto;overflow-anchor:none;scrollbar-gutter:stable}
+ .f50-device-scroll{max-height:none;overflow:auto;overflow-anchor:none;scrollbar-gutter:stable}
  .f50-devices table{table-layout:fixed;border-collapse:separate;border-spacing:0;width:100%;min-width:620px;font-size:12px;margin:0}
  .f50-devices th,.f50-devices td{box-sizing:border-box;height:54px;padding:8px 10px;white-space:nowrap;text-align:center;vertical-align:middle;line-height:1.4;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--hairline,var(--border,#e3e6ea))}
  .f50-devices th:first-child,.f50-devices td:first-child{text-align:left;width:26%}
@@ -73,10 +77,14 @@ return baseclass.extend({mount:function(root){
   .f50-device-name{font-size:10px;line-height:1.25;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
  }
  `));
- var cards={},rows={},dead=false,timer,busy=false,lastTimestamp=null,lastAdvance=0;
- function card(kind){if(cards[kind])return cards[kind];var title={wifi24:'无线连接设备 · 2.4 GHz',wifi5:'无线连接设备 · 5 GHz',wired:'USB / 有线设备',unknown:'待识别接口 · 保留历史设备'}[kind];
-  var body=E('tbody'),el=E('article',{class:'f50-device-panel '+kind,'aria-label':title},[E('div',{class:'f50-device-scroll'},[E('table',{},[E('thead',{},[E('tr',{},['设备名称','实时速率','今日流量','本月累计','总累计'].map(function(t){return E('th',{},[E('span',{},t.length===3?t.slice(0,1):t.slice(0,2)),E('span',{},t.length===3?t.slice(1):t.slice(2))]);}))]),body])])]);
-  panels.appendChild(el);cards[kind]={el:el,body:body};return cards[kind];}
+ var rows={},dead=false,timer,busy=false,lastTimestamp=null,lastAdvance=0;
+ function table(title){
+  var body=E('tbody'),el=E('article',{class:'f50-device-panel','aria-label':title},[E('div',{class:'f50-device-scroll'},[E('table',{},[E('thead',{},[E('tr',{},['设备名称','实时速率','今日流量','本月累计','总累计'].map(function(t){return E('th',{},[E('span',{},t.length===3?t.slice(0,1):t.slice(0,2)),E('span',{},t.length===3?t.slice(1):t.slice(2))]);}))]),body])])]);
+  return {el:el,body:body};
+ }
+ var online=table('在线设备'),offline=table('离线设备'),offlineLabel=E('summary',{},'离线设备');
+ var offlineGroup=E('details',{class:'f50-device-offline-group',hidden:true},[offlineLabel,offline.el]);
+ panels.appendChild(online.el);content.appendChild(offlineGroup);
  function edit(d){var input=E('input',{type:'text',value:d.name,style:'width:100%;min-width:0;box-sizing:border-box',maxlength:96});
   ui.showModal('设备名称',[E('p',{},d.mac+' · '+d.ip),input,E('p',{},'留空恢复主机名；名称按 MAC 保存。'),E('div',{class:'right'},[
    E('button',{class:'btn',click:ui.hideModal},'取消'),E('button',{class:'btn cbi-button-positive',click:function(){rename(d.mac,input.value).then(function(r){if(!r.ok)throw Error(r.error||'保存失败');ui.hideModal();}).catch(function(e){ui.addNotification(null,E('p',{},e.message));});}},'保存')])],'f50-device-name-modal');input.focus();}
@@ -87,21 +95,23 @@ return baseclass.extend({mount:function(root){
   if(data.timestamp&&data.timestamp!==lastTimestamp){lastTimestamp=data.timestamp;lastAdvance=received;}
   var stale=data.stale||!data.timestamp||received-lastAdvance>4000;
   if(stale)Object.keys(rows).forEach(function(mac){rows[mac].rates.forEach(function(el){el.textContent='—';});});
-  var positions={},scrolls=Object.keys(cards).map(function(k){var el=cards[k].el.querySelector('.f50-device-scroll');return {el:el,top:el.scrollTop,left:el.scrollLeft};});
+  var positions={},scrolls=[online,offline].map(function(c){var el=c.el.querySelector('.f50-device-scroll');return {el:el,top:el.scrollTop,left:el.scrollLeft};});
   var present={};(data.devices||[]).slice().sort(function(a,b){return todayDownloadRank(b)-todayDownloadRank(a)||a.mac.localeCompare(b.mac);}).forEach(function(d){
-   if(present[d.mac])return;present[d.mac]=true;var kind=/^(wifi24|wifi5|wired)$/.test(d.connection)?d.connection:'unknown';var c=card(kind),r=rows[d.mac];
+   if(present[d.mac])return;present[d.mac]=true;var kind=d.online?'online':'offline',c=d.online?online:offline,r=rows[d.mac];
    if(!r){var button=E('button',{class:'f50-device-name',type:'button'}),rates=[E('span',{class:'f50-device-dl','aria-label':'下载'}),E('span',{class:'f50-device-ul','aria-label':'上传'})],daily=[E('span',{class:'f50-device-dl','aria-label':'下载'}),E('span',{class:'f50-device-ul','aria-label':'上传'})];
     var cells=[E('td',{},[button]),E('td',{class:'f50-device-pair'},rates),E('td',{class:'f50-device-pair'},daily),E('td'),E('td')];
     r=rows[d.mac]={el:E('tr',{},cells),cells:cells,button:button,rates:rates,daily:daily};}
    var index=positions[kind]||0;
    if(c.body.children[index]!==r.el)c.body.insertBefore(r.el,c.body.children[index]||null);
    positions[kind]=index+1;
-   r.el.className=d.online?'':'f50-device-offline';r.button.textContent=d.name;
+   r.el.className=d.online?'':'f50-device-offline';r.el.setAttribute('data-connection',d.connection||'unknown');r.button.textContent=d.name;
    r.button.title=d.name+'\nIP: '+(d.ip||'—')+'\nMAC: '+d.mac+'\n接口: '+(d.interface||'—');r.button.onclick=function(){edit(d);};
    var targets=r.rates.concat(r.daily,[r.cells[3],r.cells[4]]);
    [size(stale?null:d.rx_rate,true),size(stale?null:d.tx_rate,true),size(d.today_rx),size(d.today_tx),size(d.month_total),size(d.total)].forEach(function(v,i){if(targets[i].textContent!==v)targets[i].textContent=v;});
   });
-  Object.keys(cards).forEach(function(k){cards[k].el.hidden=!cards[k].body.children.length;});
+  if(Array.isArray(data.devices))Object.keys(rows).forEach(function(mac){if(!present[mac]){rows[mac].el.remove();delete rows[mac];}});
+  online.el.hidden=!online.body.children.length;
+  offlineGroup.hidden=!offline.body.children.length;offlineLabel.textContent='离线设备 · '+offline.body.children.length;
   scrolls.forEach(function(s){s.el.scrollTop=s.top;s.el.scrollLeft=s.left;});
  }
  function refresh(){if(dead||!document.documentElement.contains(root))return;var start=Date.now();busy=true;

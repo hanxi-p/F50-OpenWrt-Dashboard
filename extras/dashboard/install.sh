@@ -57,6 +57,7 @@ cat > "$backup/paths" <<'PATHS'
 /usr/libexec/f50-devices/flow-account
 /usr/libexec/f50-devices/ledger.uc
 /usr/libexec/f50-devices/collector.uc
+/usr/libexec/f50-devices/peers.uc
 /usr/libexec/f50-devices/rpc.uc
 /etc/init.d/f50-devices
 /usr/libexec/rpcd/f50devices
@@ -186,6 +187,7 @@ f50livechart.js /www/luci-static/resources/f50livechart.js
 f50devices.js /www/luci-static/resources/f50devices.js
 device-traffic/flow-account /usr/libexec/f50-devices/flow-account
 device-traffic/ledger.uc /usr/libexec/f50-devices/ledger.uc
+device-traffic/peers.uc /usr/libexec/f50-devices/peers.uc
 device-traffic/collector.uc /usr/libexec/f50-devices/collector.uc
 device-traffic/rpc.uc /usr/libexec/f50-devices/rpc.uc
 device-traffic/service /etc/init.d/f50-devices

@@ -623,7 +623,8 @@
         "extras/dashboard/device-traffic/collector.uc",
         "extras/dashboard/device-traffic/ledger.uc",
         "extras/dashboard/device-traffic/rpc.uc",
-        "extras/dashboard/device-traffic/build.sh"
+        "extras/dashboard/device-traffic/build.sh",
+        "extras/dashboard/device-traffic/peers.uc"
       ],
       "requires": [
         "dashboard-base"

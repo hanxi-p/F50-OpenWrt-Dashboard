@@ -2,6 +2,7 @@
 import * as fs from 'fs';
 import * as loop from 'uloop';
 import {readjson,atomic,calculate} from './ledger.uc';
+import {usbPeers} from './peers.uc';
 const R='/tmp/f50-devices', P='/etc/f50-devices';
 fs.mkdir(R,0700);fs.mkdir(P,0700);
 function cmd(s){let f=fs.popen(s,'r');if(!f)return '';let v=f.read('all');f.close();return v??'';}
@@ -22,13 +23,8 @@ function peers(){
   let stations=cmd('iw '+iface+' station dump');
   for(let s in split(stations,'\n')){let n=match(s,/^Station ([0-9a-fA-F:]{17})/);if(n){let mac=lc(n[1]);p[mac]??={};p[mac].connection=group;p[mac].interface=iface;p[mac].online=true;}}
  }
- // Current Wi-Fi wins over bridge entries; absent peers retain their last interface.
- for(let line in split(cmd('bridge fdb show br br-lan'),'\n')){
-  let m=match(line,/^([0-9a-fA-F:]{17}) dev (\S+).*master/);
-  if(!m||m[2]!='usb0'||index(line,'permanent')>=0)continue;
-  let mac=lc(m[1]);if(!p[mac]?.online){p[mac]??={};p[mac].connection='wired';p[mac].interface=m[2];}
- }
- return p;
+ // Current Wi-Fi association takes precedence over USB bridge history.
+ return usbPeers(p,cmd('bridge fdb show br br-lan'),cmd('ip -4 neigh show dev br-lan'),trim(fs.readfile('/sys/class/net/usb0/carrier')??'')=='1');
 }
 loop.init();let busy=false, timer;
 function tick(){
