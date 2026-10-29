@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin:/opt/mu300/busybox-bin
+umask 077
+exec 9>/run/f50-sticky-recovery.lock
+flock -n 9 || exit 0
+tmp=$(mktemp -d /run/f50-sticky.XXXXXX)
+child=''
+cleanup(){ trap '' TERM INT; [ -z "$child" ] || { kill -TERM "$child" 2>/dev/null || true; wait "$child" 2>/dev/null || true; };rm -rf "$tmp"; }
+trap cleanup EXIT
+trap 'exit 143' TERM INT
+source=$(uci -q get openclash.config.config_path)
+runtime="/etc/openclash/${source##*/}"
+ruby -ryaml -e 'c=YAML.load_file(ARGV[0]); puts "header = "+"Authorization: Bearer #{c["secret"]}".inspect' "$runtime" > "$tmp/api.conf"
+chmod 600 "$tmp/api.conf"
+/usr/bin/ucode /usr/libexec/f50-sticky-recovery.uc "$tmp/api.conf" &
+child=$!
+wait "$child"

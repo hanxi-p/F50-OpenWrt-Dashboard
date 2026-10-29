@@ -13,4 +13,15 @@ function parseSMS(raw) {
  return {title:'F50 新短信',body:'发送号码：'+from+'\n短信原文：'+body};
 }
 
-export {advance,parseSMS};
+function notifyAllowed(id){return type(id)=='string' && !match(id,/^(wan|dns)-/);}
+function routeAdvance(previous,snapshot){
+ if(type(snapshot)!='object'||snapshot.version!=1||type(snapshot.node)!='string'||!length(snapshot.node)||length(snapshot.node)>512||!match(snapshot.boot??'',/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/))return null;
+ if(previous!=null && (type(previous)!='object'||type(previous.node)!='string'||type(previous.seq)!='int'||previous.seq<0||previous.seq>=2147483647))return null;
+ let next={boot:snapshot.boot,node:snapshot.node,seq:previous?.seq??0};
+ if(!previous||previous.boot!=snapshot.boot){next.seq=0;return {next:next,event:null,changed:true};}
+ if(previous.node==snapshot.node)return {next:previous,event:null,changed:false};
+ next.seq++;
+ let labels={DIRECT:'直连',REJECT:'拒绝连接'},id='route-'+snapshot.boot+'-'+next.seq;
+ return {next:next,changed:true,event:{id:id,title:'F50 节点已切换',body:'原节点：'+(labels[previous.node]??previous.node)+'\n当前节点：'+(labels[snapshot.node]??snapshot.node)}};
+}
+export {advance,parseSMS,notifyAllowed,routeAdvance};

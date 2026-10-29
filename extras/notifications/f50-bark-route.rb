@@ -1,6 +1,9 @@
 require 'yaml'
 path=ARGV.fetch(0)
-abort 'unexpected configuration path' unless path.start_with?('/etc/openclash/')
+path=File.realpath(path)
+st=File.lstat(path)
+allowed=path.start_with?('/etc/openclash/') || (path.start_with?('/tmp/') && path.match?(/\.ya?ml\z/))
+abort 'unexpected configuration path' unless allowed && st.file? && st.uid==0 && (st.mode & 0022)==0
 text=File.read(path);c=YAML.load(text)
 proxy_names=Array(c['proxies']).select{|v|v['type'] && !%w[direct reject reject-drop pass].include?(v['type'].downcase)}.map{|v|v['name']}
 preferred=YAML.load_file('/etc/mu300/bark/preferred-nodes.json') rescue []
@@ -16,4 +19,10 @@ check=Marshal.load(Marshal.dump(c));old=Marshal.load(Marshal.dump(before))
 [check,old].each{|v|v['proxy-groups']=Array(v['proxy-groups']).reject{|g|g['name']=='F50 Bark'};v['rules']=Array(v['rules']).reject{|r|r=='DOMAIN,api.day.app,F50 Bark'}}
 abort 'unrelated settings changed' unless check==old
 out=YAML.dump(c);abort 'roundtrip failed' unless YAML.load(out)==c
-File.write(path+'.bark-tmp',out);File.chmod(0600,path+'.bark-tmp');File.rename(path+'.bark-tmp',path)
+tmp=path+".bark-#{Process.pid}-#{rand(1<<30)}"
+begin
+ File.open(tmp,File::WRONLY|File::CREAT|File::EXCL,0600){|f|f.write(out);f.flush;f.fsync}
+ File.rename(tmp,path)
+ensure
+ File.unlink(tmp) if File.exist?(tmp)
+end
