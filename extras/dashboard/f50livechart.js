@@ -61,7 +61,7 @@ return baseclass.extend({prepare:prepare,curve:curve,texture:texture,mount:funct
   });
   svg.setAttribute('data-scale',scale);svg.setAttribute('data-zero',zero);svg.setAttribute('data-window-ms',WINDOW_MS);svg.setAttribute('data-render-delay-ms',DELAY_MS);
   var grid='',axis='';
-  function mark(v,up){var y=zero+(up?-1:1)*v*scale;grid+='<line x1="0" x2="900" y1="'+y+'" y2="'+y+'" stroke="#557786" opacity=".12"/>';axis+='<span class="'+(v?(up?'f50-axis-dl':'f50-axis-ul'):'')+'" style="top:'+(y/2)+'%">'+Number((v/divisor).toPrecision(2))+'</span>';}
+  function mark(v,up){var y=zero+(up?-1:1)*v*scale;grid+='<line x1="0" x2="900" y1="'+y+'" y2="'+y+'" stroke="#557786" opacity=".12"/>';axis+='<span class="'+(v?(up?'f50-axis-dl':'f50-axis-ul'):'')+'" style="top:'+(y/2)+'%">'+(v/divisor).toFixed(unit==='B/s'?0:2)+'</span>';}
   for(var t=dlLimit;t>step/2;t-=step)mark(t,true);mark(0,true);for(var t=step;t<=ulLimit+step/2;t+=step)mark(t,false);
   el.querySelector('.f50-live-grid').innerHTML=grid;el.querySelector('.f50-rate-value-axis').innerHTML=axis;el.querySelector('.f50-rate-axis-unit').textContent=unit;
   var line=el.querySelector('.f50-live-zero');line.setAttribute('y1',zero);line.setAttribute('y2',zero);

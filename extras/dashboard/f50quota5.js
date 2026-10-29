@@ -6,7 +6,7 @@
 var status = rpc.declare({object:'f50quota',method:'status',nobatch:true});
 var configure = rpc.declare({object:'f50quota',method:'configure',params:['quota_gb','used_gb','calibrate']});
 var GB = 1000000000;
-function amount(v) { return Units.fmtBytes(Number(v || 0),3,true); }
+function amount(v) { return Units.fmtBytes(Number(v || 0),2,true); }
 function key(d) { return d.year+'-'+String(d.month).padStart(2,'0'); }
 function dayKey(d) { return key(d)+'-'+String(d.day).padStart(2,'0'); }
 function bytes(v) { return Number(v.rx || 0)+Number(v.tx || 0); }
@@ -20,7 +20,7 @@ function grouped(rows, hour) {
  });
  return Object.keys(map).map(function(k){return map[k];});
 }
-function compact(v) { return Units.fmtBytes(v); }
+function compact(v) { return Units.fmtBytes(v,2,true); }
 function dailySeries(data,count) {
  var rows=grouped(traffic(data.daily_json).traffic.day),map={};
  rows.forEach(function(r){map[dayKey(r.date)]=r;});
@@ -65,7 +65,7 @@ return baseclass.extend({
    var quota=Number(data.quota_gb)*GB,percent=quota>0?used/quota*100:0;
    q('month').textContent=data.month;
    q('used').textContent=amount(used);
-   section.querySelector('.f50-quota-meter').title=quota>0?'本月总流量 '+Number(data.quota_gb)+' G':'本月总流量尚未设置';
+   section.querySelector('.f50-quota-meter').title=quota>0?'本月总流量 '+Number(data.quota_gb).toFixed(2)+' G':'本月总流量尚未设置';
    q('remaining').textContent=quota>0?(used>quota?'超出 '+amount(used-quota):amount(quota-used)):'—';
    q('percent').textContent=quota>0?percent.toFixed(2)+'%':'请设置额度';
    q('fill').style.width=Math.min(100,percent)+'%';
@@ -74,9 +74,9 @@ return baseclass.extend({
    var rx=root.querySelector('#mud-rx'),tx=root.querySelector('#mud-tx');
    var hours=grouped(traffic(data.hourly_json).traffic.hour,true),h=hours.find(function(r){return dayKey(r.date)===data.today&&Number(r.time.hour)===Number(data.hour);});
    var today=grouped(traffic(data.daily_json).traffic.day).find(function(r){return dayKey(r.date)===data.today;});
-   if(rx){rx.textContent=h?compact(bytes(h)):'0 B';rx.title=data.today+' '+String(data.hour).padStart(2,'0')+':00–'+String(Number(data.hour)+1).padStart(2,'0')+':00（北京时间，接收+发送）';}
-   if(tx){var suspect=today&&data.suspect_before&&data.today<=data.suspect_before;tx.textContent=suspect?'—':today?compact(bytes(today)):'0 B';tx.title=suspect?'今日原始统计含历史异常跳增，不能推算真实用量。原始值 '+amount(bytes(today)):'今日 0 点至现在';}
-   q('used').title=used.toLocaleString('zh-CN')+' 字节'+(adjustment?'（含手动校准）':'');
+   if(rx){rx.textContent=h?compact(bytes(h)):compact(0);rx.title=data.today+' '+String(data.hour).padStart(2,'0')+':00–'+String(Number(data.hour)+1).padStart(2,'0')+':00（北京时间，接收+发送）';}
+   if(tx){var suspect=today&&data.suspect_before&&data.today<=data.suspect_before;tx.textContent=suspect?'—':today?compact(bytes(today)):compact(0);tx.title=suspect?'今日原始统计含历史异常跳增，不能推算真实用量。原始值 '+amount(bytes(today)):'今日 0 点至现在';}
+   q('used').title=used.toLocaleString('zh-CN',{maximumFractionDigits:0})+' 字节'+(adjustment?'（含手动校准）':'');
   }
   function refresh(){return status().then(function(d){if(!disposed)render(d);}).catch(function(e){if(!disposed)ui.addNotification(null,E('p',{},'流量读取失败：'+e.message));});}
   q('daily-open').onclick=function(){
@@ -88,7 +88,7 @@ return baseclass.extend({
    var points=series.map(function(d,i){return {x:25+i*step,y:base-(d.bytes || 0)/max*(base-top),d:d};});
    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+width+' '+height+'" style="display:block;width:'+width+'px;height:220px" role="img" aria-label="最近30天每日用量柱状图">';
    [35,105,175].forEach(function(y){svg+='<line x1="25" x2="'+(width-25)+'" y1="'+y+'" y2="'+y+'" stroke="#e6eef2"/>';});
-   points.forEach(function(p,i){var value=p.d.bytes===null?'—':p.d.bytes>=GB?(p.d.bytes/GB).toFixed(1)+'G':p.d.bytes>=1000000?(p.d.bytes/1000000).toFixed(0)+'M':compact(p.d.bytes),label=p.d.date+' · '+(p.d.bytes===null?'未记录':compact(p.d.bytes))+(p.d.suspect?'（原始记录异常）':'');
+   points.forEach(function(p,i){var value=p.d.bytes===null?'—':compact(p.d.bytes),label=p.d.date+' · '+(p.d.bytes===null?'未记录':compact(p.d.bytes))+(p.d.suspect?'（原始记录异常）':'');
     if(p.d.bytes!==null)svg+='<rect data-daily-bar="'+p.d.date+'" x="'+(p.x-13)+'" y="'+p.y+'" width="26" height="'+(base-p.y)+'" rx="3" fill="'+(p.d.suspect?'#c58d34':'#43b3d5')+'"><title>'+label+'</title></rect>';
     var y=Math.max(16,p.y-10);
     svg+='<text x="'+p.x+'" y="'+y+'" text-anchor="middle" font-size="11" fill="'+(p.d.suspect?'#a47329':'#278eaa')+'">'+value+'</text><text x="'+p.x+'" y="208" text-anchor="middle" font-size="10" fill="#74858c">'+p.d.date.slice(5)+'</text>';

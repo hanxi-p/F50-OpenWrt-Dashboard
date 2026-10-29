@@ -14,6 +14,6 @@ function format(n, rate, places, fixed) {
 }
 return baseclass.extend({
  fmtBytes:function(n,places,fixed){return format(n,false,places,fixed);},
- fmtRate:function(n){return format(n,true);},
+ fmtRate:function(n){return format(n,true,+n<K?0:2,true);},
  rateScale:function(n){var s=scale(n,true);return {divisor:s.divisor,unit:s.unit+'/s'};}
 });

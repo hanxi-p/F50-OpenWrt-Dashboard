@@ -773,7 +773,7 @@ return view.extend({
 			}
 		}
 		if (net) {
-			M.set('session-rx', Units.fmtBytes(net.rx)); M.set('session-tx', Units.fmtBytes(net.tx));
+			M.set('session-rx', Units.fmtBytes(net.rx,2,true)); M.set('session-tx', Units.fmtBytes(net.tx,2,true));
 			this.lastNet = { ts: i.ts, rx: net.rx, tx: net.tx };
 		}
 		var w = i.wan || {};

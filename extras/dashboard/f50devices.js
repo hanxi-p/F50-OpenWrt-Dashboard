@@ -5,7 +5,7 @@
 'require f50units as Units';
 var status=rpc.declare({object:'f50devices',method:'status',expect:{'':{}}});
 var rename=rpc.declare({object:'f50devices',method:'rename',params:['mac','name'],expect:{'':{}}});
-function size(n,rate){return rate?Units.fmtRate(n):Units.fmtBytes(n);}
+function size(n,rate){return rate?Units.fmtRate(n):Units.fmtBytes(n,2,true);}
 function todayDownloadRank(d){return d.today_rx!=null&&Number.isFinite(+d.today_rx)&&+d.today_rx>=0?+d.today_rx:-1;}
 return baseclass.extend({mount:function(root){
  var section=E('section',{class:'mud-sec f50-devices'},[E('h3',{},'设备流量统计')]);

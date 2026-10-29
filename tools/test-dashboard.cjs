@@ -26,7 +26,7 @@ async function scenario(){
  for(let i=0;i<3;i++){
   opener.onclick();assert.equal(usage.hidden,false);assert.equal(opener.getAttribute('aria-expanded'),'true');
   for(let n=0;n<4;n++)assert.equal(document.getElementById(cardIds[n]),cards[n],'toggling must preserve live counter nodes');
-  assert.equal(cards[0].textContent,'10 MB');assert.equal(cards[1].textContent,'2 MB');assert.equal(cards[2].textContent,'0.003M');assert.equal(cards[3].textContent,'0.03M');
+  assert.equal(cards[0].textContent,'10 MB');assert.equal(cards[1].textContent,'2 MB');assert.equal(cards[2].textContent,'0.00M');assert.equal(cards[3].textContent,'0.03M');
   const refresh=pending.shift();refresh();await flush();assert.equal(usage.hidden,false,'data refresh must not close the expanded panel');
   root.querySelector('[data-q=daily-open]').onclick();assert.equal(usage.hidden,false,'monthly consumed history is independent');
   opener.onclick();assert.equal(usage.hidden,true);
