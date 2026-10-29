@@ -4,7 +4,7 @@ umask 077
 . /usr/share/libubox/jshn.sh
 fail(){ json_init; json_add_string error "$1"; json_dump; }
 case "$1:$2" in
-list:) echo '{"prepare":{},"ping":{"target":"String"}}';;
+list:) echo '{"prepare":{},"finish":{"token":"String"},"ping":{"target":"String"}}';;
 call:prepare)
  mkdir -p /tmp/f50-nettest; chmod 700 /tmp/f50-nettest
  exec 9>/tmp/f50-nettest/lock
@@ -12,13 +12,25 @@ call:prepare)
  now=$(cut -d. -f1 /proc/uptime)
  last=$(cat /tmp/f50-nettest/started 2>/dev/null)
  case "$last" in ''|*[!0-9]*) last=0;; esac
- [ "$((now-last))" -ge 15 ] || { fail '请稍后再试，两次测速至少间隔15秒'; exit; }
+ if [ -s /tmp/f50-nettest/token ] && [ "$now" -ge "$last" ] && [ "$((now-last))" -le 30 ]; then
+  fail '已有测速正在进行'; exit
+ fi
  token=$(hexdump -v -n 24 -e '1/1 "%02x"' /dev/urandom)
  [ "${#token}" = 48 ] || { fail '无法创建测速凭据'; exit; }
  printf '%s\n' "$token" > /tmp/f50-nettest/token
  echo "$now" > /tmp/f50-nettest/started
  echo 0 > /tmp/f50-nettest/count
  json_init; json_add_string token "$token"; json_add_int chunk 8388608; json_dump;;
+call:finish)
+ json_load "$(cat)" || { fail '无效请求'; exit; }; json_get_var token token
+ case "$token" in ''|*[!0-9a-f]*) fail '无效测速凭据'; exit;; esac
+ [ "${#token}" = 48 ] || { fail '无效测速凭据'; exit; }
+ [ -d /tmp/f50-nettest ] || { fail '测速已失效'; exit; }
+ exec 9>/tmp/f50-nettest/lock
+ flock -n 9 || { fail '测速正在结束'; exit; }
+ [ "$token" = "$(cat /tmp/f50-nettest/token 2>/dev/null)" ] || { fail '测速已失效'; exit; }
+ rm -f /tmp/f50-nettest/token
+ json_init; json_add_boolean ok 1; json_dump;;
 call:ping)
  exec 9>/tmp/f50-ping-test.lock
  flock -n 9 || { fail '连通检测正在进行'; exit; }

@@ -37,9 +37,9 @@ async function scenario(){
  const NetTest=new (load('f50nettest.js',common))();const disposeNetTest=NetTest.mount(root);
  const primary=root.querySelector('.f50-primary-controls');
  assert.deepEqual(Array.from(primary.children).slice(0,3).map(n=>n.id),['mud-btn-data','mud-btn-power','mud-btn-openclash']);
- assert.equal(primary.children[3].id,'mud-btn-adguard');assert.equal(primary.children[5].id,'mud-btn-other');
- assert.deepEqual(Array.from(primary.children).slice(6).map(n=>n.textContent),['内网测速','国内测速','国外测速']);
- assert.equal(root.querySelector('#f50-other-controls').contains(primary.children[6]),false);
+ assert.equal(primary.children[6].id,'mud-btn-adguard');assert.equal(primary.children[8].id,'mud-btn-other');
+ assert.deepEqual(Array.from(primary.children).slice(3,6).map(n=>n.textContent),['内网速度','国内延迟','国外延迟']);
+ assert.equal(root.querySelector('#f50-other-controls').contains(primary.children[3]),false);
  disposeNetTest();
 
  assert.equal(root.querySelectorAll('.f50-load-section > .mud-kpis > .mud-kpi').length,3);

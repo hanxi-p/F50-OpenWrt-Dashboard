@@ -677,7 +677,7 @@
       "id": "network-test",
       "category": "诊断管理",
       "name": "内网测速与国内／国外连通检测",
-      "summary": "更多设置所在行的下一排测试内网双向吞吐、百度与谷歌ping，按钮内显示结果。",
+      "summary": "第二排测试内网吞吐、百度与谷歌ping，标题和小字结果三行显示，可点击复位重测。",
       "delivery": "dashboard",
       "document": "docs/features/network-test.md",
       "files": [
