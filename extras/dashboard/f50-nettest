@@ -36,6 +36,40 @@ call:ping)
  flock -n 9 || { fail '连通检测正在进行'; exit; }
  json_load "$(cat)" || { fail '无效请求'; exit; }; json_get_var target target
  case "$target" in domestic) host=www.baidu.com;; foreign) host=www.google.com;; *) fail '无效目标'; exit;; esac
+ if [ "$target" = foreign ]; then
+  temp=$(mktemp -d /tmp/f50-nettest-https.XXXXXX) || { fail '无法连接'; exit; }
+  trap 'rm -f "$temp/proxy.conf"; rmdir "$temp"' EXIT
+  core=$(pidof clash); core=${core%% *}
+  if [ -n "$core" ]; then
+   ruby -ryaml - "$core" > "$temp/proxy.conf" 2>/dev/null <<'RUBY'
+pid = ARGV[0]
+raise 'invalid PID' unless pid.match?(/\A[0-9]+\z/)
+args = File.binread("/proc/#{pid}/cmdline").split("\0")
+i = args.index('-f'); path = i && args[i + 1]
+raise 'invalid active config' unless path && path.start_with?('/etc/openclash/')
+c = YAML.load_file(path)
+port = c['mixed-port'] || c['port']
+raise 'invalid proxy port' unless port.is_a?(Integer) && port.between?(1, 65535)
+puts 'proxy = ' + "http://127.0.0.1:#{port}".inspect
+credentials = Array(c['authentication']).first
+if credentials
+ raise 'invalid proxy credentials' unless credentials.is_a?(String) && !credentials.match?(/[\r\n\0]/)
+ puts 'proxy-user = ' + credentials.inspect
+end
+RUBY
+   [ "$?" = 0 ] || { fail '无法连接'; exit; }
+  else
+   printf 'proxy = ""\n' > "$temp/proxy.conf"
+  fi
+  result=$(/usr/libexec/f50-bounded 10 curl --config "$temp/proxy.conf" --noproxy '' -sS -o /dev/null --connect-timeout 3 --max-time 8 -w '%{http_code} %{time_total}' https://www.google.com/generate_204 2>/dev/null)
+  status=$?
+  code=${result%% *}; seconds=${result#* }
+  ok=0
+  if [ "$status" = 0 ]; then case "$code" in 2[0-9][0-9]) ok=1;; esac; fi
+  ms=$(awk -v seconds="$seconds" 'BEGIN{if(seconds ~ /^[0-9]+([.][0-9]+)?$/) printf "%.2f",seconds*1000;else print -1}')
+  json_init; json_add_object google.com; json_add_boolean https_ok "$ok"; json_add_double https_ms "$ms"; json_close_object; json_dump
+  exit
+ fi
  json_init
  for host in "$host"; do
   result=$(/usr/libexec/f50-bounded 8 ping -4 -c 3 -W 2 -w 6 "$host" 2>&1)

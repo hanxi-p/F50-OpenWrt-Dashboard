@@ -13,10 +13,10 @@ return baseclass.extend({mount:function(root){
  var primary=root.querySelector('.f50-primary-controls');
  // Keep three tests between the first and third control rows.
  [lan,domestic,foreign].forEach(function(button){primary.insertBefore(button,root.querySelector('#mud-btn-adguard'));});
- var css=E('style',{},'.f50-home .f50-primary-controls>.f50-test-btn{background:#008cba!important;border-color:#008cba!important;color:#fff!important;opacity:1!important;padding:3px 4px!important;line-height:1!important;gap:0!important;flex-direction:column;white-space:normal;overflow-wrap:anywhere}.f50-home .f50-primary-controls>.f50-test-btn[data-running=true]{background:#238b45!important;border-color:#238b45!important;color:#fff!important}.f50-home .f50-test-result{display:block;font-size:.72em;line-height:1.1}');root.appendChild(css);
+ var css=E('style',{},'.f50-home .f50-primary-controls>.f50-test-btn{background:#008cba!important;border-color:#008cba!important;color:#fff!important;opacity:1!important;padding:3px 4px!important;line-height:1.1!important;gap:0!important;flex-direction:column;white-space:normal;overflow-wrap:anywhere}.f50-home .f50-primary-controls>.f50-test-btn[data-running=true]{background:#238b45!important;border-color:#238b45!important;color:#fff!important}.f50-home .f50-primary-controls>.f50-test-btn[data-results=true]{font-size:.65rem!important}.f50-home .f50-test-btn>span{display:block;font-size:inherit!important;line-height:inherit}.f50-home .f50-test-result{font-size:inherit!important}@media(max-width:600px){.f50-home .f50-primary-controls>.f50-test-btn[data-results=true]{font-size:.62rem!important}}');root.appendChild(css);
  function state(button,on){busy=on;[lan,domestic,foreign].forEach(function(b){b.disabled=on;});button.setAttribute('data-running',String(on));}
  var rates={download:null,upload:null},completed=new Map([[lan,false],[domestic,false],[foreign,false]]);
- function show(button,title,a,b){button.replaceChildren(E('span',{},title));if(a!=null)button.appendChild(E('span',{class:'f50-test-result'},a));if(b!=null)button.appendChild(E('span',{class:'f50-test-result'},b));}
+ function show(button,title,a,b){button.setAttribute('data-results',String(a!=null||b!=null));button.replaceChildren(E('span',{},title));if(a!=null)button.appendChild(E('span',{class:'f50-test-result'},a));if(b!=null)button.appendChild(E('span',{class:'f50-test-result'},b));}
  function reset(button,title){if(!completed.get(button))return false;completed.set(button,false);show(button,title);return true;}
  function showRates(){show(lan,'内网速度','上传 '+(rates.upload==null?'—':Units.fmtRate(rates.upload)),'下载 '+(rates.download==null?'—':Units.fmtRate(rates.download)));}
  function bounded(promise,ms){return new Promise(function(resolve,reject){var timer=setTimeout(function(){reject(new Error('timeout'));},ms);promise.then(function(v){clearTimeout(timer);resolve(v);},function(e){clearTimeout(timer);reject(e);});});}
@@ -42,11 +42,12 @@ return baseclass.extend({mount:function(root){
   catch(e){if(!stopped)show(lan,'内网速度','上传 无法连接','下载 无法连接');}
   finally{clearTimeout(timer);await release(job&&job.token);controller=null;if(!stopped){completed.set(lan,true);state(lan,false);}}
  };
- async function connectivity(target,button,title,label){if(stopped||busy)return;if(reset(button,title))return;state(button,true);show(button,title,label,'Ping —');
+ async function connectivity(target,button,title,label){if(stopped||busy)return;if(reset(button,title))return;state(button,true);show(button,title,label,(target==='foreign'?'HTTPS':'Ping')+' —');
   try{
    var result=await bounded(ping(target),12000);if(stopped)return;if(result.error)throw new Error('无法连接');
    var r=result[target==='domestic'?'baidu.com':'google.com']||{},raw=r.ping||'',avg=raw.match(/min\/avg\/max(?:\/[^ ]+)?\s*=\s*([\d.]+)\/([\d.]+)/);
-   show(button,title,label,avg?'Ping '+Number(avg[2]).toFixed(2)+'ms':'无法连接');
+   var value=target==='foreign'?(r.https_ok===true&&typeof r.https_ms==='number'&&Number.isFinite(r.https_ms)&&r.https_ms>=0?'HTTPS '+Number(r.https_ms).toFixed(2)+'ms':'无法连接'):(avg?'Ping '+Number(avg[2]).toFixed(2)+'ms':'无法连接');
+   show(button,title,label,value);
   }catch(e){if(!stopped)show(button,title,label,'无法连接');}finally{if(!stopped){completed.set(button,true);state(button,false);}}
  }
  domestic.onclick=function(){return connectivity('domestic',domestic,'国内延迟','Baidu');};foreign.onclick=function(){return connectivity('foreign',foreign,'国外延迟','Google');};
