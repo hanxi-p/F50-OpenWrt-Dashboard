@@ -1,0 +1,3 @@
+#!/bin/sh
+umask 077
+exec /usr/bin/flock -n /var/lock/f50-device-actions.lock /usr/bin/ucode /usr/libexec/f50-devices/profiles-worker.uc "$@"

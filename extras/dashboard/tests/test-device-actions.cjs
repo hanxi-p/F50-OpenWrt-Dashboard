@@ -4,7 +4,7 @@ const flush=async()=>{for(let i=0;i<14;i++)await Promise.resolve();};
 async function scenario(){
  const {document,window}=parseHTML('<html><body><div class="f50-home"><div class="mud-body"><section class="mud-sec"></section></div></div></body></html>');
  function E(tag,a={},children=[]){const n=document.createElement(tag);for(const[k,v]of Object.entries(a))typeof v==='function'?n.addEventListener(k,v):n.setAttribute(k,v);for(const c of [children].flat(Infinity))if(c!=null)n.append(typeof c==='string'?document.createTextNode(c):c);return n;}
- let timers=new Map(),id=0,modal,title,calls=[],errors=[],fail=false,payload={timestamp:1000,devices:[{mac:'02:50:aa:bb:cc:01',name:'Device',online:true,connection:'wifi5',interface:'wlan0',today_rx:200,total:500,month_total:400}]};
+ let timers=new Map(),id=0,modal,title,calls=[],errors=[],fail=false,payload={timestamp:1000,devices:[{mac:'02:50:aa:bb:cc:01',device_id:'12345678-1234-4234-8234-123456789001',name:'Device',online:true,connection:'wifi5',interface:'wlan0',today_rx:200,total:500,month_total:400}]};
  const ui={showModal(t,n){if(modal)modal.remove();title=t;modal=E('div',{},n);document.body.append(modal);},hideModal(){if(modal)modal.remove();modal=null;},addNotification(_,n){errors.push(n.textContent);}};
  const rpc={declare:d=>(...args)=>{if(d.method==='status')return Promise.resolve(payload);calls.push([d.method,...args]);return Promise.resolve(fail?{error:'test failure'}:{ok:true});}};
  const Units=new(new Function('baseclass',fs.readFileSync(path.join(dir,'f50units.js'),'utf8'))(Base))();
@@ -19,6 +19,7 @@ async function scenario(){
  payload.devices[0].blocked=true;payload.timestamp++;await tick();assert.equal(row.querySelector('.f50-device-total-action'),button);button.onclick();click([...modal.querySelectorAll('button')].find(b=>b.textContent==='允许连接'));await flush();assert.equal(calls.at(-1)[0],'unblock');
  payload.devices[0].blocked=false;payload.timestamp++;await tick();button.onclick();fail=true;click([...modal.querySelectorAll('button')].find(b=>b.textContent==='踢出并拒绝连接'));await flush();assert(modal);assert(errors.includes('test failure'));assert([...modal.querySelectorAll('button')].every(b=>!b.disabled));fail=false;ui.hideModal();
  payload.devices[0].connection='wired';payload.devices[0].interface='usb0';payload.timestamp++;await tick();button.onclick();const deny=[...modal.querySelectorAll('button')].find(b=>b.textContent==='踢出并拒绝连接');assert(deny.disabled);const before=calls.length;deny.onclick();assert.equal(calls.length,before);ui.hideModal();
+ payload.devices[0].mac='02:50:aa:bb:cc:02';payload.timestamp++;await tick();assert.equal(document.querySelector('tr[data-connection]'),row,'confirmed MAC change must retain the stable profile row');assert.equal(row.querySelector('.f50-device-total-action'),button);
  stop();assert.equal(timers.size,0);
 }
 (async()=>{for(let i=0;i<3;i++)await scenario();console.log('PASS three rounds: total-value click only, rename intact, delete confirmation, block/unblock, stable button, errors, USB protection, cleanup');})().catch(e=>{console.error(e);process.exit(1);});

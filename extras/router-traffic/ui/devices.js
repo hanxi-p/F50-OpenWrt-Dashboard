@@ -2,9 +2,10 @@
 'require baseclass';
 'require rpc';
 'require ui';
-'require routertraffic.units_v022 as Units';
+'require routertraffic.profiles_v031 as Profiles';
+'require routertraffic.units_v031 as Units';
 var status=rpc.declare({object:'routertraffic',method:'devices',expect:{'':{}}});
-var rename=rpc.declare({object:'routertraffic',method:'rename',params:['mac','name'],expect:{'':{}}});
+var rename=rpc.declare({object:'routertraffic',method:'rename',params:['mac','name','expected_id'],expect:{'':{}}});
 function size(n,rate){return rate?Units.fmtRate(n):Units.fmtBytes(n,2,true);}
 function todayDownloadRank(d){return d.today_rx!=null&&Number.isFinite(+d.today_rx)&&+d.today_rx>=0?+d.today_rx:-1;}
 return baseclass.extend({mount:function(root){
@@ -12,16 +13,18 @@ return baseclass.extend({mount:function(root){
  var content=E('div',{id:'rt-device-content'}),section=E('section',{class:'mud-sec rt-devices'},[E('h3',{},[toggle]),content]);
  var panels=E('div',{class:'rt-device-panels'});content.appendChild(panels);
  toggle.onclick=function(){content.hidden=!content.hidden;toggle.setAttribute('aria-expanded',String(!content.hidden));};
- var anchor=root.querySelector('.mud-body > .mud-sec');anchor.insertAdjacentElement('afterend',section);
+ var anchor=root.querySelector('.mud-body > .mud-sec');var totals=root.querySelector('.rt-totals-section');(totals||anchor).insertAdjacentElement('afterend',section);
  section.appendChild(E('style',{},`
- .rt-devices{min-width:0;--rt-device-total:#8970b3}
+ .container:has(.rt-root){max-width:1800px!important}
+ .rt-root{max-width:1800px!important;width:100%;box-sizing:border-box}
+ .rt-devices{min-width:0;--f50-device-total:#8970b3}
  .rt-device-panels{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
  .rt-device-toggle{border:0!important;background:transparent!important;color:inherit!important;font:inherit!important;padding:0!important;text-align:left;cursor:pointer}
  .rt-devices .rt-device-offline-heading>td{width:auto!important;height:32px;padding:6px 10px;text-align:left;background:var(--surface-sunken,var(--background-alt,#f5f7fa))}
  .rt-root .rt-devices .rt-device-offline-toggle{border:0!important;background:transparent!important;color:var(--text-muted,#666)!important;font:inherit!important;font-size:.7rem!important;font-weight:500!important;padding:0!important;text-align:left;cursor:pointer}
- .rt-device-panel{--rt-device-accent:color-mix(in srgb,var(--f50-dl,#249ad1) 65%,var(--f50-ul,#159b85));min-width:0;border:1px solid var(--hairline,var(--border,#e3e6ea));border-top:2px solid var(--rt-device-accent);border-radius:var(--radius-base,.5rem);overflow:hidden;background:var(--surface,var(--background-alt,var(--background,#fff)));color:var(--text,#222)}
- .rt-device-panel.wifi5{--rt-device-accent:var(--f50-dl,#249ad1)}
- .rt-device-panel.wired{--rt-device-accent:var(--f50-ul,#159b85)}
+ .rt-device-panel{--f50-device-accent:color-mix(in srgb,var(--f50-dl,#249ad1) 65%,var(--f50-ul,#159b85));min-width:0;border:1px solid var(--hairline,var(--border,#e3e6ea));border-top:2px solid var(--f50-device-accent);border-radius:var(--radius-base,.5rem);overflow:hidden;background:var(--surface,var(--background-alt,var(--background,#fff)));color:var(--text,#222)}
+ .rt-device-panel.wifi5{--f50-device-accent:var(--f50-dl,#249ad1)}
+ .rt-device-panel.wired{--f50-device-accent:var(--f50-ul,#159b85)}
  .modal.rt-device-name-modal{box-sizing:border-box;width:min(320px,calc(100vw - 40px))!important;min-width:0!important;max-width:calc(100vw - 40px)!important}
  .modal.rt-device-name-modal p{overflow-wrap:anywhere}
  .rt-device-scroll{max-height:none;overflow:auto;overflow-anchor:none;scrollbar-gutter:stable}
@@ -38,10 +41,13 @@ return baseclass.extend({mount:function(root){
  .rt-device-pair>span+span{margin-top:2px}
  .rt-devices .rt-device-dl{color:var(--f50-dl,#249ad1)}
  .rt-devices .rt-device-ul{color:var(--f50-ul,#159b85)}
- .rt-devices td:nth-child(4),.rt-devices th:nth-child(4),.rt-devices th:nth-child(5){color:var(--rt-device-total)}
+ .rt-devices td:nth-child(4),.rt-devices th:nth-child(4),.rt-devices th:nth-child(5){color:var(--f50-device-total)}
  .rt-devices td:nth-child(4),.rt-devices td:nth-child(5){font-weight:400}
- .rt-devices td:nth-child(5){color:var(--rt-device-total)}
+ .rt-devices td:nth-child(5){color:var(--f50-device-total)}
  .rt-device-name{display:block;width:100%;white-space:normal;overflow-wrap:anywhere;border:0!important;background:transparent!important;color:inherit!important;padding:0!important;text-align:left;font:inherit;font-size:.92em;line-height:1.35;font-weight:600;cursor:pointer}
+ .rt-device-total-action{border:0!important;background:transparent!important;color:inherit!important;font:inherit!important;font-weight:400!important;padding:0!important;width:100%;cursor:pointer;text-align:center}.rt-device-total-action:hover{text-decoration:underline}
+ .rt-device-blocked .rt-device-name:after{content:' · 已拒绝';font-weight:400;font-size:.85em;color:var(--danger,#b33)}
+ .rt-device-action-buttons{display:grid;gap:10px;margin-top:12px}.rt-device-action-buttons>button{width:100%;margin:0}
  .rt-device-offline{opacity:.65}.rt-device-offline .rt-device-name:before{content:'○ ';font-weight:400}
  @media(min-width:1500px){.rt-devices table{font-size:13px}.rt-devices td,.rt-devices th{padding:10px 14px}}
  @media(max-width:767px){
@@ -85,8 +91,8 @@ return baseclass.extend({mount:function(root){
  panels.appendChild(E('article',{class:'rt-device-panel','aria-label':'设备流量统计'},[scroll]));
  offlineLabel.onclick=function(){offline.body.hidden=!offline.body.hidden;offlineLabel.setAttribute('aria-expanded',String(!offline.body.hidden));};
  function edit(d){var input=E('input',{type:'text',value:d.name,style:'width:100%;min-width:0;box-sizing:border-box',maxlength:96});
-  ui.showModal('设备名称',[E('p',{},d.mac+' · '+d.ip),input,E('p',{},'留空恢复主机名；名称按 MAC 保存。'),E('div',{class:'right'},[
-   E('button',{class:'btn',click:ui.hideModal},'取消'),E('button',{class:'btn cbi-button-positive',click:function(){rename(d.mac,input.value).then(function(r){if(!r.ok)throw Error(r.error||'保存失败');ui.hideModal();}).catch(function(e){ui.addNotification(null,E('p',{},e.message));});}},'保存')])],'rt-device-name-modal');input.focus();}
+  ui.showModal('设备名称',[E('p',{},d.mac+' · '+d.ip),input,E('p',{},'留空恢复主机名；名称按设备档案保存。'),E('div',{class:'right'},[
+   E('button',{class:'btn',click:ui.hideModal},'取消'),E('button',{class:'btn cbi-button-positive',click:function(){rename(d.mac,input.value,d.device_id||'').then(function(r){if(!r.ok)throw Error(r.error||'保存失败');ui.hideModal();}).catch(function(e){ui.addNotification(null,E('p',{},e.message));});}},'保存')])],'rt-device-name-modal');input.focus();}
  function draw(data){
   // Device and computer clocks need not agree. Measure how long the producer
   // has stopped advancing using only this client's monotonic clock.
@@ -96,10 +102,10 @@ return baseclass.extend({mount:function(root){
   if(stale)Object.keys(rows).forEach(function(mac){rows[mac].rates.forEach(function(el){if(el.textContent!=='—')el.textContent='—';});});
   var positions={},scrolls=[{el:scroll,top:scroll.scrollTop,left:scroll.scrollLeft}];
   var present={};(data.devices||[]).slice().sort(function(a,b){return (+!!a.aggregate)-(+!!b.aggregate)||todayDownloadRank(b)-todayDownloadRank(a)||a.mac.localeCompare(b.mac);}).forEach(function(d){
-   if(present[d.mac])return;present[d.mac]=true;var kind=d.online?'online':'offline',c=d.online?online:offline,r=rows[d.mac];
+   var key=d.device_id||d.mac;if(present[key])return;present[key]=true;var kind=d.online?'online':'offline',c=d.online?online:offline,r=rows[key];
    if(!r){var button=E('button',{class:'rt-device-name',type:'button'}),rates=[E('span',{class:'rt-device-dl','aria-label':'下载'}),E('span',{class:'rt-device-ul','aria-label':'上传'})],daily=[E('span',{class:'rt-device-dl','aria-label':'下载'}),E('span',{class:'rt-device-ul','aria-label':'上传'})];
-    var cells=[E('td',{},[button]),E('td',{class:'rt-device-pair'},rates),E('td',{class:'rt-device-pair'},daily),E('td'),E('td')];
-    r=rows[d.mac]={el:E('tr',{},cells),cells:cells,button:button,rates:rates,daily:daily};}
+    var cells=[E('td',{},[button]),E('td',{class:'rt-device-pair'},rates),E('td',{class:'rt-device-pair'},daily),E('td'),E('td',{},[E('button',{class:'rt-device-total-action',type:'button'})])];
+    r=rows[key]={el:E('tr',{},cells),cells:cells,button:button,rates:rates,daily:daily};}
    var index=positions[kind]||0;
    if(c.body.children[index]!==r.el)c.body.insertBefore(r.el,c.body.children[index]||null);
    positions[kind]=index+1;
@@ -108,7 +114,8 @@ return baseclass.extend({mount:function(root){
    if(r.el.getAttribute('data-connection')!==connection)r.el.setAttribute('data-connection',connection);
    if(r.button.textContent!==d.name)r.button.textContent=d.name;
    r.button.title=d.aggregate?'LAN 外网流量 · '+(d.members||[]).length+' 台设备':d.name+'\nIP: '+(d.ip||'—')+'\nMAC: '+d.mac+'\n接口: '+(d.interface||'—');r.button.onclick=d.aggregate?null:function(){edit(d);};r.button.disabled=!!d.aggregate;
-   var targets=r.rates.concat(r.daily,[r.cells[3],r.cells[4]]);
+   var total=r.cells[4].querySelector('.rt-device-total-action');total.disabled=!!d.aggregate;total.onclick=d.aggregate?null:function(){Profiles.manage(d);};
+   var targets=r.rates.concat(r.daily,[r.cells[3],total]);
    [size(stale?null:d.rx_rate,true),size(stale?null:d.tx_rate,true),size(d.today_rx),size(d.today_tx),size(d.month_total),size(d.total)].forEach(function(v,i){if(targets[i].textContent!==v)targets[i].textContent=v;});
   });
   if(Array.isArray(data.devices))Object.keys(rows).forEach(function(mac){if(!present[mac]){rows[mac].el.remove();delete rows[mac];}});

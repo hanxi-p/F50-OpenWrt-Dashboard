@@ -1,8 +1,10 @@
 'use strict';
 'require baseclass';
+'require routertraffic.devices_v031 as Devices';
+'require routertraffic.resources_v031 as Resources';
 'require fs';
-'require routertraffic.livechart_v022 as F50LiveChart';
-'require routertraffic.units_v022 as Units';
+'require routertraffic.livechart_v031 as F50LiveChart';
+'require routertraffic.units_v031 as Units';
 
 var STATUS_FILE = '/tmp/f50-traffic/status.json';
 var HISTORY_FILE = '/tmp/f50-traffic/history.csv';
@@ -24,10 +26,12 @@ return baseclass.extend({
 	title: '',
 
 	load: function() {
+		if (this.root && document.documentElement.contains(this.root)) return Promise.resolve(null);
 		return Promise.all([
 			L.resolveDefault(fs.read(STATUS_FILE), '{}'),
 			L.resolveDefault(fs.read(HISTORY_FILE), ''),
-			L.resolveDefault(fs.read(STYLE_FILE), '')
+			L.resolveDefault(fs.read(STYLE_FILE), ''),
+			L.resolveDefault(fs.read('/www/luci-static/resources/routertraffic/style.css'), '')
 		]);
 	},
 
@@ -77,7 +81,7 @@ return baseclass.extend({
 		if (v4Style)
 			v4Style.remove();
 
-		var root = E('div', { 'class': 'f50-home mud', 'data-f50-style-version': '6' }, [
+		var root = E('div', { 'class': 'f50-home mud rt-root', 'data-f50-style-version': '7' }, [
 			E('div', { 'class': 'mud-card mud-body' }, [
 				E('div', { 'class': 'mud-sec' }, [
 					E('h3', { 'class': 'f50-traffic-title' }, [
@@ -107,6 +111,8 @@ return baseclass.extend({
 						}),
 						E('div', { 'id': 'f50-rate-detail', 'style': 'display:none;font-size:.75em;margin:4px 0' })
 					]),
+				]),
+				E('section', { 'class': 'mud-sec rt-totals-section' }, [
 					E('h3', { 'class': 'f50-today-title' }, [
 						'今日流量统计',
 						E('span', { 'id': 'f50-today-date' }, '--')
@@ -120,7 +126,7 @@ return baseclass.extend({
 				])
 			])
 		]);
-		root.prepend(E('style', { 'data-f50-inline-style': '6' }, css || ''));
+		root.prepend(E('style', { 'data-f50-inline-style': '7' }, css || ''));
 		return root;
 	},
 
@@ -159,6 +165,8 @@ return baseclass.extend({
 	},
 
 	dispose: function() {
+		if(this.devicesDispose){this.devicesDispose();this.devicesDispose=null;}
+		if(this.resourcesDispose){this.resourcesDispose();this.resourcesDispose=null;}
 		clearTimeout(this.refreshTimer);
 		this.refreshTimer = null;
 		if (this.liveChart) {
@@ -198,7 +206,9 @@ return baseclass.extend({
 		this.ulHistory = [];
 		this.lastTimestamp = 0;
 		this.wasConnected = false;
-		this.root = this.build(Array.isArray(raw) ? raw[2] : '');
+		this.root = this.build(Array.isArray(raw) ? (raw[2] || '')+'\n'+(raw[3] || '') : '');
+		this.devicesDispose = Devices.mount(this.root);
+		this.resourcesDispose = Resources.mount(this.root);
 
 		if (Array.isArray(raw))
 			this.loadHistory(raw[1]);

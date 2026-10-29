@@ -1,6 +1,6 @@
-# AX6S 独立流量面板 0.2.2
+# 其他路由器通用面板 0.3.1
 
-基于 F50 面板提取并适配 OpenWrt，来源及 MIT 授权见 SOURCE.json、LICENSE。此包是 OpenWrt 上执行的离线安装包，不能作为固件交给 sysupgrade。无需连接 F50，不包含私人名称、MAC、代理配置、密码及其他路由器流量历史。
+面向其他 OpenWrt 路由器，基于 F50 面板提取，当前以 AX6S 完成适配，来源及 MIT 授权见 SOURCE.json、LICENSE。此包是 OpenWrt 上执行的离线安装包，不能作为固件交给 sysupgrade。无需连接 F50，不包含私人名称、MAC、代理配置、密码及其他路由器流量历史。
 
 ## 功能
 
@@ -21,7 +21,7 @@ GitHub 提供源码及字体授权；已编译二进制、私有账本和整机�
 ```sh
 # 先在电脑核验外部 SHA256SUMS，再将 tar.gz 传到路由器 /tmp。
 mkdir -p /tmp/router-traffic-install
-tar xzf /tmp/router-traffic-ax6s-v0.2.2.tar.gz -C /tmp/router-traffic-install
+tar xzf /tmp/router-traffic-ax6s-v0.3.1.tar.gz -C /tmp/router-traffic-install
 cd /tmp/router-traffic-install
 sh preflight.sh lan wan
 sh install.sh lan wan
@@ -47,6 +47,20 @@ sh install.sh lan wan
 
 AX6S2 保持硬件卸载，实际 TCP 上传、下载各三轮（每轮 2 MiB）。上传 conntrack 与发送端 TCP_INFO 的字节量相差约 2–3%，大量高于文件大小的部分由真实 TCP 重传解释；下载收到的 conntrack 字节与唯一 SSH 数据量差约 2%。不能因此宣称所有内核、卸载驱动、代理模式、多 VLAN/多 WAN 均已准确适配。IPv6/跨日/重启/接口切换中仅模型覆盖的项目不能称为实机中断验收。
 
-源码内含 tests；构建：`python tools/build.py --zig /path/to/zig --output router-traffic-ax6s-v0.2.2.tar.gz`。亦可使用 --reuse-archive 复用源码哈希一致、ELF 架构和构建校验通过的已编译二进制。Lato 字体及 OFL 授权单独见 wan/fonts/。
+源码内含 tests；构建：`python tools/build.py --zig /path/to/zig --output router-traffic-ax6s-v0.3.1.tar.gz`。亦可使用 --reuse-archive 复用源码哈希一致、ELF 架构和构建校验通过的已编译二进制。Lato 字体及 OFL 授权单独见 wan/fonts/。
 
 月度与总累计从可恢复历史衔接：月度只能以旧版可信今日值为已知下限，总累计保留独立已知值的最大值，重叠记录不相加；缺失的更早/月初历史无法补算，数字提示和本说明明确标注。
+
+
+## 设备档案与连接记录（0.3.0）
+
+保持原有五列表格和曲线布局。点击总累计进入设备档案，管理固定 UUID、已确认的 MAC 成员、绑定历史和 Wi-Fi 会话；有线汇总行不作为一台真实设备进行绑定。已有名称及明确身份关系首次迁入，新 MAC 单独建档，主机名相同不会自动合并。名称仍从原设备名称入口编辑。
+
+权威配置为 /etc/config/router_traffic_devices，派生缓存和原始分 MAC 账本仍在 /etc/router-traffic/。UCI 只在档案变化时写入，会话复用原有每秒扫描，失败检测不判离线；记录的是观测时间，不能保证精确认证/断开时间。会话日志保留当前及上一代各约256KiB，小型活动状态每分钟及会话变化保存。突然断电可能留下观察空档，不能当作设备连续在线。
+
+绑定和解绑需要确认，保留各 MAC 原始字节并重新汇总，不增加免登录授权。升级保留有效历史，回退保留最新 UCI 档案和流量数据。需要 ucode 的 uci 模块。统计后端继续采用只读高水位采集；nlbwmon 尚未纳入本包，不可并行启动清零式采集器。
+
+
+## F50 四区样式基准（0.3.1）
+
+流量、累计数字、设备流量统计、设备负载与温度统一在一个 F50 容器。复用现有 F50 字体、配色、设备表 CSS 和三卡尺寸，不再由 WAN 与设备区分别决定字号。样式参数与来源 SHA256 见 STYLE-CONTRACT.json；计数、档案和会话后端保持。手机累计四项两行两列，桌面四项一行；CPU 两核直接显示，存储折叠。未进行浏览器或新版 AX6S 实机视觉验收。

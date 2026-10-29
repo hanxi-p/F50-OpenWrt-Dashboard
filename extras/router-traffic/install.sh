@@ -25,7 +25,7 @@ sh preflight.sh "${lan:-lan}" "${wan:-wan}" > "$tmp/config.json"
 ucode -c -o "$tmp/check.ucb" app/collector.uc
 free=$(df -k /overlay | awk 'END{print $4}')
 [ "$free" -ge 2048 ] || { echo 'At least 2 MiB free overlay space required.' >&2;exit 1;}
-backup=/root/router-traffic-backups/$(date +%Y%m%d-%H%M%S)-v022-$$
+backup=/root/router-traffic-backups/$(date +%Y%m%d-%H%M%S)-v031-$$
 mkdir -p "$backup";chmod 700 "$backup"
 for service in router-traffic f50-traffic;do
  enabled=0;running=0
@@ -58,6 +58,7 @@ for dir in /etc/router-traffic /etc/f50-traffic /tmp/f50-traffic;do
  if [ -d "$dir" ];then cp -a "$dir" "$backup/$(echo "$dir" | tr / _)";fi
 done
 sha256sum /etc/config/network /etc/config/firewall /etc/config/wireless > "$backup/network.sha256"
+[ ! -f /etc/config/router_traffic_devices ] || cp -p /etc/config/router_traffic_devices "$backup/device-profiles.uci"
 cp rollback.sh app/export-legacy-wan.uc app/ledger.uc "$backup/"
 hot=0
 if [ "$(cat "$backup/router-traffic.running")" = 1 ] && [ -f /usr/libexec/router-traffic/flow-account ] && cmp -s bin/flow-account /usr/libexec/router-traffic/flow-account;then
@@ -73,35 +74,37 @@ mkdir -p /usr/libexec/router-traffic /etc/router-traffic /www/luci-static/resour
 chmod 700 /etc/router-traffic
 cp app/*.uc /usr/libexec/router-traffic/
 if [ "$hot" = 0 ];then cp bin/flow-account /usr/libexec/router-traffic/flow-account.new;chmod 755 /usr/libexec/router-traffic/flow-account.new;mv /usr/libexec/router-traffic/flow-account.new /usr/libexec/router-traffic/flow-account;fi
+cp app/profile-action /usr/libexec/router-traffic/profile-action
 cp app/rpc-wrapper /usr/libexec/rpcd/routertraffic
 cp app/service /etc/init.d/router-traffic
 cp app/acl.json /usr/share/rpcd/acl.d/luci-app-routertraffic.json
 cp "$tmp/config.json" /etc/router-traffic/config.json
 ucode /usr/libexec/router-traffic/migrate-wan.uc "$legacy_mode" > "$backup/wan-migration.json"
 cp ui/*.js ui/style.css /www/luci-static/resources/routertraffic/
-for name in units devices livechart resources today;do cp "ui/$name.js" "/www/luci-static/resources/routertraffic/${name}_v022.js";done
+for name in units devices profiles livechart resources today;do cp "ui/$name.js" "/www/luci-static/resources/routertraffic/${name}_v031.js";done
 cp wan/style.css /www/luci-static/resources/routertraffic/wan.css
 cp wan/fonts/* /www/luci-static/resources/routertraffic/fonts/
 for file in /www/luci-static/resources/view/status/include/00_f50_traffic*.js /www/luci-static/resources/view/status/include/00_routertraffic_wan*.js /www/luci-static/resources/view/status/include/01_routertraffic*.js /www/luci-static/resources/view/status/include/02_native_folds*.js;do [ ! -f "$file" ] || rm -f "$file";done
-cp wan/view.js /www/luci-static/resources/view/status/include/00_routertraffic_wan_v022.js
-cp ui/status.js /www/luci-static/resources/view/status/include/01_routertraffic_v022.js
-cp ui/native-folds.js /www/luci-static/resources/view/status/include/02_native_folds_v022.js
+cp wan/view.js /www/luci-static/resources/view/status/include/00_routertraffic_wan_v031.js
+cp ui/status.js /www/luci-static/resources/view/status/include/01_routertraffic_v031.js
+cp ui/native-folds.js /www/luci-static/resources/view/status/include/02_native_folds_v031.js
 for name in 19_cpu.js 20_memory.js 25_storage.js;do
  path=/www/luci-static/resources/view/status/include/$name
  if [ -f "$path" ];then mv "$path" "$path.routertraffic-disabled";fi
 done
 chmod 600 /etc/router-traffic/*.json
-chmod 755 /usr/libexec/router-traffic/flow-account /usr/libexec/rpcd/routertraffic /etc/init.d/router-traffic
+chmod 755 /usr/libexec/router-traffic/profile-action /usr/libexec/router-traffic/flow-account /usr/libexec/rpcd/routertraffic /etc/init.d/router-traffic
 grep -qxF '/etc/router-traffic/' /etc/sysupgrade.conf || echo '/etc/router-traffic/' >> /etc/sysupgrade.conf
+grep -qxF '/etc/config/router_traffic_devices' /etc/sysupgrade.conf || echo '/etc/config/router_traffic_devices' >> /etc/sysupgrade.conf
 /etc/init.d/router-traffic enable
 if [ "$hot" = 1 ];then ubus call service signal '{"name":"router-traffic","instance":"ledger","signal":15}';else /etc/init.d/router-traffic start;fi
 /etc/init.d/rpcd reload
 ready=0
 for attempt in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15;do
- if ucode -e 'import * as fs from "fs";let d=json(fs.readfile("/tmp/router-traffic/devices.json")),w=json(fs.readfile("/tmp/f50-traffic/status.json")),c=json(fs.readfile("/etc/router-traffic/config.json"));exit(d.collector_id!=c.install_id||w.collector_id!=c.install_id||d.stale||time()-d.timestamp>4||w.engine!="router-traffic-wan-v2"||w.stale||time()-w.timestamp>4||w.rx_rate==null?1:0);' 2>/dev/null;then ready=1;break;fi
+ if ucode -e 'import * as fs from "fs";let d=json(fs.readfile("/tmp/router-traffic/devices.json")),w=json(fs.readfile("/tmp/f50-traffic/status.json")),c=json(fs.readfile("/etc/router-traffic/config.json"));exit(d.profile_revision==null||d.collector_id!=c.install_id||w.collector_id!=c.install_id||d.stale||time()-d.timestamp>4||w.engine!="router-traffic-wan-v2"||w.stale||time()-w.timestamp>4||w.rx_rate==null?1:0);' 2>/dev/null;then ready=1;break;fi
  sleep 1
 done
 [ "$ready" = 1 ] || { echo 'Collector health check failed' >&2;exit 1;}
 sha256sum -c "$backup/network.sha256"
-echo "Installed v0.2.2. Backup and rollback: sh $backup/rollback.sh $backup"
+echo "Installed v0.3.1. Backup and rollback: sh $backup/rollback.sh $backup"
 changed=0

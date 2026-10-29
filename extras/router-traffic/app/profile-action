@@ -1,0 +1,5 @@
+#!/bin/sh
+umask 077
+export DEVICE_PROFILE_DATA_DIR="${ROUTER_TRAFFIC_CONFIG_DIR:-/etc/router-traffic}"
+export DEVICE_PROFILE_RUNTIME_DIR="${ROUTER_TRAFFIC_RUNTIME_DIR:-/tmp/router-traffic}"
+exec /usr/bin/flock -n /var/lock/router-traffic-profiles.lock /usr/bin/ucode /usr/libexec/router-traffic/profiles-worker.uc "$@"

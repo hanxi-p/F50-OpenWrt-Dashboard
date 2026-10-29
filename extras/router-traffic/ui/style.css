@@ -1,40 +1,30 @@
-.rt-root{--f50-dl:#249ad1;--f50-ul:#159b85;box-sizing:border-box;width:100%;min-width:0;color:var(--text-color,#222);font-family:"Lato",ui-sans-serif,system-ui,sans-serif}
-.rt-root *{box-sizing:border-box}
-.rt-root .mud-sec{min-width:0;margin:0 0 16px;padding:12px 14px;border:1px solid var(--border-color,#dce4e8);border-radius:10px;background:var(--background-color-high,#fff)}
-.rt-root .mud-sec[hidden]{display:none!important}
-.rt-root .mud-sec h3{font-size:14px;font-weight:600;letter-spacing:normal;margin:0 0 12px;padding:0;border:0;line-height:1.5;text-align:left}
+/* F50 card styles; the enclosing .f50-home provides the shared palette/font. */
+.rt-root [hidden]{display:none!important}
+.rt-root .mud-body>.mud-sec+.mud-sec{border-top:1px dashed color-mix(in oklab,var(--hairline,var(--border,#ddd)) 60%,transparent);margin-top:8px;padding-top:2px}
 .rt-root .rt-device-toggle:after,.rt-root .rt-device-offline-toggle:after{content:' ▸';font-size:.8em;opacity:.7}
 .rt-root [aria-expanded=true].rt-device-toggle:after,.rt-root [aria-expanded=true].rt-device-offline-toggle:after{content:' ▾'}
-.rt-root .rt-rates{display:flex;flex-direction:column;gap:3px;margin:0 0 10px;font-variant-numeric:tabular-nums}
-.rt-root .rt-rate-title{display:flex;justify-content:space-between}
-.rt-root .rt-rates>div{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);column-gap:8px;align-items:baseline}
-.rt-root .rt-rates [data-peak]{text-align:right;font-size:13px}
-.rt-root .rt-rates b{font-size:26px;font-weight:500}
-.rt-root .rt-download>b{font-size:1.7rem;font-weight:750}.rt-root .rt-upload>b{font-size:1.4rem;font-weight:650}
-.rt-root .rt-download{color:var(--f50-dl)}.rt-root .rt-upload{color:var(--f50-ul)}
-.rt-root #mud-rate-chart{position:relative;height:220px;overflow:hidden;border:1px solid #c5dce5;border-radius:8px;font-variant-numeric:tabular-nums}
-.rt-root .f50-rate-svg{position:absolute;top:22px;left:0;width:100%;height:calc(100% - 46px);overflow:hidden}
-.rt-root .f50-rate-value-axis{position:absolute;top:22px;bottom:24px;left:5px;width:40px;pointer-events:none;z-index:1;color:#6b8794;font:10px monospace}
-.rt-root .f50-rate-value-axis span{position:absolute;left:0;transform:translateY(-50%);background:rgba(255,255,255,.55);white-space:nowrap}
-.rt-root .f50-axis-dl{color:var(--f50-dl)}.rt-root .f50-axis-ul{color:var(--f50-ul)}
-.rt-root .f50-rate-axis-unit{display:none}
-.rt-root .f50-btop-label{position:absolute;left:50%;transform:translateX(-50%);height:20px;line-height:16px;font:10px monospace;white-space:nowrap;pointer-events:none}
-.rt-root .f50-btop-dl{top:3px;color:var(--f50-dl)}.rt-root .f50-btop-ul{bottom:3px;color:var(--f50-ul)}
-.rt-root .f50-rate-time-axis{position:absolute;left:0;right:0;bottom:3px;padding:0 5px;display:flex;justify-content:space-between;pointer-events:none;color:#6b8794;font:10px monospace}
-.rt-root .rt-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-.rt-root .rt-kpi{min-width:0;padding:10px;background:var(--surface-sunken,#f4f7f9);border-radius:9px;color:var(--text-color,#192028);font-variant-numeric:tabular-nums}
-.rt-root .rt-kpi>b{display:block;font-size:1.4rem;font-weight:600;line-height:1.3;margin:0 0 5px;white-space:nowrap}
-.rt-root .rt-kpi>span{display:block;font-size:13px;color:var(--text-muted,#697179);line-height:1.45}
-.rt-root .rt-kpi .rt-kpi-sub{white-space:pre-line;font-size:12px}
-.rt-root .rt-temp-card{border:1px solid var(--border-color,rgba(127,127,127,.28))}
-.rt-root .rt-temp-card .rt-kpi-sub{font-size:11px;color:#76520b}
-.rt-root .rt-meter{height:5px;margin-top:6px;overflow:hidden;border-radius:9px}
-.rt-root .rt-meter i{height:100%;display:block;background:#398ac0;border-radius:9px}
-.rt-root .rt-ram-card .rt-meter i{background:#285f99}.rt-root .rt-disk-card .rt-meter i{background:#a88240}
-.rt-root .rt-cpu-card{cursor:default}
-.rt-root .rt-core-details{font-size:12px;padding:10px 0;color:var(--text-muted,#697179)}
-.rt-root .rt-core-inline{padding:3px 0 0;font-size:.65rem;line-height:1.45;white-space:pre-line}
-.rt-root .rt-storage-details{margin-top:14px}.rt-root .rt-storage-details summary{cursor:pointer;font-size:13px;font-weight:600}.rt-root .rt-extra-cards{margin-top:8px;max-width:420px}
-.rt-root [hidden]{display:none!important}
-@media(max-width:767px){.rt-root .mud-sec{padding:10px 8px}.rt-root .rt-rates{gap:16px}.rt-root .rt-rates b{font-size:22px}.rt-root #mud-rate-chart{height:200px}}
-@media(max-width:420px){.rt-root .rt-rates{gap:3px}.rt-root .rt-download>b{font-size:1.45rem}.rt-root .rt-upload>b{font-size:1.25rem}}
+.rt-root .f50-load-section>.mud-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:0!important;margin-bottom:6px}
+.rt-root .f50-load-section>.mud-kpis b{font-size:1.4rem}
+.rt-root .rt-kpi{min-width:0}
+.rt-root .rt-kpi>span{display:block}
+.rt-root .rt-kpi-sub{white-space:pre-line;line-height:1.45}
+.rt-root .rt-temp-card{border:1px solid var(--border-color,rgba(127,127,127,.28));border-radius:8px}
+.rt-root .rt-temp-card>.rt-kpi-sub{display:grid;grid-template-columns:1fr;gap:2px;margin:4px 0 0}
+.rt-root .rt-temp-card .rt-kpi-sub span{display:block;font-size:.65rem;padding:0;border:0;text-align:left;white-space:nowrap}
+.rt-root .rt-meter{height:5px;border-radius:3px;background:var(--surface-sunken,rgba(127,127,127,.15));overflow:hidden;margin:3px 0 1px}
+.rt-root .rt-meter i{display:block;height:100%;border-radius:3px;background:var(--brand,#0085b7)}
+.rt-root .rt-ram-card .rt-meter i{background:var(--info,#0e5794)}
+.rt-root .rt-disk-card .rt-meter i{background:var(--warning,#643e00)}
+.rt-root .rt-core-inline{padding:3px 0 0;font-size:.65rem;line-height:1.45;white-space:pre-line;color:var(--text-muted,#5f666d)}
+.rt-root .rt-storage-details{margin:4px 0 2px;font-size:.82rem;line-height:1.4}
+.rt-root .rt-storage-details summary{cursor:pointer;font-weight:600;list-style:none}
+.rt-root details>summary::marker{content:''}
+.rt-root details>summary::-webkit-details-marker{display:none}
+.rt-root details>summary::before{content:'▸';display:inline-block;width:.7em;margin-right:.35em;font-size:.75em;opacity:.75}
+.rt-root details[open]>summary::before{content:'▾'}
+.rt-root .rt-extra-cards{margin-top:8px;max-width:420px}
+@media(max-width:600px){
+ .rt-root .f50-load-section>.mud-kpis .mud-kpi{padding:7px 6px}
+ .rt-root .f50-load-section>.mud-kpis span{font-size:.68rem}
+ .rt-root .rt-temp-card .rt-kpi-sub span{font-size:.62rem}
+}

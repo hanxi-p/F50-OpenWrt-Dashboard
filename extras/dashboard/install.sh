@@ -5,6 +5,7 @@ cd "$(dirname "$0")"
 version=$(cat /etc/mu300/image-version 2>/dev/null || true)
 [ "$version" = v2026.10.11 ] || { echo "此补丁匹配 v2026.10.11，当前为 $version；请先核对页面与 RPC 差异。"; exit 1; }
 for cmd in vnstat ubus uci jsonfilter setsid flock sha256sum curl ucode iw lua; do command -v "$cmd" >/dev/null || { echo "缺少 $cmd，请先安装对应依赖"; exit 1; }; done
+ucode -e "import * as uci from 'uci';" || { echo '设备档案需要 ucode uci 模块，未修改设备'; exit 1; }
 lua -e 'assert(require("nixio"));assert(require("nixio.fs"));assert(require("luci.jsonc"))' || { echo '设备操作需要 Lua nixio/jsonc，未修改设备'; exit 1; }
 [ -r /usr/libexec/unisoc-modem/dashboard-info ] && [ -r /www/luci-static/resources/view/mu300/home.js ] || { echo '缺少 MU300 面板'; exit 1; }
 ip link show sipa_eth0 >/dev/null || { echo '当前蜂窝接口不是 sipa_eth0，请先适配统计接口'; exit 1; }
@@ -54,6 +55,11 @@ cat > "$backup/paths" <<'PATHS'
 /www/luci-static/resources/f50speedpeaks.js
 /www/luci-static/resources/f50livechart.js
 /www/luci-static/resources/f50devices.js
+/usr/libexec/f50-devices/profile-action
+/usr/libexec/f50-devices/profiles-worker.uc
+/usr/libexec/f50-devices/profiles.uc
+/usr/libexec/f50-devices/sessions.uc
+/www/luci-static/resources/f50deviceprofiles.js
 /www/luci-static/resources/f50units.js
 /usr/libexec/f50-devices/flow-account
 /usr/libexec/f50-devices/ledger.uc
@@ -125,9 +131,10 @@ while IFS= read -r path; do
  if [ -e "$path" ]; then mkdir -p "$backup$(dirname "$path")"; cp -p "$path" "$backup$path"; fi
 done < "$backup/paths"
 cp restore.sh "$backup/restore.sh"
+[ ! -f /etc/config/f50_devices ] || cp -p /etc/config/f50_devices "$backup/f50_devices.uci"
 if [ -d /etc/f50-devices ]; then
  mkdir -p "$backup/device-traffic-state"
- cp -p /etc/f50-devices/*.json "$backup/device-traffic-state/" 2>/dev/null || true
+ cp -p /etc/f50-devices/*.json /etc/f50-devices/sessions.jsonl* "$backup/device-traffic-state/" 2>/dev/null || true
 fi
 [ ! -x /etc/init.d/f50-devices ] || /etc/init.d/f50-devices stop
 [ ! -x /etc/init.d/f50history ] || /etc/init.d/f50history stop
@@ -187,6 +194,11 @@ f50-speed-peaks-init /etc/init.d/f50-speed-peaks
 f50speedpeaks.js /www/luci-static/resources/f50speedpeaks.js
 f50livechart.js /www/luci-static/resources/f50livechart.js
 f50devices.js /www/luci-static/resources/f50devices.js
+device-traffic/profile-action /usr/libexec/f50-devices/profile-action
+device-traffic/profiles-worker.uc /usr/libexec/f50-devices/profiles-worker.uc
+device-traffic/profiles.uc /usr/libexec/f50-devices/profiles.uc
+device-traffic/sessions.uc /usr/libexec/f50-devices/sessions.uc
+f50deviceprofiles.js /www/luci-static/resources/f50deviceprofiles.js
 device-traffic/flow-account /usr/libexec/f50-devices/flow-account
 device-traffic/ledger.uc /usr/libexec/f50-devices/ledger.uc
 device-traffic/peers.uc /usr/libexec/f50-devices/peers.uc
@@ -241,7 +253,7 @@ chmod 755 /usr/libexec/f50-speed-peaks-worker /etc/init.d/f50-speed-peaks
 chmod 755 /usr/libexec/f50-wifi-nondfs /usr/libexec/f50-wifi-start-safe
 chmod 755 /usr/libexec/f50-bounded /usr/libexec/f50-wifi-guard /usr/libexec/f50-wifi-evaluate /etc/init.d/f50-wifi-guard /usr/libexec/f50-dns-guard /usr/libexec/f50-dns-health /etc/init.d/f50-dns-guard /usr/libexec/f50-lock
 rm -f /www/cgi-bin/f50-nettest /usr/libexec/f50-nettest-stream.uc
-chmod 755 /usr/libexec/f50-devices/action /usr/libexec/f50-devices/flow-account /usr/libexec/rpcd/f50devices /etc/init.d/f50-devices
+chmod 755 /usr/libexec/f50-devices/profile-action /usr/libexec/f50-devices/action /usr/libexec/f50-devices/flow-account /usr/libexec/rpcd/f50devices /etc/init.d/f50-devices
 sh apply-reliability.sh
 chmod 755 /usr/libexec/rpcd/f50nettest
 chmod 755 /usr/libexec/unisoc-modem/dashboard-info /usr/libexec/rpcd/f50quota /usr/libexec/rpcd/f50channel /usr/libexec/rpcd/f50openclash /usr/libexec/f50openclash-worker

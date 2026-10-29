@@ -51,9 +51,7 @@
 	box-sizing: border-box;
 }
 
-.f50-home * {
-	font-family: "Lato", ui-sans-serif, system-ui, sans-serif !important;
-}
+.f50-home button,.f50-home input,.f50-home table{font-family:inherit}
 
 .f50-home .mud-card {
 	background: var(--surface);
@@ -449,3 +447,11 @@
 .f50-home .f50-today-kpis .mud-kpi:nth-child(n+3) b{color:#9471c0}
 @media(max-width:600px){.f50-home .f50-today-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 #maincontent:has(.f50-home) h2[name="content"]{display:none}
+
+/* F50 Aurora palette snapshot, scoped to this panel. */
+.f50-home{--surface:#fff;--surface-sunken:#f4f7fa;--hairline:#121a2221;--text:#121a22;--text-muted:#5f666d;--text-subtle:#7f858b;--brand:#0085b7;--brand-subtle:#ddecf5;--success:#004f3e;--warning:#643e00;--danger:#8d1925;--info:#0e5794;}
+html[data-darkmode=true] .f50-home{--surface:#141822;--surface-sunken:#0a0e17;--hairline:#f9fafb1a;--text:#f9fafb;--text-muted:#909297;--text-subtle:#5d6067;--brand:#00958e;--brand-subtle:#061a20;--success:#51bd85;--warning:#f0ba59;--danger:#f17070;--info:#90c1ff;}
+
+/* F50 cumulative-value typography; totals remain actual counters, without a quota/proportion bar. */
+.f50-home .f50-today-kpis .mud-kpi:nth-child(n+3) b{font-size:.94rem;font-weight:700}
+@media(max-width:600px){.f50-home .f50-today-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}

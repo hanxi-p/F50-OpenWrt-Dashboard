@@ -12,5 +12,17 @@
     "device-traffic/test-ledger.uc": "5ddf78bc0fc5e0c518de21cb6a9cd335b63bdc2dda14ed393357f5c5849d9499",
     "device-traffic/test-identity.uc": "54e17c09bbb28f5ed57213eb751410d4f43cbbe0e05a238bba44bcdeed9d73f9"
   },
-  "changes": "Portable paths, configurable interfaces/redirect port, shared LuCI status include; high-water protection for partial/out-of-order conntrack updates."
+  "changes": "Portable paths, configurable interfaces/redirect port, shared LuCI status include; high-water protection for partial/out-of-order conntrack updates.",
+  "identity_extension": {
+    "date": "2026-10-30",
+    "base_commit": "8d6bd620d0c77a01978404e5f3290b37de25c6d5",
+    "status": "source included in this publication; see repository history",
+    "sha256": {
+      "device-traffic/profiles.uc": "c84660ad2001f2d6389defbd1cf5c5be6782ca65276b4415dc20c3fee79267ef",
+      "device-traffic/profiles-worker.uc": "96964ba7d6143303de8decc143cbfd0a5c6cccfb72d18a92a7296d95924b8cbe",
+      "device-traffic/sessions.uc": "af90684b97c57df424002c93ed6b47377c706d9b5cc6b06069d0ae0b8a0d950f",
+      "f50deviceprofiles.js": "819d2a533c17e69583151f4350248329b2cfbede70cbc6ca6d3e7ea179ef6440"
+    }
+  },
+  "panel_name": "其他路由器通用面板"
 }

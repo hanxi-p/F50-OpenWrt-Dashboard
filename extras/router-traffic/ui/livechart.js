@@ -1,6 +1,6 @@
 'use strict';
 'require baseclass';
-'require routertraffic.units_v022 as Units';
+'require routertraffic.units_v031 as Units';
 
 
 var WINDOW_MS=60000,DELAY_MS=1200;

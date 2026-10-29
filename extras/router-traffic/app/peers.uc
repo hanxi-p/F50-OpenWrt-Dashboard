@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 function command(s){let p=fs.popen(s,'r');if(!p)return '';let value=p.read('all');p.close();return value??'';}
 function valid(s){return type(s)=='string'&&match(s,/^[a-zA-Z0-9_.:-]+$/);}
-function peers(bridge){
+function observations(bridge){
+ let scanValid=true;
  let result={};
  for(let line in split(fs.readfile('/tmp/dhcp.leases')??'','\n')){
   let a=split(trim(line),/\s+/);if(length(a)<4)continue;
@@ -14,7 +15,8 @@ function peers(bridge){
  for(let path in fs.glob('/sys/class/net/*/phy80211')){
   let iface=split(path,'/')[4];if(!valid(iface))continue;wireless[iface]=true;
   let info=command('iw '+iface+' info'),f=match(info,/\((\d+) MHz\)/),kind=f&&+f[1]<3000?'wifi24':'wifi5';
-  for(let line in split(command('iw '+iface+' station dump'),'\n')){
+  let scan=fs.popen('iw '+iface+' station dump','r'),stations=scan?.read('all')??'';if(!scan||scan.close()!=0)scanValid=false;
+  for(let line in split(stations,'\n')){
    let m=match(line,/^Station ([0-9a-fA-F:]{17})/);if(!m)continue;
    let mac=lc(m[1]);result[mac]??={};result[mac].connection=kind;result[mac].interface=iface;result[mac].online=true;
   }
@@ -33,6 +35,7 @@ function peers(bridge){
   if(result[mac]?.online)continue;
   result[mac]??={};result[mac].online=true;result[mac].interface=iface;result[mac].connection='wired';
  }
- return result;
+ return {peers:result,valid:scanValid};
 }
-export {peers};
+function peers(bridge){return observations(bridge).peers;}
+export {peers,observations};

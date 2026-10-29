@@ -1,0 +1,86 @@
+{
+  "version": "0.3.1",
+  "modules": [
+    "流量",
+    "本月累计／总累计（含今日下载、今日上传四项）",
+    "设备流量统计",
+    "设备负载与温度"
+  ],
+  "source": {
+    "f50devices.js": "eec03f76dae5182eae5b3cea7310b63d13c2c756cf02471a30d4388b0f07d540",
+    "home.js": "1dc5bb369fd35a9d880960cb9a3dab8553a2c93013ad52bc6cec4c3582c2f5ac"
+  },
+  "tokens": {
+    "font": "Lato",
+    "download": "#249ad1",
+    "upload": "#159b85",
+    "device_total": "#8970b3",
+    "heading_size": ".7rem",
+    "heading_weight": 600,
+    "download_size": "1.7rem",
+    "upload_size": "1.4rem",
+    "load_value_size": "1.4rem",
+    "load_label_size": ".68rem",
+    "temperature_detail_size": ".65rem",
+    "mobile_temperature_detail_size": ".62rem",
+    "load_gap": "6px",
+    "card_padding": "7px 9px",
+    "cumulative_value_size": ".94rem",
+    "cumulative_label_size": ".68rem"
+  },
+  "device_css": "namespace-only copy from F50 source",
+  "layout": "one f50-home, one mud-body, four ordered sections",
+  "backend": "unchanged from 0.3.0",
+  "palette": {
+    "surface": [
+      "#fff",
+      "#141822"
+    ],
+    "surface-sunken": [
+      "#f4f7fa",
+      "#0a0e17"
+    ],
+    "hairline": [
+      "#121a2221",
+      "#f9fafb1a"
+    ],
+    "text": [
+      "#121a22",
+      "#f9fafb"
+    ],
+    "text-muted": [
+      "#5f666d",
+      "#909297"
+    ],
+    "text-subtle": [
+      "#7f858b",
+      "#5d6067"
+    ],
+    "brand": [
+      "#0085b7",
+      "#00958e"
+    ],
+    "brand-subtle": [
+      "#ddecf5",
+      "#061a20"
+    ],
+    "success": [
+      "#004f3e",
+      "#51bd85"
+    ],
+    "warning": [
+      "#643e00",
+      "#f0ba59"
+    ],
+    "danger": [
+      "#8d1925",
+      "#f17070"
+    ],
+    "info": [
+      "#0e5794",
+      "#90c1ff"
+    ]
+  },
+  "device_css_sha256": "5ecf5c990c11bbcd9d2dd4232a744b8465334455393a63e2106a4b5c6cf662ca",
+  "responsive_totals": "four values on desktop; two by two below 600px"
+}
