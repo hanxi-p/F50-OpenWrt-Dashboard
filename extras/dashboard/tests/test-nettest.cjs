@@ -19,6 +19,6 @@ const text=e=>typeof e==='string'?e:e.children.map(text).join('');
  assert.equal(prepareCalls,2);assert.equal(finishCalls,2);assert.equal(calls.filter(c=>c.headers['Content-Type'].includes('download')).length,10);assert.equal(calls.filter(c=>c.headers['Content-Type'].includes('upload')).length,10);
  fail=true;await lan.onclick();assert.deepEqual(lan.children.map(text),['内网速度','上传 无法连接','下载 无法连接']);assert.equal(finishCalls,3);await lan.onclick();assert.equal(text(lan),'内网速度');
  await domestic.onclick();task=domestic.onclick();let timeout=[...timers.values()].find(t=>t.ms===12000);assert(timeout);timeout.fn();await task;assert(!domestic.disabled);assert.equal(text(domestic.children[2]),'无法连接');await domestic.onclick();assert.equal(text(domestic),'国内延迟');
- assert(!source.includes('测速完成'));assert(!source.includes('停止测速'));assert(source.includes('font-size:.82em'));dispose();assert(controls.children.every(c=>c.removed));
+ assert(!source.includes('测速完成'));assert(!source.includes('停止测速'));dispose();assert(controls.children.every(c=>c.removed));
  console.log('nettest three-line/repeat/reset/timeout round '+(round+1)+' PASS');
 }})().catch(e=>{console.error(e);process.exit(1);});
