@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/hanxi-p/F50-OpenWrt-Dashboard",
+  "commit": "ded6006579f0b3c14bea10d1e0d3a00de26b9039",
+  "upstream_sha256": {
+    "LICENSE": "99cc79e6a7a44f927b75b0548e43d745897eca6a60fd4074fae013112508a070",
+    "device-traffic/ledger.uc": "e555b6012e9bbcd3367b76892055524a5d37c56a5493491d8f31b9e32db6e1c2",
+    "f50units.js": "fa894f2da56e23ef44e621a27d49c4b3dfee05bd3cca4ef8cd2a695451662bd7",
+    "f50livechart.js": "c287cf095791d5fa962a3bf8cb12200926f83231cb1f7807c461950870b8079c",
+    "f50devices.js": "b5ba77b41c84a9b6240447c7a91068259bd9452542b77fdef3b0bfe6cf906da7",
+    "device-traffic/flow-account.c": "54fa27eeb5bd1071bce59825597db8d17cbce2248d4b3003b213e5904951a4f6",
+    "device-traffic/test-native.c": "170285754530d23bd37f3a007b1484efd714bb578b70595886a5bd193ee53136",
+    "device-traffic/test-ledger.uc": "5ddf78bc0fc5e0c518de21cb6a9cd335b63bdc2dda14ed393357f5c5849d9499",
+    "device-traffic/test-identity.uc": "54e17c09bbb28f5ed57213eb751410d4f43cbbe0e05a238bba44bcdeed9d73f9"
+  },
+  "changes": "Portable paths, configurable interfaces/redirect port, shared LuCI status include; high-water protection for partial/out-of-order conntrack updates."
+}

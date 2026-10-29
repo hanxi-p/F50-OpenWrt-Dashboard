@@ -1,0 +1,6 @@
+#!/bin/sh
+case "$1:$2" in
+ call:resources) exec flock /tmp/router-traffic-resources.lock ucode /usr/libexec/router-traffic/rpc.uc "$@";;
+ call:rename) exec flock /tmp/router-traffic-aliases.lock ucode /usr/libexec/router-traffic/rpc.uc "$@";;
+ *) exec ucode /usr/libexec/router-traffic/rpc.uc "$@";;
+esac

@@ -3,7 +3,7 @@ from pathlib import Path
 import ast,hashlib,json,re,shutil,subprocess
 root=Path(__file__).resolve().parents[1]
 missing=[];count=0
-for folder in ['dashboard','sms-email','system-reliability','notifications']:
+for folder in ['dashboard','sms-email','system-reliability','notifications','router-traffic']:
  d=root/'extras'/folder
  for line in (d/'SHA256SUMS').read_text(encoding='utf-8').splitlines():
   digest,name=line.split('  ',1)
@@ -11,7 +11,11 @@ for folder in ['dashboard','sms-email','system-reliability','notifications']:
  for p in d.rglob('*'):
   if p.is_file():
    if p.relative_to(d).as_posix() in ('device-traffic/flow-account','device-traffic/SHA256SUMS.local','device-traffic/flow-account.build'):continue
-   data=p.read_bytes();assert b'\r\n' not in data,p
+   data=p.read_bytes()
+   if p.suffix=='.woff2':
+    assert folder=='router-traffic' and data.startswith(b'wOF2'),p
+    count+=1;continue
+   assert b'\r\n' not in data,p
    if data.startswith(b'#!/bin/sh') and shutil.which('bash'):subprocess.run(['bash','-n',str(p)],check=True)
    if p.suffix=='.py':ast.parse(p.read_text(encoding='utf-8'))
    count+=1
@@ -44,7 +48,7 @@ if catalog:
   allowed={o['id'] for o in configuration['options']}
   choice=json.loads((root/'selection.example.json').read_text(encoding='utf-8')).get('configuration',{}).get('options',[]);assert all(x in allowed for x in choice)
   for alias,row in catalog.get('option_aliases',{}).items():assert row['feature']=='configuration' and row['option'] in allowed
-js=list((root/'extras/dashboard').rglob('*.js'))+list((root/'extras/dashboard').rglob('*.cjs'))
+js=[p for d in ['dashboard','router-traffic'] for ext in ['*.js','*.cjs'] for p in (root/'extras'/d).rglob(ext)]
 if shutil.which('node'):
  subprocess.run(['node','-e',"const fs=require('fs');for(const p of process.argv.slice(1))new Function(fs.readFileSync(p,'utf8'));",*[str(p) for p in js]],check=True)
 print(json.dumps({'package_files':count,'javascript_files':len(js),'individual_features':len(catalog['features']) if catalog else 0,'missing_links':missing,'result':'PASS'},ensure_ascii=False))

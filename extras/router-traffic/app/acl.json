@@ -1,0 +1,1 @@
+{"luci-app-routertraffic":{"description":"Portable WAN rates and per-device traffic","read":{"ubus":{"routertraffic":["status","devices","resources"]},"file":{"/tmp/f50-traffic/status.json":["read"],"/tmp/f50-traffic/history.csv":["read"],"/www/luci-static/resources/routertraffic/wan.css":["read"]}},"write":{"ubus":{"routertraffic":["rename"]}}}}

@@ -4,6 +4,9 @@
 'require ui';
 'require f50units as Units';
 var status=rpc.declare({object:'f50devices',method:'status',expect:{'':{}}});
+var removeDevice=rpc.declare({object:'f50devices',method:'remove',params:['mac'],expect:{'':{}}});
+var blockDevice=rpc.declare({object:'f50devices',method:'block',params:['mac'],expect:{'':{}}});
+var unblockDevice=rpc.declare({object:'f50devices',method:'unblock',params:['mac'],expect:{'':{}}});
 var rename=rpc.declare({object:'f50devices',method:'rename',params:['mac','name'],expect:{'':{}}});
 function size(n,rate){return rate?Units.fmtRate(n):Units.fmtBytes(n,2,true);}
 function todayDownloadRank(d){return d.today_rx!=null&&Number.isFinite(+d.today_rx)&&+d.today_rx>=0?+d.today_rx:-1;}
@@ -44,6 +47,9 @@ return baseclass.extend({mount:function(root){
  .f50-devices td:nth-child(4),.f50-devices td:nth-child(5){font-weight:400}
  .f50-devices td:nth-child(5){color:var(--f50-device-total)}
  .f50-device-name{display:block;width:100%;white-space:normal;overflow-wrap:anywhere;border:0!important;background:transparent!important;color:inherit!important;padding:0!important;text-align:left;font:inherit;font-size:.92em;line-height:1.35;font-weight:600;cursor:pointer}
+ .f50-device-total-action{border:0!important;background:transparent!important;color:inherit!important;font:inherit!important;font-weight:400!important;padding:0!important;width:100%;cursor:pointer;text-align:center}.f50-device-total-action:hover{text-decoration:underline}
+ .f50-device-blocked .f50-device-name:after{content:' · 已拒绝';font-weight:400;font-size:.85em;color:var(--danger,#b33)}
+ .f50-device-action-buttons{display:grid;gap:10px;margin-top:12px}.f50-device-action-buttons>button{width:100%;margin:0}
  .f50-device-offline{opacity:.65}.f50-device-offline .f50-device-name:before{content:'○ ';font-weight:400}
  @media(min-width:1500px){.f50-devices table{font-size:13px}.f50-devices td,.f50-devices th{padding:10px 14px}}
  @media(max-width:767px){
@@ -89,6 +95,23 @@ return baseclass.extend({mount:function(root){
  function edit(d){var input=E('input',{type:'text',value:d.name,style:'width:100%;min-width:0;box-sizing:border-box',maxlength:96});
   ui.showModal('设备名称',[E('p',{},d.mac+' · '+d.ip),input,E('p',{},'留空恢复主机名；名称按 MAC 保存。'),E('div',{class:'right'},[
    E('button',{class:'btn',click:ui.hideModal},'取消'),E('button',{class:'btn cbi-button-positive',click:function(){rename(d.mac,input.value).then(function(r){if(!r.ok)throw Error(r.error||'保存失败');ui.hideModal();}).catch(function(e){ui.addNotification(null,E('p',{},e.message));});}},'保存')])],'f50-device-name-modal');input.focus();}
+ function actions(d){
+  if(dead)return;
+  function run(method,button){
+   if(dead||button.disabled)return;button.disabled=true;
+   method(d.mac).then(function(r){if(!r.ok)throw Error(r.error||'操作失败');ui.hideModal();})
+    .catch(function(e){ui.addNotification(null,E('p',{},e.message));}).finally(function(){button.disabled=false;});
+  }
+  var del=E('button',{class:'btn cbi-button-negative',type:'button'},'删除记录');
+  var reject=E('button',{class:'btn cbi-button-negative',type:'button'},d.blocked?'允许连接':'踢出并拒绝连接');
+  del.onclick=function(){
+   ui.showModal('删除统计记录',[E('p',{},d.name),E('p',{},'清除此设备的统计，不影响联网；下次重新连接时重新计数。'+(d.blocked?' 此操作不会解除拒绝连接。':'')),E('div',{class:'f50-device-action-buttons'},[
+    E('button',{class:'btn cbi-button-negative',click:function(){run(removeDevice,this);}},'删除记录'),E('button',{class:'btn',click:ui.hideModal},'取消')])],'f50-device-name-modal');
+  };
+  reject.disabled=d.connection==='wired'||d.interface==='usb0';
+  reject.onclick=function(){run(d.blocked?unblockDevice:blockDevice,reject);};
+  ui.showModal('设备操作',[E('p',{},d.name),E('p',{style:'font-size:.85em'},(d.ip||'—')+' · '+d.mac),E('div',{class:'f50-device-action-buttons'},[del,reject,E('button',{class:'btn',click:ui.hideModal},'取消')])],'f50-device-name-modal');
+ }
  function draw(data){
   // Device and computer clocks need not agree. Measure how long the producer
   // has stopped advancing using only this client's monotonic clock.
@@ -100,14 +123,15 @@ return baseclass.extend({mount:function(root){
   var present={};(data.devices||[]).slice().sort(function(a,b){return todayDownloadRank(b)-todayDownloadRank(a)||a.mac.localeCompare(b.mac);}).forEach(function(d){
    if(present[d.mac])return;present[d.mac]=true;var kind=d.online?'online':'offline',c=d.online?online:offline,r=rows[d.mac];
    if(!r){var button=E('button',{class:'f50-device-name',type:'button'}),rates=[E('span',{class:'f50-device-dl','aria-label':'下载'}),E('span',{class:'f50-device-ul','aria-label':'上传'})],daily=[E('span',{class:'f50-device-dl','aria-label':'下载'}),E('span',{class:'f50-device-ul','aria-label':'上传'})];
-    var cells=[E('td',{},[button]),E('td',{class:'f50-device-pair'},rates),E('td',{class:'f50-device-pair'},daily),E('td'),E('td')];
-    r=rows[d.mac]={el:E('tr',{},cells),cells:cells,button:button,rates:rates,daily:daily};}
+    var totalButton=E('button',{class:'f50-device-total-action',type:'button',title:'设备操作'});
+    var cells=[E('td',{},[button]),E('td',{class:'f50-device-pair'},rates),E('td',{class:'f50-device-pair'},daily),E('td'),E('td',{},[totalButton])];
+    r=rows[d.mac]={el:E('tr',{},cells),cells:cells,button:button,rates:rates,daily:daily,totalButton:totalButton};r.button.onclick=function(){edit(r.data);};r.totalButton.onclick=function(){actions(r.data);};}
    var index=positions[kind]||0;
    if(c.body.children[index]!==r.el)c.body.insertBefore(r.el,c.body.children[index]||null);
    positions[kind]=index+1;
-   r.el.className=d.online?'':'f50-device-offline';r.el.setAttribute('data-connection',d.connection||'unknown');r.button.textContent=d.name;
-   r.button.title=d.name+'\nIP: '+(d.ip||'—')+'\nMAC: '+d.mac+'\n接口: '+(d.interface||'—');r.button.onclick=function(){edit(d);};
-   var targets=r.rates.concat(r.daily,[r.cells[3],r.cells[4]]);
+   r.data=d;r.el.className=(d.online?'':'f50-device-offline')+(d.blocked?' f50-device-blocked':'');r.el.setAttribute('data-connection',d.connection||'unknown');r.button.textContent=d.name;
+   r.button.title=d.name+'\nIP: '+(d.ip||'—')+'\nMAC: '+d.mac+'\n接口: '+(d.interface||'—');
+   var targets=r.rates.concat(r.daily,[r.cells[3],r.totalButton]);
    [size(stale?null:d.rx_rate,true),size(stale?null:d.tx_rate,true),size(d.today_rx),size(d.today_tx),size(d.month_total),size(d.total)].forEach(function(v,i){if(targets[i].textContent!==v)targets[i].textContent=v;});
   });
   if(Array.isArray(data.devices))Object.keys(rows).forEach(function(mac){if(!present[mac]){rows[mac].el.remove();delete rows[mac];}});

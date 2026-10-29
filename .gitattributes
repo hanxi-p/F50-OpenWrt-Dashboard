@@ -8,3 +8,9 @@ extras/dashboard/** text=auto eol=lf
 extras/sms-email/** text=auto eol=lf
 extras/system-reliability/** text=auto eol=lf
 extras/notifications/** text=auto eol=lf
+
+extras/router-traffic/** text=auto eol=lf
+extras/router-traffic/wan/fonts/*.woff2 binary
+
+# Keep the upstream OFL text verbatim, including its original trailing space.
+extras/router-traffic/wan/fonts/OFL.txt whitespace=-blank-at-eol

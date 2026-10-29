@@ -1,4 +1,4 @@
-import {advance,parseSMS,notifyAllowed,routeAdvance} from '../f50-bark-state.uc';
+import {advance,parseSMS,notifyAllowed,routeAdvance,barkTTL} from '../f50-bark-state.uc';
 function check(ok,msg){if(!ok)die(msg);}
 for(let round=0;round<3;round++){
  let s={};check(advance(s,'wifi',true)==null,'initial healthy');
@@ -34,6 +34,13 @@ print('PASS route transition, baseline, restart, event-ID retry and invalid-inpu
 for(let round=0;round<3;round++){
  check(notifyAllowed('route-example-1'),'route notifications allowed on Bark');
  check(!notifyAllowed('route-example-1','wxpusher'),'route notifications disabled on WxPusher');
- check(notifyAllowed('sms-1','wxpusher')&&notifyAllowed('kernel-example-1-fault','wxpusher'),'WxPusher SMS and device faults retained');
+ check(notifyAllowed('sms-1','wxpusher')&&!notifyAllowed('kernel-example-1-fault','wxpusher'),'WxPusher SMS only');
 }
 print('PASS route channel policy three rounds\n');
+
+for(let round=0;round<3;round++){
+ for(let id in ['boot-example','ready-example','wifi-example-1-recovery','devices-example-1-recovery','kernel-example-1-recovery','route-example-1']){check(!notifyAllowed(id,'wxpusher'),'non-SMS excluded on Wx');check(barkTTL(id)==600,'transient Bark archive TTL');}
+ for(let id in ['sms-123','wifi-example-1-fault','kernel-example-1-fault'])check(barkTTL(id)==0,'SMS and faults retain existing archive policy');
+ check(notifyAllowed('sms-123','wxpusher')&&!notifyAllowed('sms-invalid','wxpusher')&&!notifyAllowed(null,'wxpusher'),'strict SMS event IDs');
+}
+print('PASS three rounds: Wx SMS allowlist and Bark restart/ready/recovery TTL, SMS/fault retention\n');

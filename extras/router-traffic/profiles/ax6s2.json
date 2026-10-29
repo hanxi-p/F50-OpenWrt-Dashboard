@@ -1,0 +1,9 @@
+{
+  "board": "xiaomi,redmi-router-ax6s",
+  "architecture": "aarch64",
+  "lan_network": "lan",
+  "wan_network": "wan",
+  "interface_detection": "ubus network.interface status; never copies F50 names",
+  "acceleration": "leave current software/hardware offload unchanged; verify kernel counters",
+  "legacy_wan_widget": "bundle WAN view; migrate reliable legacy counters/history, stop the old writer, retain backup and rollback"
+}

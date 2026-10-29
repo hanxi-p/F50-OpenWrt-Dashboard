@@ -4,6 +4,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin:/bin:/opt/mu300/busybox-bin
 umask 077
 [ "$#" -eq 1 ] || { echo 'usage: f50-wxpusher-send payload.json' >&2; exit 2; }
 D=/etc/mu300/wxpusher
+ucode -e 'import * as fs from "fs";import {notifyAllowed} from "/usr/libexec/f50-bark-state.uc";let p=json(fs.readfile(ARGV[0]));if(!notifyAllowed(p.id,"wxpusher"))exit(2);' "$1"
 [ -s "$D/spt" ] || { echo 'WxPusher token missing' >&2; exit 1; }
 tmp=$(mktemp -d /tmp/f50-wxpusher-send.XXXXXX)
 trap 'rm -rf "$tmp"' EXIT

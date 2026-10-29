@@ -1,0 +1,52 @@
+# AX6S 独立流量面板 0.2.2
+
+基于 F50 面板提取并适配 OpenWrt，来源及 MIT 授权见 SOURCE.json、LICENSE。此包是 OpenWrt 上执行的离线安装包，不能作为固件交给 sysupgrade。无需连接 F50，不包含私人名称、MAC、代理配置、密码及其他路由器流量历史。
+
+## 功能
+
+- 独立 WAN 上传下载曲线，桌面指针旁提示、手机按住拖动，稳定刷新；速率 B/K/M/G，每秒一次，除 B 外两位小数。
+- 无线逐台展示，同表下面的“有线连接”聚合全部 LAN 设备；按 MAC 保存底层记录，自定义名称优先，按今日下载量排序。
+- 实时速率／今日流量各自上下排下载、上传，本月累计／总累计独立；设备表整体及其下级离线设备可折叠，名称完整换行。
+- CPU 两核直接显示，CPU／内存／实际温度三卡布局，下方存储详情。使用 MemAvailable 表示可用内存。
+- 原有系统、端口、网络、DHCPv4/v6、无线、站点、UPnP 默认手动折叠。今日统计仅保留数字，不显示下载/上传比例横条或图例。今日下载、今日上传、本月累计、总累计四项展示，删除本次接收/发送和小时用量。
+
+## 安装
+
+GitHub 提供源码及字体授权；已编译二进制、私有账本和整机备份不上传。请先按文末构建命令生成带 bin/flow-account 的离线包，再传到目标设备安装。
+
+仅支持 aarch64。本版适配单个 Linux LAN bridge、单 WAN 的 AX6S；从 ubus 发现实际物理接口，不假设 F50 接口名称。默认逻辑接口 lan/wan，也可用安装参数指定。
+
+要求：已有 LuCI、rpcd、ucode 及 fs/uloop signal、ubus、uci、nft、jsonfilter、iw、ip、flock；nf_conntrack_netlink 已可用、nf_conntrack_acct=1。已有软/硬卸载时，fw4 的 ft 流表必须包含 counter。预检失败会退出，不会自动改网络、代理、加速或加载内核模块。缺少内核模块时应安装与目标固件严格匹配的模块，不能跨固件复制 .ko。
+
+```sh
+# 先在电脑核验外部 SHA256SUMS，再将 tar.gz 传到路由器 /tmp。
+mkdir -p /tmp/router-traffic-install
+tar xzf /tmp/router-traffic-ax6s-v0.2.2.tar.gz -C /tmp/router-traffic-install
+cd /tmp/router-traffic-install
+sh preflight.sh lan wan
+sh install.sh lan wan
+```
+
+安装器核验包内 MANIFEST.sha256，备份至 /root/router-traffic-backups/，保留名称、身份与账本，校验 network/firewall/wireless 未变；健康检查失败自动恢复代码。仅启动/更新统计及重载 rpcd，不重启 Wi-Fi、网络或 Clash。相同 native 二进制升级只重启账本进程，保留采集源代次。安装完成后重新载入 LuCI 状态页。
+
+回退：使用安装成功输出的完整备份目录执行 `sh /root/router-traffic-backups/具体目录/rollback.sh /root/router-traffic-backups/具体目录`。回退恢复旧代码，保留最新设备账本；回到旧 WAN 后端时导出最新可兼容的 WAN 总量，另存新账本。
+
+## 计数口径与迁移
+
+设备数据来自只读 conntrack，排除局域网、私有目的地及内部 DNS，不相加 Wi-Fi/LAN/WAN 接口计数。透明代理只归属客户端连接段，按检测到的 redir-port 识别。TCP 重传及协议头属于实际网络流量，因此不会等于下载文件大小或运营商账单。
+
+0.2.2 修正 WAN 整秒计时造成的速率跳动，改用实际单调时间差；绑定 boot_id、设备及 ifindex，首次和计数重置建立基线，过期不显示虚假速率。跨日/小时清零；跨越未采样边界的增量只进总量，不凭空归入当天。设备采集还使用高水位防止乱序/重复事件重复累计。
+
+旧 WAN 的有效今日、小时和峰值保留，旧峰值时序无法重新计算；停止旧服务后只有校验一致且新鲜的原始基线才衔接。旧版本没有保存的历史、停机期间无法归属的跨日增量无法重建。全新路由器从安装后统计，不能把当前设备账本复制给另一台当作其历史。
+
+账本每秒写 RAM，每 60 秒持久保存，正常停止时保存；突然断电最多可能丢失最近检查点内的数据。兼容目录 /tmp/f50-traffic 仅为已有曲线的数据接口，不依赖 F50 硬件。/etc/router-traffic/ 是本机私有数据，应单独备份。
+
+## 验证范围
+
+纯模型与 DOM 测试覆盖首样、真实间隔、重复采样、回退、代次/模拟重启、跨日/月、失效、身份归并、LAN 排除、有线聚合、布局生命周期、触摸和折叠。隔离文件系统测试覆盖新装、完整 WAN 资源/字体、重复热安装、保留总量、回退及健康失败自动回退。
+
+AX6S2 保持硬件卸载，实际 TCP 上传、下载各三轮（每轮 2 MiB）。上传 conntrack 与发送端 TCP_INFO 的字节量相差约 2–3%，大量高于文件大小的部分由真实 TCP 重传解释；下载收到的 conntrack 字节与唯一 SSH 数据量差约 2%。不能因此宣称所有内核、卸载驱动、代理模式、多 VLAN/多 WAN 均已准确适配。IPv6/跨日/重启/接口切换中仅模型覆盖的项目不能称为实机中断验收。
+
+源码内含 tests；构建：`python tools/build.py --zig /path/to/zig --output router-traffic-ax6s-v0.2.2.tar.gz`。亦可使用 --reuse-archive 复用源码哈希一致、ELF 架构和构建校验通过的已编译二进制。Lato 字体及 OFL 授权单独见 wan/fonts/。
+
+月度与总累计从可恢复历史衔接：月度只能以旧版可信今日值为已知下限，总累计保留独立已知值的最大值，重叠记录不相加；缺失的更早/月初历史无法补算，数字提示和本说明明确标注。

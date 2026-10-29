@@ -1,0 +1,451 @@
+/* Exact F50 dashboard structure, adapted only for the AX6S2 LuCI status page. */
+@font-face {
+	font-display: swap;
+	font-family: "Lato";
+	font-style: normal;
+	font-weight: 400;
+	src: url("/luci-static/resources/routertraffic/fonts/lato-v24-latin-regular.woff2") format("woff2");
+}
+
+.cbi-section:has(.f50-home) {
+	background: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	margin: 0 0 1rem !important;
+	padding: 0 !important;
+}
+
+.cbi-section:has(.f50-home) > .cbi-title {
+	display: none !important;
+}
+
+.cbi-section:has(.f50-home) > div:last-child {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.f50-home {
+	--f50-dl: #249ad1;
+	--f50-ul: #159b85;
+	--surface: #fff;
+	--surface-sunken: #f4f7fa;
+	--hairline: rgba(18, 26, 34, .13);
+	--text: #121a22;
+	--text-muted: #5f666d;
+	--text-subtle: #7f858b;
+	--brand: #0085b7;
+	--brand-subtle: #ddecf5;
+	--radius-base: .5rem;
+	--app-shadow-sm: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
+	--f50-rate-label-size: .7rem;
+	--f50-rate-label-weight: 600;
+	color: var(--text);
+	font-family: "Lato", ui-sans-serif, system-ui, sans-serif !important;
+	font-size: .85rem;
+	line-height: 1.45;
+}
+
+.f50-home *,
+.f50-home *::before,
+.f50-home *::after {
+	box-sizing: border-box;
+}
+
+.f50-home * {
+	font-family: "Lato", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+.f50-home .mud-card {
+	background: var(--surface);
+	border: 1px solid var(--hairline);
+	border-radius: calc(var(--radius-base) + .375rem);
+	box-shadow: var(--app-shadow-sm);
+	padding: 10px 12px;
+	transition: border-color .15s;
+}
+
+.f50-home .mud-card:hover {
+	border-color: color-mix(in oklab, var(--brand, var(--primary, #2f7bf6)) 30%, var(--hairline, var(--border, #e3e6ea)));
+}
+
+.f50-home .mud-sec {
+	padding: 0 0 4px;
+}
+
+.f50-home .mud-sec > h3 {
+	color: var(--text-muted);
+	font-size: .7rem;
+	font-weight: 600;
+	letter-spacing: .08em;
+	margin: 9px 0 7px;
+}
+
+.f50-home .mud-sec > h3::before {
+	background: var(--brand);
+	border-radius: 50%;
+	content: '';
+	display: inline-block;
+	height: 6px;
+	margin-right: 7px;
+	vertical-align: 1px;
+	width: 6px;
+}
+
+.f50-home .f50-traffic-title {
+	align-items: baseline;
+	display: flex;
+}
+
+.f50-home #f50-peak-title {
+	background: none;
+	border: 0;
+	box-shadow: none;
+	color: inherit;
+	font: inherit;
+	margin-left: auto;
+	padding: 0;
+}
+
+.f50-home .f50-rate-head {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	margin: 5px 0 7px;
+}
+
+.f50-home .f50-rate-head > div {
+	align-items: baseline;
+	column-gap: 8px;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+	min-width: 0;
+}
+
+.f50-home .f50-rate-head b {
+	font-variant-numeric: tabular-nums;
+	line-height: 1.2;
+}
+
+.f50-home .f50-rate-download {
+	color: var(--f50-dl);
+	font-size: 1.7rem;
+	font-weight: 750;
+}
+
+.f50-home .f50-rate-upload {
+	color: var(--f50-ul);
+	font-size: 1.4rem;
+	font-weight: 650;
+}
+
+.f50-home .f50-rate-head span,
+.f50-home .f50-rate-head b {
+	color: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	white-space: nowrap;
+}
+
+.f50-home .f50-rate-head > div > span:first-child {
+	font-size: var(--f50-rate-label-size);
+	font-weight: var(--f50-rate-label-weight);
+}
+
+.f50-home .f50-peak-button {
+	align-items: baseline;
+	background: transparent;
+	border: 0;
+	border-radius: 6px;
+	box-shadow: none;
+	display: flex;
+	font: inherit;
+	justify-content: flex-end;
+	justify-self: stretch;
+	line-height: inherit;
+	min-width: 0;
+	padding: 0;
+	text-align: right;
+}
+
+.f50-home :is(#mud-rate-chart,#f50-rate-chart) {
+	background: #fff;
+	border: 1px solid #c8dfe7;
+	border-radius: 8px;
+	color: #385666;
+	font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace !important;
+	height: 230px !important;
+	overflow: hidden;
+	position: relative;
+}
+
+.f50-home :is(#mud-rate-chart,#f50-rate-chart) * {
+	font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace !important;
+}
+
+.f50-home .f50-rate-svg {
+	height: calc(100% - 46px);
+	left: 0;
+	position: absolute;
+	top: 22px;
+	width: 100%;
+}
+
+.f50-home .f50-btop-label {
+	box-sizing: border-box;
+	display: flex;
+	font-size: 10px;
+	height: 20px;
+	justify-content: center;
+	left: 50%;
+	line-height: 16px;
+	position: absolute;
+	right: auto;
+	transform: translateX(-50%);
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+}
+
+.f50-home .f50-btop-label > span:empty {
+	display: none;
+}
+
+.f50-home .f50-btop-dl {
+	align-items: center;
+	bottom: auto;
+	color: #249ad1;
+	top: 2px;
+}
+
+.f50-home .f50-btop-ul {
+	align-items: center;
+	bottom: 2px;
+	color: #159b85;
+	top: auto;
+	z-index: 2;
+}
+
+.f50-home .f50-rate-time-axis {
+	align-items: center;
+	border: 0;
+	bottom: 2px;
+	box-sizing: border-box;
+	color: #607985;
+	display: flex;
+	font-size: 10px;
+	font-variant-numeric: tabular-nums;
+	height: 20px;
+	justify-content: space-between;
+	left: 0;
+	line-height: 16px;
+	padding: 0 5px;
+	position: absolute;
+	right: 0;
+}
+
+.f50-home .f50-rate-time-axis span {
+	line-height: 16px;
+	padding-top: 0;
+	position: relative;
+}
+
+.f50-home .f50-rate-value-axis {
+	bottom: 24px;
+	color: #607985;
+	display: block;
+	font-size: 9px;
+	font-variant-numeric: tabular-nums;
+	left: 5px;
+	line-height: 1;
+	pointer-events: none;
+	position: absolute;
+	text-align: left;
+	top: 22px;
+	width: 25px;
+	z-index: 1;
+}
+
+.f50-home .f50-rate-value-axis > span {
+	background: rgba(255, 255, 255, .8);
+	left: 0;
+	padding-right: 2px;
+	position: absolute;
+	right: auto;
+	transform: translateY(-50%);
+	white-space: nowrap;
+}
+
+.f50-home .f50-rate-value-axis .f50-axis-dl { color: #249ad1; }
+.f50-home .f50-rate-value-axis .f50-axis-ul { color: #159b85; }
+
+.f50-home .f50-rate-axis-unit {
+	display: none;
+}
+
+.f50-home .f50-today-title {
+	align-items: baseline;
+	display: flex;
+	margin-top: 12px !important;
+}
+
+.f50-home .f50-today-title > span {
+	color: var(--text-subtle);
+	font-size: .68rem;
+	font-weight: 400;
+	letter-spacing: 0;
+	margin-left: auto;
+}
+
+.f50-home .f50-today-kpis {
+	display: grid;
+	gap: 6px;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	margin-bottom: 5px;
+}
+
+.f50-home .f50-today-kpis .mud-kpi {
+	min-width: 0;
+	padding: 8px 9px;
+}
+
+.f50-home .f50-today-kpis .mud-kpi b {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.f50-home .f50-today-kpis .mud-kpi:first-child b {
+	color: var(--f50-dl);
+}
+
+.f50-home .f50-today-kpis .mud-kpi:nth-child(2) b {
+	color: var(--f50-ul);
+}
+
+.f50-home .mud-kpis {
+	display: grid;
+	gap: 6px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	margin-bottom: 6px;
+}
+
+.f50-home .mud-kpi {
+	background: var(--surface-sunken);
+	border-radius: var(--radius-base);
+	padding: 7px 9px;
+}
+
+.f50-home .mud-kpi b {
+	display: block;
+	font-size: 1rem;
+	font-variant-numeric: tabular-nums;
+	font-weight: 700;
+	line-height: 1.25;
+}
+
+.f50-home .mud-kpi span {
+	color: var(--text-muted);
+	font-size: .68rem;
+}
+
+.f50-home .f50-live-return {
+	background: #fff;
+	border: 1px solid #b6d7e4;
+	border-radius: 5px;
+	color: #278eaa;
+	font-size: .65rem;
+	padding: 1px 5px;
+	position: absolute;
+	right: 5px;
+	top: 1px;
+	z-index: 2;
+}
+
+.f50-home #f50-rate-detail {
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+	.f50-home .mud-card { padding: 9px 10px; }
+	.f50-home :is(#mud-rate-chart,#f50-rate-chart) { height: 200px !important; }
+	.f50-home .f50-btop-label { font-size: 10px; }
+}
+
+@media (max-width: 420px) {
+	.f50-home .f50-rate-download { font-size: 1.45rem; }
+	.f50-home .f50-rate-upload { font-size: 1.25rem; }
+	.f50-home .f50-rate-head > div { column-gap: 5px; }
+	.f50-home .f50-today-kpis .mud-kpi { padding: 7px 6px; }
+	.f50-home .f50-today-kpis .mud-kpi b { font-size: .9rem; }
+	.f50-home .f50-today-kpis .mud-kpi span { font-size: .61rem; }
+}
+
+/* F50 published WAN header and live-chart styles, scoped to .f50-home. */
+   .f50-home{--f50-dl:#249ad1;--f50-ul:#159b85}
+   .f50-home .f50-rate-head{display:flex;flex-direction:column;gap:3px;margin:5px 0 7px}
+   .f50-home .f50-rate-head>div{display:flex;align-items:baseline;gap:9px;min-width:0}
+   .f50-home .f50-rate-head b{font-variant-numeric:tabular-nums;line-height:1.2}
+   .f50-home .f50-rate-download{color:var(--f50-dl)}
+   .f50-home .f50-rate-download{font-size:1.7rem;font-weight:750}
+   .f50-home .f50-rate-upload{color:var(--f50-ul)}
+   .f50-home .f50-rate-upload{font-size:1.4rem;font-weight:650}
+   .f50-home .f50-rate-head span,.f50-home .f50-rate-head b{font-size:inherit;font-weight:inherit;white-space:nowrap;color:inherit}
+   .f50-home .f50-rate-head span{font-size:var(--f50-rate-label-size,1rem);font-weight:var(--f50-rate-label-weight,600)}
+   .f50-home .f50-traffic-title{display:flex;align-items:baseline}
+   .f50-home #f50-peak-title{margin-left:auto;border:0;background:none;box-shadow:none;padding:0;color:inherit;font:inherit}
+   .f50-home .f50-rate-head>div{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);align-items:baseline;column-gap:8px}
+   .f50-home .f50-peak-button{border:0;background:transparent;color:inherit;box-shadow:none;border-radius:6px;padding:0;min-width:0;display:flex;align-items:baseline;justify-content:flex-end;justify-self:stretch;line-height:inherit;font:inherit;cursor:pointer;text-align:right}
+   .f50-home .f50-rate-head .f50-peak-button b{font-size:inherit;font-weight:inherit}
+   .f50-home .f50-peak-button[aria-expanded=true]{background:#eef7fa}
+   .f50-home #mud-peaks-panel{margin:5px 0 8px;padding:7px 0;border:1px solid #d4e5eb;border-radius:9px;background:#fff}
+   .f50-home #mud-peaks-panel[hidden]{display:none}
+   .f50-home .f50-peak-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+   .f50-home .f50-peak-legend{display:flex;justify-content:flex-end;gap:14px;padding:0 10px;font-size:.7rem}
+   .f50-home .f50-peak-legend span:first-child{color:#249ad1}.f50-home .f50-peak-legend span:last-child{color:#159b85}
+   @media(max-width:420px){.f50-home .f50-rate-download{font-size:1.45rem}.f50-home .f50-rate-upload{font-size:1.25rem}.f50-home .f50-rate-head>div{column-gap:5px}}
+   html[data-darkmode=true] .f50-home{--f50-dl:#249ad1;--f50-ul:#159b85}
+
+   .f50-home :is(#mud-rate-chart,#f50-rate-chart){height:230px!important;background:#fff;border:1px solid #c8dfe7;border-radius:8px;overflow:hidden;color:#385666;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+   .f50-home .f50-rate-svg{left:0;top:22px;width:100%;height:calc(100% - 46px)}
+   .f50-home .f50-btop-label{position:absolute;left:9px;right:9px;display:flex;justify-content:space-between;font-size:11px;line-height:20px;white-space:nowrap;font-variant-numeric:tabular-nums}
+   .f50-home .f50-btop-dl{top:2px;right:50%;color:#249ad1}.f50-home .f50-btop-ul{top:2px;bottom:auto;left:52%;color:#159b85}
+   @media(max-width:600px){.f50-home :is(#mud-rate-chart,#f50-rate-chart){height:200px!important}.f50-home .f50-btop-label{font-size:10px}}
+   .f50-home .f50-rate-time-axis{position:absolute;left:9px;right:9px;bottom:2px;height:19px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #c8dfe7;color:#607985;font-size:10px;font-variant-numeric:tabular-nums}
+   .f50-home .f50-rate-time-axis span{position:relative;padding-top:3px}.f50-home .f50-rate-time-axis span:before{content:'';position:absolute;top:0;height:3px;border-left:1px solid #94b2bf}.f50-home .f50-rate-time-axis span:last-child:before{right:0}
+   .f50-home .f50-rate-svg{left:46px;width:calc(100% - 54px)}
+   .f50-home .f50-rate-value-axis{position:absolute;left:5px;top:22px;bottom:24px;width:37px;display:flex;flex-direction:column;justify-content:space-between;text-align:right;font-size:9px;line-height:1;color:#607985;font-variant-numeric:tabular-nums}
+   .f50-home .f50-rate-value-axis small{font-size:8px}.f50-home .f50-rate-value-axis .f50-axis-dl{color:#249ad1}.f50-home .f50-rate-value-axis .f50-axis-ul{color:#159b85}
+   .f50-home .f50-rate-value-axis{display:block}
+   .f50-home .f50-rate-value-axis>span{position:absolute;right:0;transform:translateY(-50%);white-space:nowrap}
+   .f50-home .f50-rate-axis-unit{position:absolute;left:4px;top:6px;width:38px;text-align:right;color:#607985;font-size:8px;line-height:14px}
+   .f50-home .f50-btop-label{left:46px;right:8px}
+   .f50-home .f50-rate-time-axis{left:46px;right:8px}
+   .f50-home .f50-rate-svg{left:0;width:100%}
+   .f50-home .f50-rate-value-axis{left:5px;width:25px;text-align:left;pointer-events:none;z-index:1}
+   .f50-home .f50-rate-value-axis>span{left:0;right:auto;background:rgba(255,255,255,.8);padding-right:2px}
+   .f50-home .f50-rate-axis-unit{left:5px;width:auto;text-align:left}
+   .f50-home .f50-rate-time-axis{left:0;right:0;padding:0 5px;box-sizing:border-box}
+   .f50-home .f50-btop-dl{left:42px;right:50%}.f50-home .f50-btop-ul{left:52%;right:5px}
+   .f50-home .f50-btop-dl{top:2px;bottom:auto;left:42px;right:5px}
+   .f50-home .f50-btop-ul{top:auto;bottom:25px;left:42px;right:5px;pointer-events:none}
+   .f50-home .f50-rate-axis-unit{display:none}
+   .f50-home .f50-btop-dl{left:5px;right:auto;top:2px;justify-content:flex-start;gap:0}
+   .f50-home .f50-btop-ul{left:5px;right:auto;bottom:25px;justify-content:flex-start;gap:0}
+   .f50-home .f50-btop-label>span:empty{display:none}
+   .f50-home .f50-btop-dl,.f50-home .f50-btop-ul{left:50%;right:auto;transform:translateX(-50%);justify-content:center;white-space:nowrap}
+   .f50-home .f50-btop-dl{top:2px;bottom:auto}.f50-home .f50-btop-ul{top:auto;bottom:2px;z-index:2}
+   .f50-home .f50-btop-label,.f50-home .f50-rate-time-axis{font-size:10px;line-height:16px;height:20px;box-sizing:border-box}
+   .f50-home .f50-btop-dl{top:2px;bottom:auto;align-items:center}
+   .f50-home .f50-btop-ul{top:auto;bottom:2px;align-items:center}
+   .f50-home .f50-rate-time-axis{bottom:2px;border:0;align-items:center}
+   .f50-home .f50-rate-time-axis span{padding-top:0;line-height:16px}
+   .f50-home .f50-rate-time-axis span:before{display:none}
+
+/* Keep old/new cached chart containers dimensionally identical. */
+.f50-home :is(#mud-rate-chart,#f50-rate-chart){display:block;position:relative;min-width:0;width:100%;height:230px!important;isolation:isolate}
+.f50-home :is(#mud-rate-chart,#f50-rate-chart) .f50-rate-svg{position:absolute;left:0;right:0;top:22px;bottom:24px;width:100%;height:calc(100% - 46px);display:block;max-width:none}
+@media(max-width:600px){.f50-home :is(#mud-rate-chart,#f50-rate-chart){height:200px!important}}
+
+.f50-home .f50-today-kpis .mud-kpi:nth-child(n+3) b{color:#9471c0}
+@media(max-width:600px){.f50-home .f50-today-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#maincontent:has(.f50-home) h2[name="content"]{display:none}

@@ -654,7 +654,7 @@
       "id": "push-notifications",
       "category": "其他功能",
       "name": "Bark/WxPusher短信与故障通知",
-      "summary": "双通道接收新短信及故障/恢复，独立重试去重，保留原短信邮件。",
+      "summary": "Bark接收短信与设备告警，WxPusher仅短信；重启/恢复提醒十分钟过期，保留短信邮件。",
       "delivery": "configuration",
       "document": "docs/features/push-notifications.md",
       "files": [
@@ -676,15 +676,13 @@
     {
       "id": "network-test",
       "category": "诊断管理",
-      "name": "内网测速与国内／国外连通检测",
-      "summary": "第二排测试内网吞吐、百度Ping与谷歌HTTPS，标题和小字结果三行显示，可点击复位重测。",
+      "name": "国内／国外延迟检测",
+      "summary": "百度Ping与谷歌HTTPS，运行和结果两行显示，可复位重测；不再提供内网吞吐测速。",
       "delivery": "dashboard",
       "document": "docs/features/network-test.md",
       "files": [
         "extras/dashboard/f50nettest.js",
         "extras/dashboard/f50-nettest",
-        "extras/dashboard/f50-nettest-cgi",
-        "extras/dashboard/f50-nettest-stream.uc",
         "extras/dashboard/luci-app-f50nettest.json"
       ],
       "requires": [

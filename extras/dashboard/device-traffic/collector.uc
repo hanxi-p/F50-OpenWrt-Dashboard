@@ -2,6 +2,7 @@
 import * as fs from 'fs';
 import * as loop from 'uloop';
 import {readjson,atomic,calculate} from './ledger.uc';
+import {filterRemoved} from './controls.uc';
 import {usbPeers} from './peers.uc';
 const R='/tmp/f50-devices', P='/etc/f50-devices';
 fs.mkdir(R,0700);fs.mkdir(P,0700);
@@ -31,7 +32,10 @@ function tick(){
  if(busy)return;busy=true;let start=mono();
  try{
   let src=fs.readfile(R+'/source');if(src){
-   let result=calculate(state,src,peers(),readjson(P+'/aliases.json',{}),time(),trim(cmd('date +%F')),readjson(P+'/identities.json',{}));
+   let links=readjson(P+'/identities.json',{}),controls=readjson(P+'/actions.json',{});
+   let filtered=filterRemoved(state,src,peers(),links,controls,function(id,snapshot){fs.mkdir(P+'/deleted-archive',0700);atomic(P+'/deleted-archive/'+id+'.json',snapshot);});
+   let result=calculate(state,filtered.source,filtered.peers,readjson(P+'/aliases.json',{}),time(),trim(cmd('date +%F')),links);
+   result.public.control_version=1;
    state=result.state;atomic(P+'/ledger.json',state);atomic(R+'/devices.json',result.public);
   }
  }catch(e){warn('f50-devices: '+e+'\n');}

@@ -83,8 +83,8 @@
 
 ### 诊断管理
 
-- [ ] **[内网测速与国内／国外连通检测](docs/features/network-test.md)** `network-test`
-  第二排按需测速，标题与小字结果三行显示；再次点击复位，随后可重测。
+- [ ] **[国内／国外延迟检测](docs/features/network-test.md)** `network-test`
+  第二排按需检测百度Ping和谷歌HTTPS；运行/结果两行显示，再次点击复位后可重测。
 
 - [ ] **[无线驱动日志与发包修补](docs/features/wifi-log-quiet.md)** `wifi-log-quiet`
   精确匹配构建的日志降噪与 AP DNS/IPv6组播发送路径修补，独立确认应用。
@@ -115,7 +115,7 @@
 ### 其他功能
 
 - [ ] **[Bark/WxPusher短信与故障通知](docs/features/push-notifications.md)** `push-notifications`
-  新短信与故障/恢复双通道通知，独立重试，保留原短信邮件转发。
+  Bark接收短信与设备告警，WxPusher仅短信；重启/恢复提醒十分钟过期，保留原短信邮件转发。
 
 - [ ] **[手机与桌面布局](docs/features/mobile-layout.md)** `mobile-layout`
   常用信息常显，详情按需展开，手机按钮每行3个。
@@ -152,3 +152,7 @@
 系统和原始MU300面板：[dikeckaan/mu300-linux](https://github.com/dikeckaan/mu300-linux)，感谢作者与[kanoqwq / Minikano](https://github.com/kanoqwq)等贡献者。功能扩展由[hanxi-p](https://github.com/hanxi-p)维护，[完整署名](CREDITS.md)与[许可](LICENSE.md)保留。
 
 尚未安装系统，先使用[F50刷机指北](https://github.com/hanxi-p/F50-mu300-linux-guide)。这里按功能选择和配置；公开代码和截图不含私人凭据、原始日志或整机备份。
+
+## AX6S 独立流量面板
+
+迁移到已运行 OpenWrt 的 AX6S，可使用[独立流量面板源码与构建说明](extras/router-traffic/README.md)。包含无线逐台/有线汇总统计、WAN曲线、CPU/内存/温度与折叠区块；运行时识别接口，不带F50蜂窝、登录、代理或通知配置。源码版本0.2.2，编译生成aarch64离线安装包；安装包不属于刷机固件。

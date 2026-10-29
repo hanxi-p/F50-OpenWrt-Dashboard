@@ -36,9 +36,11 @@ async function scenario(){
  home.organize(root);home._actionsObserver.disconnect();
  const NetTest=new (load('f50nettest.js',common))();const disposeNetTest=NetTest.mount(root);
  const primary=root.querySelector('.f50-primary-controls');
- assert.deepEqual(Array.from(primary.children).slice(0,3).map(n=>n.id),['mud-btn-data','mud-btn-power','mud-btn-openclash']);
- assert.equal(primary.children[6].id,'mud-btn-adguard');assert.equal(primary.children[8].id,'mud-btn-other');
- assert.deepEqual(Array.from(primary.children).slice(3,6).map(n=>n.textContent),['内网速度','国内延迟','国外延迟']);
+ assert.deepEqual(Array.from(primary.children).slice(0,3).map(n=>n.id),['mud-btn-adguard','mud-btn-power','mud-btn-openclash']);
+ assert.equal(primary.children.length,6);assert.equal(primary.children[5].id,'mud-btn-other');
+ assert(root.querySelector('#f50-other-controls').contains(root.querySelector('#mud-btn-data')));assert(root.querySelector('#f50-other-controls').contains(root.querySelector('#mud-btn-reboot')));
+ const more=root.querySelector('#mud-btn-other'),drawer=root.querySelector('#f50-other-controls');for(let n=0;n<3;n++){more.onclick();assert(!drawer.hidden);more.onclick();assert(drawer.hidden);}
+ assert.deepEqual(Array.from(primary.children).slice(3,5).map(n=>n.textContent),['国内延迟','国外延迟']);
  assert.equal(root.querySelector('#f50-other-controls').contains(primary.children[3]),false);
  disposeNetTest();
 

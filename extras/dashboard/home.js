@@ -404,6 +404,10 @@ return view.extend({
   wrap([extra,dcols,leases,android],'无线、局域网与设备详情',dcols);
   var other=E('div',{id:'f50-other-controls',class:'mud-ctl f50-other-controls',hidden:true});quick.appendChild(other);
   ['wifi','5g','channel','modem','android'].forEach(function(id){other.appendChild(root.querySelector('#mud-btn-'+id));});android.remove();
+  var primary=quick.querySelector('.f50-primary-controls');
+  ['adguard','power','openclash','other'].forEach(function(id){primary.appendChild(root.querySelector('#mud-btn-'+id));});
+  var firstOther=other.firstChild;
+  ['data','reboot'].forEach(function(id){other.insertBefore(root.querySelector('#mud-btn-'+id),firstOther);});
   var otherBtn=root.querySelector('#mud-btn-other');otherBtn.setAttribute('aria-controls','f50-other-controls');
   otherBtn.onclick=function(){other.hidden=!other.hidden;otherBtn.setAttribute('aria-expanded',String(!other.hidden));otherBtn.textContent=other.hidden?'更多设置':'收起设置';};
   var lockTable=locks.querySelector('.mud-scroll');locks.querySelector('h3').remove();
@@ -468,6 +472,7 @@ return view.extend({
    .f50-home #mud-btn-other,.f50-home #mud-btn-other[aria-expanded=false],.f50-home #mud-btn-other[aria-expanded=true],.f50-home #f50-other-controls>.mud-btn,.f50-home #f50-other-controls .mud-lockbtn{background:#238b45!important;border-color:#238b45!important;color:#fff!important;font-weight:500!important}
    .f50-home #mud-btn-reboot{background:#fff;color:#b52c38;border-color:#e2a5ab}
    .f50-home #mud-btn-reboot:hover{background:#fff1f2}
+   .f50-home #f50-other-controls>#mud-btn-reboot{background:#fff!important;color:#b52c38!important;border-color:#e2a5ab!important}
    .f50-home #mud-rate-chart{height:230px!important;background:#fff;border:1px solid #c8dfe7;border-radius:8px;overflow:hidden;color:#385666;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
    .f50-home .f50-rate-svg{left:0;top:22px;width:100%;height:calc(100% - 46px)}
    .f50-home .f50-btop-label{position:absolute;left:9px;right:9px;display:flex;justify-content:space-between;font-size:11px;line-height:20px;white-space:nowrap;font-variant-numeric:tabular-nums}
