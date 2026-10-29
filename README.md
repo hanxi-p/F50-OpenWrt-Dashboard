@@ -140,12 +140,12 @@
 
 ## 实拍截图
 
-<a href="assets/dashboard-phone-overview-20261028.png"><img src="assets/dashboard-phone-overview-20261028.png" alt="F50 手机实拍：信号、实时流量曲线与本月套餐" width="360"></a>
-<a href="assets/dashboard-phone-devices-20261028.png"><img src="assets/dashboard-phone-devices-20261028.png" alt="F50 手机实拍：设备流量统计、负载温度与快捷控制" width="360"></a>
+<a href="assets/dashboard-phone-overview-20261029.png"><img src="assets/dashboard-phone-overview-20261029.png" alt="F50 手机实拍：信号、实时流量曲线与本月套餐" width="360"></a>
+<a href="assets/dashboard-phone-devices-20261029.png"><img src="assets/dashboard-phone-devices-20261029.png" alt="F50 手机实拍：设备流量统计、负载温度与快捷控制" width="360"></a>
 
-[信号与流量原图](assets/dashboard-phone-overview-20261028.png) · [设备统计原图](assets/dashboard-phone-devices-20261028.png) · [截图与版本说明](assets/README.md)
+[信号与流量原图](assets/dashboard-phone-overview-20261029.png) · [设备统计原图](assets/dashboard-phone-devices-20261029.png) · [截图与版本说明](assets/README.md)
 
-以上为使用者于 2026-10-28 提供并指定公开的两张手机实拍截图，保留原图与拍摄时读数，点击查看原尺寸。第二张展示设备名称及上下行合并的五列统计；截图不是测速或长期稳定性验收。旧版手机响应式视口图和桌面图保留在截图说明中。
+以上为使用者于 2026-10-29 提供并指定公开的两张手机实拍截图，保留原图与拍摄时读数，点击查看原尺寸。两张展示统一设备流量表、表内离线折叠、三列负载温度及第二排测速入口；截图不是测速或长期稳定性验收。2026-10-28 手机原图及旧版响应式视口图、桌面图保留在截图说明中。
 
 ## 来源与更新
 
