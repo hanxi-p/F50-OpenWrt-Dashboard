@@ -54,7 +54,7 @@ async function scenario(){
  const tick=async()=>{assert.ok(pending.length);pending.shift()();await flush();};
  const sample={mac:'02:11:22:33:44:55',name:'A very long device name <script>text only</script>',ip:'192.0.2.2',interface:'wlan0',connection:'wifi5',online:true,today_rx:100,today_tx:99999,month_total:12345,total:999999,rx_rate:10000,tx_rate:300};
  payload={timestamp:1000,devices:[sample,{...sample}, {...sample,mac:'02:22:22:22:22:22',name:'Second',today_rx:200,today_tx:0,rx_rate:1}]};await tick();
- const stats=root.querySelector('.f50-devices'),rows=()=>[...stats.querySelectorAll('tbody tr')];
+ const stats=root.querySelector('.f50-devices'),rows=()=>[...stats.querySelectorAll('tbody tr[data-connection]')];
  assert.deepEqual([...stats.querySelector('table').querySelectorAll('th')].map(n=>n.textContent),['设备名称','实时速率','今日流量','本月累计','总累计']);
  assert.equal(rows().length,2);assert.equal(rows()[0].querySelector('button').textContent,'Second','rank uses daily download, ignoring upload, speed and lifetime');
  const row=rows()[1],scroll=stats.querySelector('.f50-device-scroll');assert.equal(row.querySelector('button').textContent,sample.name);assert.equal(row.querySelectorAll('script').length,0);
@@ -63,16 +63,17 @@ async function scenario(){
  for(let i=0;i<12;i++){payload.timestamp++;await tick();assert.equal(rows()[1],row);assert.equal(scroll.scrollTop,35);assert.equal(scroll.scrollLeft,15);}
  now+=5000;await tick();assert.equal(row.children[1].textContent,'——');assert.notEqual(row.children[2].textContent,'——');
  payload.timestamp++;now++;await tick();assert.notEqual(row.children[1].textContent,'——');
- sample.connection='wifi24';payload.timestamp++;await tick();assert.equal(stats.querySelectorAll('tbody tr').length,2);assert.equal(row.getAttribute('data-connection'),'wifi24');
+ sample.connection='wifi24';payload.timestamp++;await tick();assert.equal(stats.querySelectorAll('tbody tr[data-connection]').length,2);assert.equal(row.getAttribute('data-connection'),'wifi24');
  const usb={...sample,mac:'02:33:33:33:33:33',name:'USB desktop',connection:'wired',interface:'usb0',online:true,today_rx:300};
  payload.devices.push(usb);payload.timestamp++;await tick();
  const usbRow=rows().find(r=>r.querySelector('button').textContent==='USB desktop');
  assert.equal(usbRow.closest('article'),row.closest('article'),'USB and Wi-Fi use the same live table');
  assert.equal(stats.querySelectorAll('.f50-device-panels > article').length,1);
  const offline=stats.querySelector('.f50-device-offline-group'),fold=stats.querySelector('.f50-device-toggle'),body=stats.querySelector('#f50-device-content');
- usb.online=false;payload.timestamp++;await tick();assert.equal(usbRow.closest('details'),offline);assert(!offline.hasAttribute('open'));assert.equal(offline.hidden,false);
- offline.setAttribute('open','');
- for(let i=0;i<3;i++){fold.onclick();assert.equal(body.hidden,true);fold.onclick();assert.equal(body.hidden,false);payload.timestamp++;await tick();assert(offline.hasAttribute('open'));assert.equal(usbRow.closest('details'),offline);}
+ usb.online=false;payload.timestamp++;await tick();assert.equal(usbRow.parentNode.id,'f50-device-offline-rows');assert.equal(stats.querySelector('.f50-device-offline-toggle').getAttribute('aria-expanded'),'false');assert.equal(offline.hidden,false);
+ const offlineToggle=stats.querySelector('.f50-device-offline-toggle');offlineToggle.onclick();
+ assert.equal(offline.closest('table'),row.closest('table'));assert.equal(stats.querySelectorAll('table').length,1);assert.equal(stats.querySelectorAll('article').length,1);assert.equal(stats.querySelectorAll('thead').length,1);
+ for(let i=0;i<3;i++){fold.onclick();assert.equal(body.hidden,true);fold.onclick();assert.equal(body.hidden,false);payload.timestamp++;await tick();assert.equal(offlineToggle.getAttribute('aria-expanded'),'true');assert.equal(usbRow.parentNode.hidden,false);}
  usb.online=true;payload.timestamp++;await tick();assert.equal(usbRow.closest('article'),row.closest('article'));assert.equal(offline.hidden,true);
  assert.equal(rows().length,3,'offline/online movements cannot duplicate rows');
  payload.devices=payload.devices.filter(d=>d!==usb);payload.timestamp++;await tick();assert.equal(rows().length,2,'authoritative snapshots remove missing rows');
