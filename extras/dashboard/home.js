@@ -1,6 +1,7 @@
 'use strict';
 'require view';
 'require f50devices as F50Devices';
+'require f50nettest as F50NetTest';
 'require rpc';
 'require f50adguard as F50AdGuard';
 'require uci';
@@ -85,6 +86,7 @@ return view.extend({
 		this.wire(root);
 		this._speedPeaks = F50SpeedPeaks.mount(root);
 		this._devicesDispose = F50Devices.mount(root);
+		this._nettestDispose = F50NetTest.mount(root);
 		var self = this;
 		var seed = document.getElementById('f50-dashboard-seed');
 		if (seed) {
@@ -129,6 +131,7 @@ return view.extend({
 
 	unload: function() {
 		if(this._devicesDispose)this._devicesDispose();
+		if(this._nettestDispose)this._nettestDispose();
 		if(this._speedPeaks)this._speedPeaks.dispose();
 		clearTimeout(this._refreshTimer);
 		if(this._liveChart){this._liveChart.dispose();this._liveChart=null;}
@@ -267,8 +270,8 @@ return view.extend({
   <div class="mud-ctl f50-primary-controls">
     <button class="mud-btn" id="mud-btn-data">流量开关</button>
     <button class="mud-btn" id="mud-btn-power">温控模式</button>
-    <button class="mud-btn" id="mud-btn-adguard" aria-pressed="false">AdGuard Home</button>
     <button class="mud-btn" id="mud-btn-openclash" aria-pressed="false">OpenClash · 读取状态…</button>
+    <button class="mud-btn" id="mud-btn-adguard" aria-pressed="false">AdGuard Home</button>
     <button class="mud-btn warn" id="mud-btn-reboot">${_('Restart device')}</button>
     <button class="mud-btn" id="mud-btn-other" aria-expanded="false">更多设置</button>
     <button class="mud-btn" id="mud-btn-wifi">Wi-Fi 开关</button>
@@ -450,7 +453,7 @@ return view.extend({
    .f50-home #mud-temps{display:grid;grid-template-columns:1fr;gap:2px;margin:4px 0 0}
    .f50-home #mud-temps span{display:block;font-size:.65rem;padding:0;border:0;text-align:left;white-space:nowrap}
    .f50-home .f50-other-controls{margin-top:6px;grid-template-columns:repeat(6,minmax(0,1fr))!important}
-   .f50-home .f50-primary-controls{grid-template-columns:repeat(6,minmax(0,1fr))}
+   .f50-home .f50-primary-controls{grid-template-columns:repeat(3,minmax(0,1fr))}
    .f50-home .mud-ctl .mud-btn{background:#fff;color:#263238;border-color:#dce1e5}
    .f50-home .mud-ctl .mud-btn.on,.f50-home .mud-ctl .mud-btn[aria-pressed=true],.f50-home .mud-ctl .mud-btn[aria-expanded=true]{background:#008cba;border-color:#008cba;color:#fff}
    .f50-home .f50-primary-controls>.mud-btn,.f50-home .f50-other-controls>.mud-btn{height:46px;min-height:46px;max-height:46px;width:100%;min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.25;margin:0;padding:6px;text-decoration:none}

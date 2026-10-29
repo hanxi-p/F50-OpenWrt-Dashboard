@@ -32,6 +32,11 @@ for service in f50-devices f50-wifi-guard f50-dns-guard f50-diagnostics f50-traf
  if [ -x /etc/init.d/$service ] && /etc/init.d/$service running; then echo 1 > "$backup/$service.running"; else echo 0 > "$backup/$service.running"; fi
 done
 cat > "$backup/paths" <<'PATHS'
+/www/luci-static/resources/f50nettest.js
+/www/cgi-bin/f50-nettest
+/usr/libexec/f50-nettest-stream.uc
+/usr/libexec/rpcd/f50nettest
+/usr/share/rpcd/acl.d/luci-app-f50nettest.json
 /www/luci-static/resources/f50powerradio25.js
 /usr/libexec/f50-lock
 /usr/libexec/f50-run-worker
@@ -150,6 +155,11 @@ while IFS=' ' read -r src target; do
  chmod 644 "$target.f50-new"
  mv "$target.f50-new" "$target"
 done <<'FILES'
+f50nettest.js /www/luci-static/resources/f50nettest.js
+f50-nettest-cgi /www/cgi-bin/f50-nettest
+f50-nettest-stream.uc /usr/libexec/f50-nettest-stream.uc
+f50-nettest /usr/libexec/rpcd/f50nettest
+luci-app-f50nettest.json /usr/share/rpcd/acl.d/luci-app-f50nettest.json
 f50-bounded /usr/libexec/f50-bounded
 f50-wifi-guard /usr/libexec/f50-wifi-guard
 f50-wifi-evaluate /usr/libexec/f50-wifi-evaluate
@@ -225,6 +235,7 @@ chmod 755 /usr/libexec/f50-wifi-nondfs /usr/libexec/f50-wifi-start-safe
 chmod 755 /usr/libexec/f50-bounded /usr/libexec/f50-wifi-guard /usr/libexec/f50-wifi-evaluate /etc/init.d/f50-wifi-guard /usr/libexec/f50-dns-guard /usr/libexec/f50-dns-health /etc/init.d/f50-dns-guard /usr/libexec/f50-lock
 chmod 755 /usr/libexec/f50-devices/flow-account /usr/libexec/rpcd/f50devices /etc/init.d/f50-devices
 sh apply-reliability.sh
+chmod 755 /www/cgi-bin/f50-nettest /usr/libexec/rpcd/f50nettest
 chmod 755 /usr/libexec/unisoc-modem/dashboard-info /usr/libexec/rpcd/f50quota /usr/libexec/rpcd/f50channel /usr/libexec/rpcd/f50openclash /usr/libexec/f50openclash-worker
 chmod 755 /usr/libexec/rpcd/f50power /usr/libexec/f50power-worker /etc/init.d/f50power
 chmod 755 /usr/libexec/rpcd/f50adguard /usr/libexec/f50adguard-worker /usr/libexec/f50-dns-route

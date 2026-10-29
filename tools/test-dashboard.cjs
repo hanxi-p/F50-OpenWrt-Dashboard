@@ -34,6 +34,13 @@ async function scenario(){
  assert.deepEqual(notifications,[]);disposeQuota();pending=[];
  /* Organize after quota mounting too: the load row cannot depend on section position. */
  home.organize(root);home._actionsObserver.disconnect();
+ const NetTest=new (load('f50nettest.js',common))();const disposeNetTest=NetTest.mount(root);
+ const primary=root.querySelector('.f50-primary-controls');
+ assert.deepEqual(Array.from(primary.children).slice(0,3).map(n=>n.id),['mud-btn-data','mud-btn-power','mud-btn-openclash']);
+ assert.equal(primary.children[3].style.gridColumn,'1 / -1');assert.equal(primary.children[3].children.length,3);
+ assert.equal(primary.children[4].id,'mud-btn-adguard');assert.equal(root.querySelector('#f50-other-controls').contains(primary.children[3]),false);
+ disposeNetTest();
+
  assert.equal(root.querySelectorAll('.f50-load-section > .mud-kpis > .mud-kpi').length,3);
  assert.ok(root.querySelector('#mud-peak-title'));assert.equal(usage.hidden,true);
  const signal=root.querySelector('#f50-signal-toggle'),cell=root.querySelector('#f50-cell-inline');assert.equal(cell.hidden,true);

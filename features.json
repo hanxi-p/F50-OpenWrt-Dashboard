@@ -671,6 +671,24 @@
       "requires": [
         "device-traffic"
       ]
+    },
+    {
+      "id": "network-test",
+      "category": "诊断管理",
+      "name": "内网测速与国内／国外连通检测",
+      "summary": "快捷控制首排下方按需测试内网双向吞吐、百度与谷歌延迟，结果显示在按钮下方。",
+      "delivery": "dashboard",
+      "document": "docs/features/network-test.md",
+      "files": [
+        "extras/dashboard/f50nettest.js",
+        "extras/dashboard/f50-nettest",
+        "extras/dashboard/f50-nettest-cgi",
+        "extras/dashboard/f50-nettest-stream.uc",
+        "extras/dashboard/luci-app-f50nettest.json"
+      ],
+      "requires": [
+        "dashboard-base"
+      ]
     }
   ],
   "aliases": {

@@ -1,0 +1,40 @@
+#!/bin/sh
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+umask 077
+. /usr/share/libubox/jshn.sh
+fail(){ json_init; json_add_string error "$1"; json_dump; }
+case "$1:$2" in
+list:) echo '{"prepare":{},"ping":{"target":"String"}}';;
+call:prepare)
+ mkdir -p /tmp/f50-nettest; chmod 700 /tmp/f50-nettest
+ exec 9>/tmp/f50-nettest/lock
+ flock -n 9 || { fail '已有测速正在进行'; exit; }
+ now=$(cut -d. -f1 /proc/uptime)
+ last=$(cat /tmp/f50-nettest/started 2>/dev/null)
+ case "$last" in ''|*[!0-9]*) last=0;; esac
+ [ "$((now-last))" -ge 15 ] || { fail '请稍后再试，两次测速至少间隔15秒'; exit; }
+ token=$(hexdump -v -n 24 -e '1/1 "%02x"' /dev/urandom)
+ [ "${#token}" = 48 ] || { fail '无法创建测速凭据'; exit; }
+ printf '%s\n' "$token" > /tmp/f50-nettest/token
+ echo "$now" > /tmp/f50-nettest/started
+ echo 0 > /tmp/f50-nettest/count
+ json_init; json_add_string token "$token"; json_add_int chunk 8388608; json_dump;;
+call:ping)
+ exec 9>/tmp/f50-ping-test.lock
+ flock -n 9 || { fail '连通检测正在进行'; exit; }
+ json_load "$(cat)" || { fail '无效请求'; exit; }; json_get_var target target
+ case "$target" in domestic) host=www.baidu.com;; foreign) host=www.google.com;; *) fail '无效目标'; exit;; esac
+ json_init
+ for host in "$host"; do
+  result=$(/usr/libexec/f50-bounded 8 ping -4 -c 3 -W 2 -w 6 "$host" 2>&1)
+  json_add_object "${host#www.}"
+  json_add_string ping "$result"
+  http=$(curl --noproxy '' -I -sS -o /dev/null --connect-timeout 2 --max-time 3 -w '%{http_code} %{time_total}' "https://$host/" 2>/dev/null)
+  status=$?
+  json_add_boolean https_ok "$([ "$status" = 0 ] && echo 1 || echo 0)"
+  json_add_string https "$http"
+  json_close_object
+ done
+ json_dump;;
+*) exit 1;;
+esac
