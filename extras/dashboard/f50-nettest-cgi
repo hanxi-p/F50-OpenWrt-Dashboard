@@ -25,7 +25,7 @@ case "$direction:${CONTENT_LENGTH:-0}" in
 esac
 count=$(cat /tmp/f50-nettest/count)
 case "$count" in ''|*[!0-9]*) deny '403 Forbidden' 'Invalid test';; esac
-[ "$count" -lt 64 ] || deny '429 Too Many Requests' 'Test byte limit reached'
+[ "$count" -lt 256 ] || deny '429 Too Many Requests' 'Test byte limit reached'
 echo "$((count+1))" > /tmp/f50-nettest/count
-# RAM only, fixed 8MiB per request, at most 512MiB/30s per credential.
+# RAM only, fixed 8MiB per request, at most 2GiB/30s per credential.
 /usr/libexec/f50-bounded 15 ucode /usr/libexec/f50-nettest-stream.uc

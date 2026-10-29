@@ -84,7 +84,7 @@
 ### 诊断管理
 
 - [ ] **[内网测速与国内／国外连通检测](docs/features/network-test.md)** `network-test`
-  快捷控制首排下方按需测速，结果用小字显示在对应按钮下方。
+  更多设置所在行的下一排按需测速，结果直接显示在蓝色按钮内。
 
 - [ ] **[无线驱动日志与发包修补](docs/features/wifi-log-quiet.md)** `wifi-log-quiet`
   精确匹配构建的日志降噪与 AP DNS/IPv6组播发送路径修补，独立确认应用。

@@ -29,10 +29,6 @@ call:ping)
   result=$(/usr/libexec/f50-bounded 8 ping -4 -c 3 -W 2 -w 6 "$host" 2>&1)
   json_add_object "${host#www.}"
   json_add_string ping "$result"
-  http=$(curl --noproxy '' -I -sS -o /dev/null --connect-timeout 2 --max-time 3 -w '%{http_code} %{time_total}' "https://$host/" 2>/dev/null)
-  status=$?
-  json_add_boolean https_ok "$([ "$status" = 0 ] && echo 1 || echo 0)"
-  json_add_string https "$http"
   json_close_object
  done
  json_dump;;
