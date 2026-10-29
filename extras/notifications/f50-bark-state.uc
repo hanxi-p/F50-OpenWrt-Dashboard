@@ -13,7 +13,7 @@ function parseSMS(raw) {
  return {title:'F50 新短信',body:'发送号码：'+from+'\n短信原文：'+body};
 }
 
-function notifyAllowed(id){return type(id)=='string' && !match(id,/^(wan|dns)-/);}
+function notifyAllowed(id,channel){return type(id)=='string' && !match(id,/^(wan|dns)-/) && !(channel=='wxpusher' && match(id,/^route-/));}
 function routeAdvance(previous,snapshot){
  if(type(snapshot)!='object'||snapshot.version!=1||type(snapshot.node)!='string'||!length(snapshot.node)||length(snapshot.node)>512||!match(snapshot.boot??'',/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/))return null;
  if(previous!=null && (type(previous)!='object'||type(previous.node)!='string'||type(previous.seq)!='int'||previous.seq<0||previous.seq>=2147483647))return null;

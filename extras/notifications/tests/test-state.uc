@@ -31,3 +31,9 @@ for(let round=0;round<3;round++){
  check(routeAdvance({node:'JP-A',boot:boot,seq:-1},{version:1,node:'JP-B',boot:boot})==null,'corrupt sequence retained');
 }
 print('PASS route transition, baseline, restart, event-ID retry and invalid-input tests three rounds\n');
+for(let round=0;round<3;round++){
+ check(notifyAllowed('route-example-1'),'route notifications allowed on Bark');
+ check(!notifyAllowed('route-example-1','wxpusher'),'route notifications disabled on WxPusher');
+ check(notifyAllowed('sms-1','wxpusher')&&notifyAllowed('kernel-example-1-fault','wxpusher'),'WxPusher SMS and device faults retained');
+}
+print('PASS route channel policy three rounds\n');

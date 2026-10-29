@@ -10,7 +10,7 @@ function deliver(){
  let items=fs.glob(Q+'/*');sort(items);
  for(let path in items){let id=substr(path,length(Q)+1);if(!match(id,/^[a-zA-Z0-9_-]+$/))continue;
   if(fs.stat(S+'/'+id)){fs.unlink(path);continue;}
-  if(!notifyAllowed(id)){fs.mkdir(D+'/suppressed',0700);if(!fs.rename(path,D+'/suppressed/'+id))die('suppression archive failed');continue;}
+  if(!notifyAllowed(id,'wxpusher')){fs.mkdir(D+'/suppressed',0700);if(!fs.rename(path,D+'/suppressed/'+id))die('suppression archive failed');continue;}
   let attempt=retry[id]??{failures:0,next:0};if(mono()<attempt.next)continue;
   if(system('/usr/libexec/f50-wxpusher-send "'+path+'" >/dev/null 2>&1')==0){put(S+'/'+id,{sent:time()});fs.unlink(path);delete retry[id];}
   else{attempt.failures++;attempt.next=mono()+min(600,30*(2**min(5,attempt.failures-1)));retry[id]=attempt;}

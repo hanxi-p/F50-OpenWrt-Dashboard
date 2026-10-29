@@ -12,7 +12,7 @@ function wxEligible(id){return WX_FIRST>0 && (substr(id,0,4)!='sms-' || +substr(
 function queue(id,payload){
  if(!notifyAllowed(id))return;
  payload.created=time();payload.id=id;
- if(wxEligible(id) && !fs.stat(WX+'/sent/'+id) && !fs.stat(WX+'/outbox/'+id))put(WX+'/outbox/'+id,payload);
+ if(notifyAllowed(id,'wxpusher') && wxEligible(id) && !fs.stat(WX+'/sent/'+id) && !fs.stat(WX+'/outbox/'+id))put(WX+'/outbox/'+id,payload);
  if(fs.stat(S+'/'+id)||fs.stat(Q+'/'+id))return;
  put(Q+'/'+id,payload);
 }
