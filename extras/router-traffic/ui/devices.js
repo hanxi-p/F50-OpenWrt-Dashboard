@@ -2,9 +2,10 @@
 'require baseclass';
 'require rpc';
 'require ui';
-'require routertraffic.profiles_v031 as Profiles';
-'require routertraffic.units_v031 as Units';
+'require routertraffic.profiles_v032 as Profiles';
+'require routertraffic.units_v032 as Units';
 var status=rpc.declare({object:'routertraffic',method:'devices',expect:{'':{}}});
+var remove=rpc.declare({object:'routertraffic',method:'remove',params:['mac','expected_id','confirmed'],expect:{'':{}}});
 var rename=rpc.declare({object:'routertraffic',method:'rename',params:['mac','name','expected_id'],expect:{'':{}}});
 function size(n,rate){return rate?Units.fmtRate(n):Units.fmtBytes(n,2,true);}
 function todayDownloadRank(d){return d.today_rx!=null&&Number.isFinite(+d.today_rx)&&+d.today_rx>=0?+d.today_rx:-1;}
@@ -93,6 +94,14 @@ return baseclass.extend({mount:function(root){
  function edit(d){var input=E('input',{type:'text',value:d.name,style:'width:100%;min-width:0;box-sizing:border-box',maxlength:96});
   ui.showModal('设备名称',[E('p',{},d.mac+' · '+d.ip),input,E('p',{},'留空恢复主机名；名称按设备档案保存。'),E('div',{class:'right'},[
    E('button',{class:'btn',click:ui.hideModal},'取消'),E('button',{class:'btn cbi-button-positive',click:function(){rename(d.mac,input.value,d.device_id||'').then(function(r){if(!r.ok)throw Error(r.error||'保存失败');ui.hideModal();}).catch(function(e){ui.addNotification(null,E('p',{},e.message));});}},'保存')])],'rt-device-name-modal');input.focus();}
+ function actions(d){
+  if(d.aggregate)return;
+  var del=E('button',{class:'btn cbi-button-negative',type:'button',click:function(){
+   var confirm=E('button',{class:'btn cbi-button-negative',type:'button',click:function(){this.disabled=true;var button=this;remove(d.mac,d.device_id,true).then(function(r){if(!r.ok)throw Error(r.error||'删除失败');ui.hideModal();}).catch(function(e){ui.addNotification(null,E('p',{},e.message));}).finally(function(){button.disabled=false;});}},'删除记录');
+   ui.showModal('删除统计记录',[E('p',{},d.name),E('p',{},'归档并删除该设备及已确认关联MAC的统计，当前连接期间隐藏。离线后再次连接从新基线统计；名称、绑定关系和整体WAN历史保留。'),E('div',{class:'right'},[E('button',{class:'btn',click:ui.hideModal},'取消'),confirm])],'rt-device-name-modal');
+  }},'删除记录');
+  ui.showModal('设备操作',[E('p',{},d.name),E('div',{class:'rt-device-action-buttons'},[del,E('button',{class:'btn',click:function(){Profiles.manage(d);}},'设备档案／MAC绑定'),E('button',{class:'btn',click:ui.hideModal},'取消')])],'rt-device-name-modal');
+ }
  function draw(data){
   // Device and computer clocks need not agree. Measure how long the producer
   // has stopped advancing using only this client's monotonic clock.
@@ -114,7 +123,7 @@ return baseclass.extend({mount:function(root){
    if(r.el.getAttribute('data-connection')!==connection)r.el.setAttribute('data-connection',connection);
    if(r.button.textContent!==d.name)r.button.textContent=d.name;
    r.button.title=d.aggregate?'LAN 外网流量 · '+(d.members||[]).length+' 台设备':d.name+'\nIP: '+(d.ip||'—')+'\nMAC: '+d.mac+'\n接口: '+(d.interface||'—');r.button.onclick=d.aggregate?null:function(){edit(d);};r.button.disabled=!!d.aggregate;
-   var total=r.cells[4].querySelector('.rt-device-total-action');total.disabled=!!d.aggregate;total.onclick=d.aggregate?null:function(){Profiles.manage(d);};
+   var total=r.cells[4].querySelector('.rt-device-total-action');total.disabled=!!d.aggregate;total.onclick=d.aggregate?null:function(){actions(d);};
    var targets=r.rates.concat(r.daily,[r.cells[3],total]);
    [size(stale?null:d.rx_rate,true),size(stale?null:d.tx_rate,true),size(d.today_rx),size(d.today_tx),size(d.month_total),size(d.total)].forEach(function(v,i){if(targets[i].textContent!==v)targets[i].textContent=v;});
   });

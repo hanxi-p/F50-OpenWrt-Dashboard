@@ -6,5 +6,5 @@ const source=path.join(root,'../dashboard/f50devices.js');if(fs.existsSync(sourc
 const wan=read('wan/style.css'),ui=read('ui/style.css');for(const[k,v]of Object.entries(contract.palette)){assert(wan.includes('--'+k+':'+v[0]));assert(wan.includes('--'+k+':'+v[1]));}
 for(const token of ['font-size:1.4rem','gap:6px','font-size:.65rem','font-size:.62rem','padding:7px 6px'])assert(ui.includes(token),token);
 assert(!/\.rt-root \.mud-sec\{[^}]*border:/.test(ui));assert(wan.includes('font-size: 1.7rem')&&wan.includes('font-size: 1.4rem'));assert(wan.includes('font-family: "Lato"'));assert(!/\.f50-home \*\s*\{\s*font-family/.test(wan));
-const view=read('wan/view.js');assert(view.includes('Devices.mount(this.root)')&&view.includes('Resources.mount(this.root)'));assert(read('install.sh').includes('_v031.js'));
+const view=read('wan/view.js');assert(view.includes('Devices.mount(this.root)')&&view.includes('Resources.mount(this.root)'));assert(read('install.sh').includes('_v'+contract.version.replaceAll('.','')+'.js'));
 console.log('PASS F50 style contract: exact device CSS, palette/light/dark, fonts, typography, responsive spacing, single owner and cache version');

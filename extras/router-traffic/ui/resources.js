@@ -1,7 +1,7 @@
 'use strict';
 'require baseclass';
 'require rpc';
-'require routertraffic.units_v031 as Units';
+'require routertraffic.units_v032 as Units';
 var sample=rpc.declare({object:'routertraffic',method:'resources',expect:{'':{}}});
 function percent(value){return Number.isFinite(value)?Math.round(Math.max(0,Math.min(100,value)))+'%':'—';}
 return baseclass.extend({mount:function(root){

@@ -1,6 +1,7 @@
 #!/usr/bin/ucode
 import * as fs from 'fs';
 import * as loop from 'uloop';
+import {filterRemoved} from './controls.uc';
 import {readjson,atomic,calculate} from './ledger.uc';
 import {observations} from './peers.uc';
 import {derive,annotate} from './profiles.uc';
@@ -51,15 +52,19 @@ function tick(){
   let date=wan(start),source=fs.readfile(R+'/source');
   if(source){
    let obs=observations(cfg.lan_device),registry=readjson(P+'/profiles.json',null),d=registry?derive(registry):null;
-   let calculated=calculate(state,source,obs.peers,d?.aliases??readjson(P+'/aliases.json',{}),time(),date,d?.links??readjson(P+'/identities.json',{}));state=calculated.state;atomic(R+'/ledger.json',state);
+   let controls=readjson(P+'/actions.json',{}),beforeRemoved=sprintf('%J',state.removed??{});
+   function archive(id,snapshot){fs.mkdir(P+'/deleted-archive',0700);let path=P+'/deleted-archive/'+id+'.json';if(!fs.stat(path))atomic(path,snapshot);}
+   let filtered=filterRemoved(state,source,obs.peers,d?.links??readjson(P+'/identities.json',{}),controls,archive,obs.valid,boot);
+   let calculated=calculate(state,filtered.source,filtered.peers,d?.aliases??readjson(P+'/aliases.json',{}),time(),date,d?.links??readjson(P+'/identities.json',{}));state=calculated.state;atomic(R+'/ledger.json',state);
    let missing=!registry;for(let mac in state.devices)if(!registry?.bindings?.[mac])missing=true;
    let st=fs.stat('/etc/config/router_traffic_devices'),signature=st?sprintf('%s:%s',st.mtime,st.size):'';
-   if((missing||signature!=registry?.config_signature)&&start>=profileTry){profileTry=start+10000;let answer;try{answer=json(command('/usr/libexec/router-traffic/profile-action sync'));}catch(e){}if(answer?.ok){registry=readjson(P+'/profiles.json',registry);d=registry?derive(registry):null;calculated=calculate(state,source,obs.peers,d?.aliases??{},time(),date,d?.links??{});state=calculated.state;}}
+   if((missing||signature!=registry?.config_signature)&&start>=profileTry){profileTry=start+10000;let answer;try{answer=json(command('/usr/libexec/router-traffic/profile-action sync'));}catch(e){}if(answer?.ok){registry=readjson(P+'/profiles.json',registry);d=registry?derive(registry):null;filtered=filterRemoved(state,source,obs.peers,d?.links??{},controls,archive,obs.valid,boot);calculated=calculate(state,filtered.source,filtered.peers,d?.aliases??{},time(),date,d?.links??{});state=calculated.state;}}
    try{
     let result=sessionStep(sessionState,obs.peers,time(),boot,registry,obs.valid);sessionState=result.state;sessionDirty=sessionDirty||result.changed;
     for(let event in result.events)push(sessionPending,event);sessionPending=slice(sessionPending,-200);appendSessions(P+'/sessions.jsonl',sessionPending);sessionPending=[];atomic(R+'/sessions.json',sessionState);
     if(sessionDirty||start-sessionSave>=60000){atomic(P+'/sessions.json',sessionState);sessionDirty=false;sessionSave=start;}
    }catch(e){if(start-sessionWarn>=60000){warn('router-traffic-sessions: '+e+'\n');sessionWarn=start;}}
+   if(beforeRemoved!=sprintf('%J',state.removed??{}))atomic(P+'/ledger.json',state);
    annotate(calculated.public.devices,registry);calculated.public.profile_revision=registry?.revision??null;calculated.public.collector_id=cfg.install_id;atomic(R+'/devices.json',calculated.public);
   }
   if(start-lastSave>=60000)save();

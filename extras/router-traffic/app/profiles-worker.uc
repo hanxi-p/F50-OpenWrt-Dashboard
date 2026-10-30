@@ -27,7 +27,7 @@ function run(){
  if(!r&&before==null&&cached){r=validate(cached);recovered=true;}
  assert(r||before==null||(trim(before)==''&&!cached),'UCI档案无效，已保留原文件与缓存，请恢复配置后重试');
  if(cached&&r)for(let mac in cached.bindings)assert(r.bindings[mac],'UCI档案缺少已有绑定，已保留缓存，请恢复配置后重试');
- let known=strict(R+'/ledger.json',strict(P+'/ledger.json',{devices:{}})).devices;
+ let ledger=strict(R+'/ledger.json',strict(P+'/ledger.json',{devices:{}})),known=ledger.devices;
  let oldAliases=r?{}:strict(P+'/aliases.json',{}),oldLinks=r?{}:strict(P+'/identities.json',{});
  // Legacy aliases/confirmed identity links are imported once. No hostname matching.
  if(!r){for(let mac in oldAliases)if(macOK(mac))known[mac]??={};for(let mac,to in oldLinks){if(macOK(mac))known[mac]??={};if(macOK(to))known[to]??={};}}
@@ -35,6 +35,7 @@ function run(){
  if(request.action!='sync'){
   let mac=lc(request.mac??'');assert(macOK(mac)&&r.bindings[mac],'设备不存在');let id=r.bindings[mac].id;
   if(request.expected_id)assert(request.expected_id==id,'设备归属已变化，请刷新后重试');
+  if(request.action=='bind'||request.action=='detach'){let deletions=strict(P+'/actions.json',{}).deleted??{};function pending(id){let root=r.profiles[id]?.anchor,request=deletions[root],marker=ledger.removed?.[root];return request&&(!marker||marker.id!=request.id||!marker.restored);}assert(!pending(id)&&!pending(request.device_id),'该档案统计已删除，请在设备重连后修改归属');}
   if(request.action=='rename'){let name=trim(request.name??'');assert(type(name)=='string'&&length(name)<=96&&!match(name,/[[:cntrl:]]/),'名称格式无效');r.profiles[id].name=name;r.revision++;}
   else{let blocked=strict(P+'/actions.json',{}).blocked??{};if(request.action=='bind')moveBinding(r,mac,request.device_id,request.expected_id,request.confirmed,time(),blocked);else detach(r,mac,request.expected_id,request.confirmed,time(),blocked,uuid);}
   changed=true;

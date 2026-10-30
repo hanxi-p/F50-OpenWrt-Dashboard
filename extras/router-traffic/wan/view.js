@@ -1,10 +1,10 @@
 'use strict';
 'require baseclass';
-'require routertraffic.devices_v031 as Devices';
-'require routertraffic.resources_v031 as Resources';
+'require routertraffic.devices_v032 as Devices';
+'require routertraffic.resources_v032 as Resources';
 'require fs';
-'require routertraffic.livechart_v031 as F50LiveChart';
-'require routertraffic.units_v031 as Units';
+'require routertraffic.livechart_v032 as F50LiveChart';
+'require routertraffic.units_v032 as Units';
 
 var STATUS_FILE = '/tmp/f50-traffic/status.json';
 var HISTORY_FILE = '/tmp/f50-traffic/history.csv';

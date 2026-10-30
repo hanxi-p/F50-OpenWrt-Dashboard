@@ -1,0 +1,3 @@
+#!/bin/sh
+umask 077
+exec /usr/bin/flock -n /var/lock/router-traffic-profiles.lock /usr/bin/ucode /usr/libexec/router-traffic/remove.uc "$@"

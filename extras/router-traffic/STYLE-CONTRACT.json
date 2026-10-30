@@ -1,5 +1,5 @@
 {
-  "version": "0.3.1",
+  "version": "0.3.2",
   "modules": [
     "流量",
     "本月累计／总累计（含今日下载、今日上传四项）",
@@ -30,7 +30,7 @@
   },
   "device_css": "namespace-only copy from F50 source",
   "layout": "one f50-home, one mud-body, four ordered sections",
-  "backend": "unchanged from 0.3.0",
+  "backend": "0.3.2 adds collector-owned per-device deletion; traffic source unchanged",
   "palette": {
     "surface": [
       "#fff",

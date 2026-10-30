@@ -31,7 +31,8 @@
         "routertraffic": [
           "rename",
           "bind",
-          "detach"
+          "detach",
+          "remove"
         ]
       }
     }
