@@ -52,6 +52,11 @@ function tick(){
   let date=wan(start),source=fs.readfile(R+'/source');
   if(source){
    let obs=observations(cfg.lan_device),registry=readjson(P+'/profiles.json',null),d=registry?derive(registry):null;
+   for(let mac,peer in obs.peers){
+    let old=state.devices[mac];
+    if(!old&&!peer.online){delete obs.peers[mac];continue;}
+    if(peer.online&&!peer.ip&&!old?.ip&&!(old?.total>0))delete obs.peers[mac];
+   }
    let controls=readjson(P+'/actions.json',{}),beforeRemoved=sprintf('%J',state.removed??{});
    function archive(id,snapshot){fs.mkdir(P+'/deleted-archive',0700);let path=P+'/deleted-archive/'+id+'.json';if(!fs.stat(path))atomic(path,snapshot);}
    let filtered=filterRemoved(state,source,obs.peers,d?.links??readjson(P+'/identities.json',{}),controls,archive,obs.valid,boot);
@@ -65,6 +70,7 @@ function tick(){
     if(sessionDirty||start-sessionSave>=60000){atomic(P+'/sessions.json',sessionState);sessionDirty=false;sessionSave=start;}
    }catch(e){if(start-sessionWarn>=60000){warn('router-traffic-sessions: '+e+'\n');sessionWarn=start;}}
    if(beforeRemoved!=sprintf('%J',state.removed??{}))atomic(P+'/ledger.json',state);
+   calculated.public.devices=filter(calculated.public.devices,function(d){return d.online||d.ip||d.total>0;});
    annotate(calculated.public.devices,registry);calculated.public.profile_revision=registry?.revision??null;calculated.public.collector_id=cfg.install_id;atomic(R+'/devices.json',calculated.public);
   }
   if(start-lastSave>=60000)save();

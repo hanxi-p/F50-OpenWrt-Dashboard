@@ -40,6 +40,13 @@ function tick(){
    let registry=readjson(P+'/profiles.json',null),derived=registry?derive(registry):null;
    let links=derived?.links??readjson(P+'/identities.json',{}),controls=readjson(P+'/actions.json',{});
    let observed=peers();
+   // Discovery metadata alone is not a connection. Retain established history,
+   // but wait for an address before admitting a new station on this driver.
+   for(let mac,peer in observed){
+    let old=state.devices[mac];
+    if(!old && !peer.online){delete observed[mac];continue;}
+    if(peer.online && !peer.ip && !old?.ip && !(old?.total>0))delete observed[mac];
+   }
    try{
     let sessions=sessionStep(sessionState,observed,time(),boot,registry,sessionScanValid);sessionState=sessions.state;sessionDirty=sessionDirty||sessions.changed;
     for(let event in sessions.events)push(sessionPending,event);sessionPending=slice(sessionPending,-200);
@@ -57,6 +64,9 @@ function tick(){
     if(answer?.ok){registry=readjson(P+'/profiles.json',registry);if(registry){derived=derive(registry);result=calculate(state,filtered.source,filtered.peers,derived.aliases,time(),trim(cmd('date +%F')),derived.links);state=result.state;}}
    }
    result.public.control_version=1;result.public.profile_revision=registry?.revision??null;
+   // Quarantine old discovery-only rows in the visible table; preserve the raw
+   // ledger and profiles so an actually returning device can recover its identity.
+   result.public.devices=filter(result.public.devices,function(d){return d.online||d.ip||d.total>0;});
    annotate(result.public.devices,registry);atomic(R+'/devices.json',result.public);
   }
  }catch(e){warn('f50-devices: '+e+'\n');}
