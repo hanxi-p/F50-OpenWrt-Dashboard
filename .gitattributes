@@ -14,3 +14,6 @@ extras/router-traffic/wan/fonts/*.woff2 binary
 
 # Keep the upstream OFL text verbatim, including its original trailing space.
 extras/router-traffic/wan/fonts/OFL.txt whitespace=-blank-at-eol
+
+# Unified patches require the leading space on empty context lines.
+extras/system-reliability/selective-20261030/selective.patch whitespace=-blank-at-eol
