@@ -160,3 +160,5 @@
 已有F50的后台组件增量维护：[2026-10-30源码与兼容条件](extras/system-reliability/selective-20261030/README.md)。保留原安装基线和定制内核，完整升级中断自动恢复尚未包含。
 
 ODI设备识别：[完整方案](docs/odi/PLAN-V2.md) · [实施进度与下一步](docs/odi/PROGRESS.md)。当前影子引擎不自动合并设备或迁移权限。
+
+通用面板与ODI的独立复制项目：[其他路由器通用面板 · OpenWrt-ODI](https://github.com/hanxi-p/OpenWrt-ODI)。保留现有仓库，本阶段不自动迁移已安装设备。
