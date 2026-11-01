@@ -555,6 +555,21 @@ return view.extend({
     .f50-home #mud-temps{grid-template-columns:1fr}
     .f50-home #mud-temps span{font-size:.62rem}
    }
+   /* dark mode: keep the quick controls and traffic chart on the theme surface */
+   html[data-darkmode=true] .f50-home .mud-ctl .mud-btn:not(.on):not([aria-pressed=true]):not([aria-expanded=true]):not([data-mode]):not([data-target-mode]):not([data-running=true]){background:var(--surface,#141822)!important;color:var(--text,#f9fafb)!important;border-color:var(--hairline,#2b3340)!important}
+   html[data-darkmode=true] .f50-home #f50-other-controls>.mud-btn:not(.on):not([aria-pressed=true]):not([aria-expanded=true]):not([data-mode]):not([data-target-mode]):not([data-running=true]){background:var(--surface,#141822)!important;color:var(--text,#f9fafb)!important;border-color:var(--hairline,#2b3340)!important}
+   html[data-darkmode=true] .f50-home #mud-btn-other:not([aria-expanded=true]){background:var(--surface,#141822)!important;color:var(--brand,#00958e)!important;border-color:var(--hairline,#2b3340)!important}
+   html[data-darkmode=true] .f50-home #mud-btn-reboot,html[data-darkmode=true] .f50-home #f50-other-controls>#mud-btn-reboot{background:var(--surface,#141822)!important;color:var(--danger,#f17070)!important;border-color:var(--hairline,#2b3340)!important}
+   html[data-darkmode=true] .f50-home #mud-btn-reboot:hover,html[data-darkmode=true] .f50-home #f50-other-controls>#mud-btn-reboot:hover{background:var(--danger-surface,#541f20)!important}
+   html[data-darkmode=true] .f50-home #mud-btn-other[aria-expanded=true],html[data-darkmode=true] .f50-home #f50-other-controls>.mud-btn[aria-expanded=true]{background:var(--brand-subtle,#061a20)!important;border-color:var(--brand,#00958e)!important;color:var(--brand,#00958e)!important}
+   html[data-darkmode=true] .f50-home #f50-other-controls{background:var(--surface-sunken,#0b1018)!important;border-color:var(--hairline,#2b3340)!important}
+   html[data-darkmode=true] .f50-home #mud-rate-chart{background:var(--surface,#141822)!important;border-color:var(--hairline,#2b3340)!important;color:var(--text,#f9fafb)}
+   html[data-darkmode=true] .f50-home #mud-peaks-panel{background:var(--surface,#141822)!important;border-color:var(--hairline,#2b3340)!important}
+   html[data-darkmode=true] .f50-home .f50-peak-button[aria-expanded=true]{background:var(--brand-subtle,#061a20)}
+   html[data-darkmode=true] .f50-live-grid line{stroke:var(--hairline,#2b3340)}
+   html[data-darkmode=true] .f50-live-zero{stroke:var(--text-subtle,#5d6067)}
+   html[data-darkmode=true] #mud-rate-cursor{stroke:var(--text-muted,#909297)}
+   html[data-darkmode=true] .f50-live-return{background:var(--surface,#141822)!important;color:var(--brand,#00958e)!important;border-color:var(--hairline,#2b3340)!important}
   `));
  },
  drawRates: function() {

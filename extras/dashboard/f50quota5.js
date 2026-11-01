@@ -93,7 +93,7 @@ return baseclass.extend({
     var y=Math.max(16,p.y-10);
     svg+='<text x="'+p.x+'" y="'+y+'" text-anchor="middle" font-size="11" fill="'+(p.d.suspect?'#a47329':'#278eaa')+'">'+value+'</text><text x="'+p.x+'" y="208" text-anchor="middle" font-size="10" fill="#74858c">'+p.d.date.slice(5)+'</text>';
    });svg+='</svg>';
-   var chart=E('div',{style:'overflow-x:auto;border:1px solid #d7e8ee;border-radius:10px;background:#fff;padding:6px 0;-webkit-overflow-scrolling:touch'});chart.innerHTML=svg;
+   var chart=E('div',{style:'overflow-x:auto;border:1px solid var(--hairline,#d7e8ee);border-radius:10px;background:var(--surface,#fff);padding:6px 0;-webkit-overflow-scrolling:touch'});chart.innerHTML=svg;
    panel.replaceChildren(selected,chart);panel.hidden=false;chart.scrollLeft=width;q('daily-open').setAttribute('aria-expanded','true');
   };
   function schedule(){timer=setTimeout(function(){if(!disposed && document.documentElement.contains(root))refresh().finally(schedule);},30000);}
