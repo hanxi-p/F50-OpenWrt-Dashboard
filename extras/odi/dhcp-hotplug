@@ -1,0 +1,4 @@
+#!/bin/sh
+# Best effort metadata only: never fail the existing DHCP event pipeline.
+[ -x /usr/bin/ucode ] && /usr/bin/ucode /usr/libexec/odi/dhcp-event.uc >/dev/null 2>&1
+:

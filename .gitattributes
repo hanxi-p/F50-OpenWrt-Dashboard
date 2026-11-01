@@ -17,3 +17,5 @@ extras/router-traffic/wan/fonts/OFL.txt whitespace=-blank-at-eol
 
 # Unified patches require the leading space on empty context lines.
 extras/system-reliability/selective-20261030/selective.patch whitespace=-blank-at-eol
+
+extras/odi/** text=auto eol=lf
