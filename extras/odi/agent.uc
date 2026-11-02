@@ -3,14 +3,21 @@ import * as fs from 'fs';
 import * as loop from 'uloop';
 import {macOK,lease,radio} from './normalize.uc';
 import {suggest} from './identity.uc';
+import {update,infer} from './learning.uc';
+import {correlate} from './mdns.uc';
+import {create as createSampler} from './sampler.uc';
+import {indexDevices} from './subjects.uc';
+import {archive} from './archive.uc';
 const R='/tmp/odi',P='/etc/odi';
+const registryPath=getenv('ODI_REGISTRY_PATH')??'/etc/f50-devices/profiles.json';
 fs.mkdir(R,0700);fs.mkdir(P,0700);
 function atomic(path,data){let f=fs.open(path+'.new','w',0600);if(!f)die('cannot write ODI state');f.write(sprintf('%J',data));f.close();if(!fs.rename(path+'.new',path))die('cannot rename ODI state');}
 let saved=fs.readfile(P+'/observations.json'),state=saved?json(saved):{version:1,router_id:trim(fs.readfile('/proc/sys/kernel/random/uuid')),devices:{}};
 if(state?.version!=1||type(state.devices)!='object')die('invalid ODI state retained');
 function command(s){let f=fs.popen(s,'r');if(!f)return {ok:false};let text=f.read('all');let status=f.close();return {ok:status==0,text:text};}
 function ubus(object,method){let r=command('ubus -t 2 call '+object+' '+method+' 2>/dev/null');if(!r.ok)return null;try{return json(r.text);}catch(e){return null;}}
-let lastSave=0,stopping=false,timer;
+let lastSave=0,stopping=false,timer,sampler=null;
+const boot=trim(fs.readfile('/proc/sys/kernel/random/boot_id')??'');
 function persist(){atomic(P+'/observations.json',state);}
 function tick(){
  let now=time(),observed={},capabilities={hostapd:[],mdns:false,dhcp:'lease_file',ipv6:'neighbour_only',dhcp_options:false,ssdp:false};
@@ -44,9 +51,12 @@ function tick(){
    }catch(e){}
   }
   capabilities.dhcp_event_hook=fs.stat('/etc/hotplug.d/dhcp/90-odi')!=null;
+  let ipv6leases=ubus('dhcp','ipv6leases');
+  if(ipv6leases&&length(sprintf('%J',ipv6leases))<=262144){capabilities.ipv6='neighbour_and_dhcpv6_snapshot';atomic(R+'/dhcpv6.json',{version:1,observed_at:now,expires_at:now+90,data:ipv6leases});}
   let services=ubus('umdns','browse');capabilities.mdns=services!=null;
   // mDNS remains a separate, timestamped snapshot. No guessed MAC association.
   if(services&&length(sprintf('%J',services))<=262144)atomic(R+'/mdns.json',{version:1,observed_at:now,expires_at:now+90,data:services});
+  for(let row in correlate(services,observed,now))add(row.mac,row.source,row.value);
   for(let mac,v in observed){
    let previous=state.devices[mac];state.devices[mac]={...v,sources:{...(previous?.sources??{}),...v.sources},first_seen:previous?.first_seen??now,last_seen:now,expires_at:now+90,identity_state:'unclassified'};
    let sourceNames=sort(keys(state.devices[mac].sources),function(a,b){return state.devices[mac].sources[b].observed_at-state.devices[mac].sources[a].observed_at;});
@@ -55,13 +65,20 @@ function tick(){
   for(let mac,v in state.devices)if(now-v.last_seen>604800)delete state.devices[mac];
   let ordered=sort(keys(state.devices),function(a,b){return state.devices[b].last_seen-state.devices[a].last_seen;});
   for(let i=1024;i<length(ordered);i++)delete state.devices[ordered[i]];
-  atomic(R+'/observations.json',{version:1,timestamp:now,mode:'observation_only',capabilities:capabilities,devices:state.devices});
+  let registry=null;try{registry=json(fs.readfile(registryPath)??'null');}catch(e){}
+  state.subjects??={};let deviceIndex=indexDevices(state.devices,state.subjects,registry,now,()=>trim(fs.readfile('/proc/sys/kernel/random/uuid')));
+  atomic(R+'/observations.json',{version:1,router_id:state.router_id,timestamp:now,mode:'observation_only',capabilities:capabilities,device_index:deviceIndex,devices:state.devices});
   try{
-   let registry=json(fs.readfile('/etc/f50-devices/profiles.json')??'null');
-   let candidates=suggest(state.devices,registry,now);candidates.router_id=state.router_id;
+   state.learning=update(state.learning,state.devices,now);
+   let candidates=infer(state.learning,state.devices,registry,now,suggest(state.devices,registry,now));candidates.router_id=state.router_id;
    atomic(R+'/candidates.json',candidates);
   }catch(e){atomic(R+'/candidates.json',{version:1,timestamp:now,mode:'shadow_only',error:'identity_unavailable'});}
-  if(now-lastSave>=600){persist();lastSave=now;}
+  try{sampler??=createSampler(P+'/dataset');atomic(R+'/dataset-status.json',sampler(state.devices,state.router_id,boot,now,capabilities));}
+  catch(e){atomic(R+'/dataset-status.json',{version:1,timestamp:now,error:'sampling_failed'});warn('odi-sampler: '+e+'\n');}
+  if(now-lastSave>=600){persist();lastSave=now;
+   try{atomic(R+'/archive-status.json',archive(P,registry,state.devices,state.learning,state.router_id,now,{mdns:services,dhcpv6:ipv6leases}));}
+   catch(e){atomic(R+'/archive-status.json',{ok:false,timestamp:now,error:'archive_failed'});}
+  }
  }catch(e){warn('odi-agent: '+e+'\n');}
  if(!stopping)timer.set(30000);
 }
