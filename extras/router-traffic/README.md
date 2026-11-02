@@ -1,4 +1,6 @@
-# 其他路由器通用面板 0.3.2
+# AX6S 专用面板 0.3.4
+
+本版修复 AX6S 硬件卸载流量漏计。适用型号、计数口径及旧数据限制见 AX6S-WAN-MIB-README.md；以下旧版“通用”描述不再适用于本版安装条件。
 
 面向其他 OpenWrt 路由器，基于 F50 面板提取，当前以 AX6S 完成适配，来源及 MIT 授权见 SOURCE.json、LICENSE。此包是 OpenWrt 上执行的离线安装包，不能作为固件交给 sysupgrade。无需连接 F50，不包含私人名称、MAC、代理配置、密码及其他路由器流量历史。
 
@@ -21,7 +23,7 @@ GitHub 提供源码及字体授权；已编译二进制、私有账本和整机�
 ```sh
 # 先在电脑核验外部 SHA256SUMS，再将 tar.gz 传到路由器 /tmp。
 mkdir -p /tmp/router-traffic-install
-tar xzf /tmp/router-traffic-ax6s-v0.3.2.tar.gz -C /tmp/router-traffic-install
+tar xzf /tmp/router-traffic-ax6s-v0.3.4.tar.gz -C /tmp/router-traffic-install
 cd /tmp/router-traffic-install
 sh preflight.sh lan wan
 sh install.sh lan wan
@@ -47,7 +49,7 @@ sh install.sh lan wan
 
 AX6S2 保持硬件卸载，实际 TCP 上传、下载各三轮（每轮 2 MiB）。上传 conntrack 与发送端 TCP_INFO 的字节量相差约 2–3%，大量高于文件大小的部分由真实 TCP 重传解释；下载收到的 conntrack 字节与唯一 SSH 数据量差约 2%。不能因此宣称所有内核、卸载驱动、代理模式、多 VLAN/多 WAN 均已准确适配。IPv6/跨日/重启/接口切换中仅模型覆盖的项目不能称为实机中断验收。
 
-源码内含 tests；构建：`python tools/build.py --zig /path/to/zig --output router-traffic-ax6s-v0.3.2.tar.gz`。亦可使用 --reuse-archive 复用源码哈希一致、ELF 架构和构建校验通过的已编译二进制。Lato 字体及 OFL 授权单独见 wan/fonts/。
+源码内含 tests；构建：`python tools/build.py --zig /path/to/zig --output router-traffic-ax6s-v0.3.4.tar.gz`。亦可使用 --reuse-archive 复用源码哈希一致、ELF 架构和构建校验通过的已编译二进制。Lato 字体及 OFL 授权单独见 wan/fonts/。
 
 月度与总累计从可恢复历史衔接：月度只能以旧版可信今日值为已知下限，总累计保留独立已知值的最大值，重叠记录不相加；缺失的更早/月初历史无法补算，数字提示和本说明明确标注。
 
@@ -71,3 +73,9 @@ AX6S2 保持硬件卸载，实际 TCP 上传、下载各三轮（每轮 2 MiB）
 点击无线设备的总累计打开设备操作，可选择删除记录或原设备档案入口。删除需确认并核对当前UUID，只发布请求，采集器归档目标及明确关联MAC的原始记录后清理；当前连接期间保持隐藏，成功观察到离线、再上线后从新基线恢复，不重新计入旧连接流量。失败扫描不作为离线；重启可按boot代次确认观察空档。删除状态立即落盘，旧归档不覆盖，其他设备及整体WAN历史不变。
 
 删除不踢出设备，不清除名称/档案/MAC绑定；删除期间暂不允许移动相关档案的成员，防止归属改变绕过删除。原始快照在私有deleted-archive目录。虚拟有线汇总不按一个真实设备删除，避免误清整组LAN。
+
+## 0.3.4准确性边界
+
+物理WAN MIB修复的是整体曲线和整体累计的硬件卸载漏计，不是每台设备计数修复。设备明细仍依赖conntrack字节统计，可能受目标内核/卸载实现影响，不能用WAN总量证明逐设备准确，也不按比例补齐。旧漏计历史无法恢复。本版安装器限定已适配AX6S；F50和其他型号不得套用此MIB接线。ODI源码与原有UUID档案功能保留，不通过关闭加速换取统计。
+
+构建器从源码编译flow-account和read-port-stats；复用包时同时验证两个程序的源码与二进制摘要。

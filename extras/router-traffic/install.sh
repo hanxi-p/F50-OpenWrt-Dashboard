@@ -25,7 +25,7 @@ sh preflight.sh "${lan:-lan}" "${wan:-wan}" > "$tmp/config.json"
 ucode -c -o "$tmp/check.ucb" app/collector.uc
 free=$(df -k /overlay | awk 'END{print $4}')
 [ "$free" -ge 2048 ] || { echo 'At least 2 MiB free overlay space required.' >&2;exit 1;}
-backup=/root/router-traffic-backups/$(date +%Y%m%d-%H%M%S)-v032-$$
+backup=/root/router-traffic-backups/$(date +%Y%m%d-%H%M%S)-v034-$$
 mkdir -p "$backup";chmod 700 "$backup"
 for service in router-traffic f50-traffic;do
  enabled=0;running=0
@@ -73,6 +73,8 @@ if [ "$hot" = 0 ] && [ -x /etc/init.d/router-traffic ];then /etc/init.d/router-t
 mkdir -p /usr/libexec/router-traffic /etc/router-traffic /www/luci-static/resources/routertraffic/fonts
 chmod 700 /etc/router-traffic
 cp app/*.uc /usr/libexec/router-traffic/
+cp bin/read-port-stats /usr/libexec/router-traffic/read-port-stats
+chmod 755 /usr/libexec/router-traffic/read-port-stats
 if [ "$hot" = 0 ];then cp bin/flow-account /usr/libexec/router-traffic/flow-account.new;chmod 755 /usr/libexec/router-traffic/flow-account.new;mv /usr/libexec/router-traffic/flow-account.new /usr/libexec/router-traffic/flow-account;fi
 cp app/remove-action /usr/libexec/router-traffic/remove-action
 cp app/profile-action /usr/libexec/router-traffic/profile-action
@@ -107,5 +109,5 @@ for attempt in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15;do
 done
 [ "$ready" = 1 ] || { echo 'Collector health check failed' >&2;exit 1;}
 sha256sum -c "$backup/network.sha256"
-echo "Installed v0.3.2. Backup and rollback: sh $backup/rollback.sh $backup"
+echo "Installed v0.3.4. Backup and rollback: sh $backup/rollback.sh $backup"
 changed=0

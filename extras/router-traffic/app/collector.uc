@@ -31,10 +31,14 @@ function wan(now){
   let candidate=net?.l3_device??net?.device;
   wanDevice=match(candidate??'',/^[a-zA-Z0-9_.:-]+$/)?candidate:'';nextResolve=now+10000;
  }
- let base='/sys/class/net/'+wanDevice+'/statistics/',rx=fs.readfile(base+'rx_bytes'),tx=fs.readfile(base+'tx_bytes'),index=fs.readfile('/sys/class/net/'+wanDevice+'/ifindex');
+ let index=fs.readfile('/sys/class/net/'+wanDevice+'/ifindex');
+ // Physical switch port MIB includes hardware-offloaded traffic. Never fall
+ // back to software counters under the same generation: that can miscount.
+ let mib=wanDevice?split(trim(command('/usr/libexec/router-traffic/read-port-stats '+wanDevice+' --bytes 2>/dev/null')),/\s+/):[];
+ let rx=length(mib)==2&&match(mib[0],/^[0-9]+$/)?mib[0]:null,tx=length(mib)==2&&match(mib[1],/^[0-9]+$/)?mib[1]:null;
  let measured=mono();
  let hour=trim(command('date +%F-%H')),date=substr(hour,0,10);
- let current={valid:rx!=null&&tx!=null&&index!=null,boot:trim(fs.readfile('/proc/sys/kernel/random/boot_id')??''),device:wanDevice,index:trim(index??''),rx:+rx,tx:+tx,ms:measured,timestamp:time(),date:date,hour:hour};
+ let current={valid:rx!=null&&tx!=null&&index!=null,boot:trim(fs.readfile('/proc/sys/kernel/random/boot_id')??''),device:wanDevice,index:trim(index??'')+':physical-mib-v1',rx:+rx,tx:+tx,ms:measured,timestamp:time(),date:date,hour:hour};
  let result=advance(wanState,current,firstWan);wanState=result.state;firstWan=false;
  let data=result.status;data.collector_id=cfg.install_id;
  if(data.rx_rate!=null)push(history,[current.timestamp,data.rx_rate,data.tx_rate]);

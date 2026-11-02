@@ -1,0 +1,14 @@
+const fs=require('node:fs'),assert=require('node:assert/strict'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const collector=read('app/collector.uc'),preflight=read('preflight.sh'),install=read('install.sh'),ledger=read('app/wan-ledger.uc'),helper=read('native/read-port-stats.c');
+assert.match(collector,/read-port-stats '\+wanDevice\+' --bytes/);
+assert.match(collector,/:physical-mib-v1/);
+assert.match(collector,/valid:rx!=null&&tx!=null&&index!=null/);
+assert.doesNotMatch(collector,/statistics\/.*rx_bytes/);
+assert.match(preflight,/xiaomi,redmi-router-ax6s/);
+assert.match(preflight,/bin\/read-port-stats "\$wan" --bytes/);
+assert.match(install,/cp bin\/read-port-stats \/usr\/libexec\/router-traffic\/read-port-stats/);
+assert.match(ledger,/old.index==sample.index/);
+assert.match(helper,/ETHTOOL_GSTATS/);
+assert.match(helper,/RxBytes/);assert.match(helper,/TxBytes/);
+console.log('PASS AX6S-only hardware MIB, read failure fail-closed, generation switch and installer wiring');
